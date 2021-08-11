@@ -1,0 +1,16 @@
+{
+  "loop_wait": 10,
+  "master_start_timeout": 300,
+  "postgresql": {
+    "parameters": {
+      "archive_command": "pgbackrest --stanza=main archive-push %p",
+      "archive_mode": "on",
+      "max_connections": 300,
+      "restore_command": "pgbackrest --stanza=main archive-get %f \"%p\""
+    },
+    "use_pg_rewind": false,
+    "use_slot": true
+  },
+  "retry_timeout": 10,
+  "ttl": 30
+}

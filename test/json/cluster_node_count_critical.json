@@ -1,0 +1,13 @@
+{
+  "members": [
+    {
+      "name": "srv1",
+      "role": "leader",
+      "state": "running",
+      "api_url": "https://10.20.199.3:8008/patroni",
+      "host": "10.20.199.3",
+      "port": 5432,
+      "timeline": 51
+    }
+  ]
+}

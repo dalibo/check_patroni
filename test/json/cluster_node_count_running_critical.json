@@ -1,0 +1,31 @@
+{
+  "members": [
+    {
+      "name": "srv1",
+      "role": "leader",
+      "state": "running",
+      "api_url": "https://10.20.199.3:8008/patroni",
+      "host": "10.20.199.3",
+      "port": 5432,
+      "timeline": 51
+    },
+    {
+      "name": "srv2",
+      "role": "replica",
+      "state": "start failed",
+      "api_url": "https://10.20.199.4:8008/patroni",
+      "host": "10.20.199.4",
+      "port": 5432,
+      "lag": "unknown"
+    },
+    {
+      "name": "srv3",
+      "role": "replica",
+      "state": "start failed",
+      "api_url": "https://10.20.199.5:8008/patroni",
+      "host": "10.20.199.5",
+      "port": 5432,
+      "lag": "unknown"
+    }
+  ]
+}

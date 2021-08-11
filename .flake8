@@ -1,0 +1,10 @@
+[flake8]
+doctests = True
+ignore =
+  E501, # line too long
+exclude =
+  .git,
+  .mypy_cache,
+  .tox,
+  .venv,
+mypy_config = mypy.ini

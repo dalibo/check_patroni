@@ -1,0 +1,2 @@
+check_patroni/__pycache__/
+test/*.state_file

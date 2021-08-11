@@ -1,0 +1,19 @@
+{
+  "state": "running",
+  "postmaster_start_time": "2021-08-11 07:57:51.693 UTC",
+  "role": "replica",
+  "server_version": 110012,
+  "cluster_unlocked": false,
+  "xlog": {
+    "received_location": 1174407088,
+    "replayed_location": 1174407088,
+    "replayed_timestamp": null,
+    "paused": false
+  },
+  "timeline": 58,
+  "database_system_identifier": "6965971025273547206",
+  "patroni": {
+    "version": "2.0.2",
+    "scope": "patroni-demo"
+  }
+}
