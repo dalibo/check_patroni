@@ -1,2 +1,4 @@
-check_patroni/__pycache__/
+*/__pycache__/
+check_patroni.egg-info
 test/*.state_file
+.*.swp

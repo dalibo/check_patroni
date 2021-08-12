@@ -25,6 +25,7 @@ def test_cluster_is_in_maintenance_ko(mocker: MockerFixture) -> None:
     )
     assert result.exit_code == 2
 
+
 def test_cluster_is_in_maintenance_ok_pause_false(mocker: MockerFixture) -> None:
     runner = CliRunner()
 

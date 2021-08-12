@@ -170,4 +170,9 @@ class ClusterIsInMaintenance(PatroniResource):
         item_dict = json.loads(r.data)
 
         # The actual check
-        return [nagiosplugin.Metric("is_in_maintenance", 1 if "pause" in item_dict and item_dict["pause"] else 0)]
+        return [
+            nagiosplugin.Metric(
+                "is_in_maintenance",
+                1 if "pause" in item_dict and item_dict["pause"] else 0,
+            )
+        ]
