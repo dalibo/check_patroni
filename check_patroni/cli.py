@@ -133,8 +133,7 @@ def main(
     """Nagios plugin for patroni."""
     ctx.obj = ConnectionInfo(endpoints, cert_file, key_file, ca_file)
 
-    # TODO Not all "is/has" services have the same return code for ok. Check if it's ok
-    # Typing
+    # FIXME Not all "is/has" services have the same return code for ok. Check if it's ok
 
 
 @main.command(name="cluster_node_count")  # required otherwise _ are converted to -
@@ -219,7 +218,7 @@ def cluster_has_leader(ctx: click.Context) -> None:
 
     Perfdata : `has_leader` is 1 if there is a leader node, 0 otherwise
     """
-    # TODO: Manage primary or standby leader in the same place ?
+    # FIXME: Manage primary or standby leader in the same place ?
     check = nagiosplugin.Check()
     check.add(
         ClusterHasLeader(ctx.obj),
@@ -375,7 +374,7 @@ def node_is_replica(ctx: click.Context, lag: str) -> None:
 
     Perfdata : `is_replica` is 1 if the node is a running replica with noloadbalance tag and the lag is under the maximum threshold, 0 otherwise.
     """
-    # add a lag check ??
+    # FIXME add a lag check ??
     check = nagiosplugin.Check()
     check.add(
         NodeIsReplica(ctx.obj, lag),

@@ -3,6 +3,7 @@ import hashlib
 import json
 import logging
 import nagiosplugin
+from typing import Iterable
 
 from .types import PatroniResource, ConnectionInfo, handle_unknown
 
@@ -14,9 +15,8 @@ def replace_chars(text: str) -> str:
 
 
 class ClusterNodeCount(PatroniResource):
-    def probe(self: "ClusterNodeCount") -> nagiosplugin.Metric:
+    def probe(self: "ClusterNodeCount") -> Iterable[nagiosplugin.Metric]:
         r = self.rest_api("cluster")
-        # FIXME RC <> 200 ?
         _log.debug(f"api call status: {r.status}")
         _log.debug(f"api call data: {r.data}")
 
@@ -51,9 +51,8 @@ class ClusterNodeCount(PatroniResource):
 
 
 class ClusterHasLeader(PatroniResource):
-    def probe(self: "ClusterHasLeader") -> nagiosplugin.Metric:
+    def probe(self: "ClusterHasLeader") -> Iterable[nagiosplugin.Metric]:
         r = self.rest_api("cluster")
-        # FIXME RC <> 200 ?
         _log.debug(f"api call status: {r.status}")
         _log.debug(f"api call data: {r.data}")
 
@@ -82,9 +81,8 @@ class ClusterHasLeaderSummary(nagiosplugin.Summary):
 
 
 class ClusterHasReplica(PatroniResource):
-    def probe(self: "ClusterHasReplica") -> nagiosplugin.Metric:
+    def probe(self: "ClusterHasReplica") -> Iterable[nagiosplugin.Metric]:
         r = self.rest_api("cluster")
-        # FIXME RC <> 200 ?
         _log.debug(f"api call status: {r.status}")
         _log.debug(f"api call data: {r.data}")
 
@@ -124,9 +122,8 @@ class ClusterConfigHasChanged(PatroniResource):
         self.state_file = state_file
         self.config_hash = config_hash
 
-    def probe(self: "ClusterConfigHasChanged") -> nagiosplugin.Metric:
+    def probe(self: "ClusterConfigHasChanged") -> Iterable[nagiosplugin.Metric]:
         r = self.rest_api("config")
-        # FIXME RC <> 200 ?
         _log.debug(f"api call status: {r.status}")
         _log.debug(f"api call data: {r.data}")
 

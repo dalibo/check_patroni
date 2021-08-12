@@ -48,16 +48,16 @@ class PatroniResource(nagiosplugin.Resource):
         raise nagiosplugin.CheckError("Connection failed for all provided endpoints")
 
 
-HandleUnknown = Callable[[nagiosplugin.Summary, nagiosplugin.Result], Any]
+HandleUnknown = Callable[[nagiosplugin.Summary, nagiosplugin.Results], Any]
 
 
-def handle_unknown(action: HandleUnknown) -> HandleUnknown:
+def handle_unknown(func: HandleUnknown) -> HandleUnknown:
     """decorator to handle the unknown state in Summary.problem"""
 
-    def wrapper(summary: nagiosplugin.Summary, results: nagiosplugin.Result) -> Any:
+    def wrapper(summary: nagiosplugin.Summary, results: nagiosplugin.Results) -> Any:
         if results.most_significant[0].state.code == 3:
             """get the appropriate message for all unknown error"""
             return results.most_significant[0].hint
-        return action(summary, results)
+        return func(summary, results)
 
     return wrapper

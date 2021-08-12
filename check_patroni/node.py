@@ -1,14 +1,16 @@
 import json
 import logging
 import nagiosplugin
+from typing import Iterable
 
 from .types import ConnectionInfo, handle_unknown, PatroniResource
+
 
 _log = logging.getLogger("nagiosplugin")
 
 
 class NodeIsPrimary(PatroniResource):
-    def probe(self: "NodeIsPrimary") -> nagiosplugin.Metric:
+    def probe(self: "NodeIsPrimary") -> Iterable[nagiosplugin.Metric]:
         r = self.rest_api("primary")
         _log.debug(f"api call status: {r.status}")
         _log.debug(f"api call data: {r.data}")
@@ -32,7 +34,7 @@ class NodeIsReplica(PatroniResource):
         super().__init__(connection_info)
         self.lag = lag
 
-    def probe(self: "NodeIsReplica") -> nagiosplugin.Metric:
+    def probe(self: "NodeIsReplica") -> Iterable[nagiosplugin.Metric]:
         if self.lag is None:
             r = self.rest_api("replica")
         else:
@@ -60,9 +62,8 @@ class NodeIsReplicaSummary(nagiosplugin.Summary):
 
 
 class NodeIsPendingRestart(PatroniResource):
-    def probe(self: "NodeIsPendingRestart") -> nagiosplugin.Metric:
+    def probe(self: "NodeIsPendingRestart") -> Iterable[nagiosplugin.Metric]:
         r = self.rest_api("patroni")
-        # FIXME RC <> 200 ?
         _log.debug(f"api call status: {r.status}")
         _log.debug(f"api call data: {r.data}")
 
@@ -98,9 +99,8 @@ class NodeTLHasChanged(PatroniResource):
         self.state_file = state_file
         self.timeline = timeline
 
-    def probe(self: "NodeTLHasChanged") -> nagiosplugin.Metric:
+    def probe(self: "NodeTLHasChanged") -> Iterable[nagiosplugin.Metric]:
         r = self.rest_api("patroni")
-        # FIXME RC <> 200 ?
         _log.debug(f"api call status: {r.status}")
         _log.debug(f"api call data: {r.data}")
 
@@ -151,9 +151,8 @@ class NodePatroniVersion(PatroniResource):
         super().__init__(connection_info)
         self.patroni_version = patroni_version
 
-    def probe(self: "NodePatroniVersion") -> nagiosplugin.Metric:
+    def probe(self: "NodePatroniVersion") -> Iterable[nagiosplugin.Metric]:
         r = self.rest_api("patroni")
-        # FIXME RC <> 200 ?
 
         _log.debug(f"api call status: {r.status}")
         _log.debug(f"api call data: {r.data}")
@@ -188,7 +187,7 @@ class NodePatroniVersionSummary(nagiosplugin.Summary):
 
 
 class NodeIsAlive(PatroniResource):
-    def probe(self: "NodeIsAlive") -> nagiosplugin.Metric:
+    def probe(self: "NodeIsAlive") -> Iterable[nagiosplugin.Metric]:
         r = self.rest_api("liveness")
         _log.debug(f"api call status: {r.status}")
         _log.debug(f"api call data: {r.data}")

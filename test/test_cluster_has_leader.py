@@ -14,7 +14,7 @@ def test_cluster_has_leader_ok(mocker: MockerFixture) -> None:
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_leader"]
     )
     assert result.exit_code == 0
-    # FIXME Not captured ???
+    # FIXME the data seems to not be written to stdout yet ...
     # assert "CLUSTERHASLEADER OK - has_leader is 1 | has_leader=1;;@0" in result.output
 
 
