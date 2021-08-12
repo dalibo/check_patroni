@@ -12,6 +12,7 @@ from .cluster import (
     ClusterHasLeaderSummary,
     ClusterHasReplica,
     ClusterNodeCount,
+    ClusterIsInMaintenance,
 )
 from .node import (
     NodeIsAlive,
@@ -183,6 +184,7 @@ def cluster_node_count(
     Perfdata:
     * `members`: the member count.
     * all the roles of the nodes in the cluster with their number.
+    * all the statuses of the nodes in the cluster with their number.
     """
     check = nagiosplugin.Check()
     check.add(
@@ -336,6 +338,31 @@ def cluster_config_has_changed(
     )
 
 
+@main.command(name="cluster_is_in_maintenance")
+@click.pass_context
+@nagiosplugin.guarded
+def cluster_is_in_maintenance(ctx: click.Context) -> None:
+    """Check if the cluster is in maintenance mode ie paused.
+
+    \b
+    Check:
+    * `OK`: If the cluster is in maintenance mode.
+    * `CRITICAL`: otherwise.
+
+    \b
+    Perfdata :
+    * `is_in_maintenance` is 1 the cluster is in maintenance mode,  0 otherwise
+    """
+    check = nagiosplugin.Check()
+    check.add(
+        ClusterIsInMaintenance(ctx.obj),
+        nagiosplugin.ScalarContext("is_in_maintenance", None, "0:0"),
+    )
+    check.main(
+        verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]
+    )
+
+
 @main.command(name="node_is_primary")
 @click.pass_context
 @nagiosplugin.guarded
@@ -393,7 +420,7 @@ def node_is_pending_restart(ctx: click.Context) -> None:
     """Check if the node is in pending restart state.
 
     This situation can arise if the configuration has been modified but
-    requiers arestart of PostgreSQL.
+    requiers a restart of PostgreSQL to take effect.
 
     \b
     Check:
@@ -427,7 +454,7 @@ def node_is_pending_restart(ctx: click.Context) -> None:
 @click.pass_context
 @nagiosplugin.guarded
 def node_tl_has_changed(ctx: click.Context, timeline: str, state_file: str) -> None:
-    """Check if the timeline hash changed.
+    """Check if the timeline has changed.
 
     Note: either a timeline or a state file must be provided for this service to work.
 

@@ -21,9 +21,9 @@ class ClusterNodeCount(PatroniResource):
         _log.debug(f"api call data: {r.data}")
 
         item_dict = json.loads(r.data)
-        role_counters = Counter()
+        role_counters: Counter[str] = Counter()
         roles = []
-        status_counters = Counter()
+        status_counters: Counter[str] = Counter()
         statuses = []
 
         for member in item_dict["members"]:
@@ -159,3 +159,15 @@ class ClusterConfigHasChangedSummary(nagiosplugin.Summary):
         self: "ClusterConfigHasChangedSummary", results: nagiosplugin.Result
     ) -> str:
         return "The hash of patroni's dynamic configuration has changed."
+
+
+class ClusterIsInMaintenance(PatroniResource):
+    def probe(self: "ClusterIsInMaintenance") -> Iterable[nagiosplugin.Metric]:
+        r = self.rest_api("cluster")
+        _log.debug(f"api call status: {r.status}")
+        _log.debug(f"api call data: {r.data}")
+
+        item_dict = json.loads(r.data)
+
+        # The actual check
+        return [nagiosplugin.Metric("is_in_maintenance", 1 if "pause" in item_dict and item_dict["pause"] else 0)]
