@@ -29,16 +29,16 @@ class NodeIsPrimarySummary(nagiosplugin.Summary):
 
 class NodeIsReplica(PatroniResource):
     def __init__(
-        self: "NodeIsReplica", connection_info: ConnectionInfo, lag: str
+        self: "NodeIsReplica", connection_info: ConnectionInfo, max_lag: str
     ) -> None:
         super().__init__(connection_info)
-        self.lag = lag
+        self.max_lag = max_lag
 
     def probe(self: "NodeIsReplica") -> Iterable[nagiosplugin.Metric]:
-        if self.lag is None:
+        if self.max_lag is None:
             r = self.rest_api("replica")
         else:
-            r = self.rest_api(f"replica?lag={self.lag}")
+            r = self.rest_api(f"replica?lag={self.max_lag}")
         _log.debug(f"api call status: {r.status}")
         _log.debug(f"api call data: {r.data}")
 

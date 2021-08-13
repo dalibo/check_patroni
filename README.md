@@ -21,7 +21,7 @@ Options:
 Commands:
   cluster_config_has_changed  Check if the hash of the configuration has...
   cluster_has_leader          Check if the cluster has a leader.
-  cluster_has_replica         Check if the cluster has replicas and their...
+  cluster_has_replica         Check if the cluster has healthy replicates.
   cluster_is_in_maintenance   Check if the cluster is in maintenance mode...
   cluster_node_count          Count the number of nodes in the cluster.
   node_is_alive               Check if the node is alive ie patroni is...
@@ -78,21 +78,23 @@ Options:
 ```
 Usage: check_patroni cluster_has_replica [OPTIONS]
 
-  Check if the cluster has replicas and their lag.
+  Check if the cluster has healthy replicates.
+
+  A healthy replicate : * is in running state * has a replica role * has a lag
+  lower or equal to max_lag
 
   Check:
-  * `OK`: if the replica count and their lag are compatible with the replica count and lag thresholds.
+  * `OK`: if the healthy_replica count and their lag are compatible with the replica count threshold.
   * `WARNING` / `CRITICAL`: otherwise
 
   Perfdata :
-  * replica count
+  * healthy_replica & unhealthy_replica count
   * the lag of each replica labelled with  "member name"_lag
 
 Options:
   -w, --warning TEXT   Warning threshold for the number of nodes.
   -c, --critical TEXT  Critical threshold for the number of replica nodes.
-  --lag-warning TEXT   Warning threshold for the lag.
-  --lag-critical TEXT  Critical threshold for the lag.
+  --max-lag TEXT       maximum allowed lag
   --help               Show this message and exit.
 ```
 
@@ -211,8 +213,8 @@ Usage: check_patroni node_is_replica [OPTIONS]
   noloadbalance tag and the lag is under the maximum threshold, 0 otherwise.
 
 Options:
-  --lag TEXT  maximum allowed lag
-  --help      Show this message and exit.
+  --max-lag TEXT  maximum allowed lag
+  --help          Show this message and exit.
 ```
 
 ### node_patroni_version

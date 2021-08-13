@@ -28,6 +28,6 @@ def test_node_is_replica_ko_lag(mocker: MockerFixture) -> None:
     # We don't do the check ourselves, patroni does it and changes the return code
     my_mock(mocker, "node_is_replica_ok", 404)
     result = runner.invoke(
-        main, ["-e", "https://10.20.199.3:8008", "node_is_replica", "--lag", "100"]
+        main, ["-e", "https://10.20.199.3:8008", "node_is_replica", "--max-lag", "100"]
     )
     assert result.exit_code == 2

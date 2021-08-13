@@ -29,6 +29,7 @@ from .node import (
     NodeTLHasChangedSummary,
 )
 from .types import ConnectionInfo
+from .convert import size_to_byte
 
 
 def print_version(ctx: click.Context, param: str, value: str) -> None:
@@ -247,45 +248,41 @@ def cluster_has_leader(ctx: click.Context) -> None:
     type=str,
     help="Critical threshold for the number of replica nodes.",
 )
-@click.option(
-    "--lag-warning", "lag_warning", type=str, help="Warning threshold for the lag."
-)
-# FIWME how do we manage maximum_lag_on_failover without doing many api calls
-@click.option(
-    "--lag-critical", "lag_critical", type=str, help="Critical threshold for the lag."
-)
+@click.option("--max-lag", "max_lag", type=str, help="maximum allowed lag")
 @click.pass_context
 @nagiosplugin.guarded
 def cluster_has_replica(
-    ctx: click.Context, warning: str, critical: str, lag_warning: str, lag_critical: str
+    ctx: click.Context, warning: str, critical: str, max_lag: str
 ) -> None:
-    """Check if the cluster has replicas and their lag.
+    """Check if the cluster has healthy replicates.
+
+    A healthy replicate :
+    * is in running state
+    * has a replica role
+    * has a lag lower or equal to max_lag
 
     \b
     Check:
-    * `OK`: if the replica count and their lag are compatible with the replica count and lag thresholds.
+    * `OK`: if the healthy_replica count and their lag are compatible with the replica count threshold.
     * `WARNING` / `CRITICAL`: otherwise
 
     \b
     Perfdata :
-    * replica count
+    * healthy_replica & unhealthy_replica count
     * the lag of each replica labelled with  "member name"_lag
     """
-    # FIXME the idea here would be to make sur we have a replica.
-    #       lag should be check to prune invalid replicas
+
+    tmax_lag = size_to_byte(max_lag) if max_lag is not None else None
     check = nagiosplugin.Check()
     check.add(
-        ClusterHasReplica(ctx.obj),
+        ClusterHasReplica(ctx.obj, tmax_lag),
         nagiosplugin.ScalarContext(
-            "replica_count",
+            "healthy_replica",
             warning,
             critical,
         ),
-        nagiosplugin.ScalarContext(
-            "replica_lag",
-            lag_warning,
-            lag_critical,
-        ),
+        nagiosplugin.ScalarContext("unhealthy_replica"),
+        nagiosplugin.ScalarContext("replica_lag"),
     )
     check.main(
         verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]
@@ -388,10 +385,10 @@ def node_is_primary(ctx: click.Context) -> None:
 
 
 @main.command(name="node_is_replica")
-@click.option("--lag", "lag", type=str, help="maximum allowed lag")
+@click.option("--max-lag", "max_lag", type=str, help="maximum allowed lag")
 @click.pass_context
 @nagiosplugin.guarded
-def node_is_replica(ctx: click.Context, lag: str) -> None:
+def node_is_replica(ctx: click.Context, max_lag: str) -> None:
     """Check if the node is a running replica with no noloadbalance tag.
 
     \b
@@ -404,9 +401,9 @@ def node_is_replica(ctx: click.Context, lag: str) -> None:
     # FIXME add a lag check ??
     check = nagiosplugin.Check()
     check.add(
-        NodeIsReplica(ctx.obj, lag),
+        NodeIsReplica(ctx.obj, max_lag),
         nagiosplugin.ScalarContext("is_replica", None, "@0:0"),
-        NodeIsReplicaSummary(lag),
+        NodeIsReplicaSummary(max_lag),
     )
     check.main(
         verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]

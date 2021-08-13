@@ -3,7 +3,7 @@ import hashlib
 import json
 import logging
 import nagiosplugin
-from typing import Iterable
+from typing import Iterable, Union
 
 from .types import PatroniResource, ConnectionInfo, handle_unknown
 
@@ -81,6 +81,14 @@ class ClusterHasLeaderSummary(nagiosplugin.Summary):
 
 
 class ClusterHasReplica(PatroniResource):
+    def __init__(
+        self: "ClusterHasReplica",
+        connection_info: ConnectionInfo,
+        max_lag: Union[int, None],
+    ):
+        super().__init__(connection_info)
+        self.max_lag = max_lag
+
     def probe(self: "ClusterHasReplica") -> Iterable[nagiosplugin.Metric]:
         r = self.rest_api("cluster")
         _log.debug(f"api call status: {r.status}")
@@ -88,17 +96,23 @@ class ClusterHasReplica(PatroniResource):
 
         item_dict = json.loads(r.data)
         replicas = []
+        healthy_replica = 0
+        unhealthy_replica = 0
         for member in item_dict["members"]:
             # FIXME are there other acceptable states
-            if member["role"] == "replica" and member["state"] == "running":
-                # FIXME which lag ?
-                replicas.append({"name": member["name"], "lag": member["lag"]})
-                break
+            if member["role"] == "replica":
+                if member["state"] == "running" and member["lag"] != "unknown":
+                    replicas.append({"name": member["name"], "lag": member["lag"]})
+                    if self.max_lag is None or self.max_lag >= int(member["lag"]):
+                        healthy_replica += 1
+                        continue
+                unhealthy_replica += 1
 
         # The actual check
-        yield nagiosplugin.Metric("replica_count", len(replicas))
+        yield nagiosplugin.Metric("healthy_replica", healthy_replica)
 
-        # The performance data : replicas lag
+        # The performance data : unheakthy replica count, replicas lag
+        yield nagiosplugin.Metric("unhealthy_replica", unhealthy_replica)
         for replica in replicas:
             yield nagiosplugin.Metric(
                 f"{replica['name']}_lag", replica["lag"], context="replica_lag"
