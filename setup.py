@@ -38,6 +38,7 @@ setup(
     keywords="patroni nagios check",
     python_requires=">=3.6",
     install_requires=[
+        "wheel",
         "attrs >= 17, !=21.1",
         "urllib3 >= 1.26.6",
         "nagiosplugin >= 1.3.2",

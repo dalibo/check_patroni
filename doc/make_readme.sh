@@ -20,13 +20,24 @@ helpme
 cat << '_EOF_' >> $README
 ## install
 
-Clone the repo, then install with pip from it :
+The check requers python3. Using a virtual env is advised for testing :
 
 ```
-pip install .
-pip install .[dev]
-pip install .[test]
+pip -m venv ~/venv
+source ~venv/bin/activate
 ```
+
+Clone the repo, then install with pip3 from it :
+
+```
+pip3 install .
+pip3 install .[dev]
+pip3 install .[test]
+```
+
+Links : 
+* [pip & centos 7](https://linuxize.com/post/how-to-install-pip-on-centos-7/)
+* [pip & debian10](https://linuxize.com/post/how-to-install-pip-on-debian-10/)
 
 ## config file
 
