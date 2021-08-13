@@ -7,16 +7,34 @@ function readme(){
 
 function helpme(){
 	readme
-	readme "\`\`\`"
+	readme '```'
 	check_patroni $1 --help >> $README
-	readme "\`\`\`"
+	readme '```'
 	readme
 }
 
-cat << _EOF_ > $README
+cat << '_EOF_' > $README
 # check_patroni
 _EOF_
 helpme
+cat << '_EOF_' >> $README
+## config file
+
+All global and service specific parameters can be specified via a config file has follows:
+
+```
+[options]
+endpoints = https://10.20.199.3:8008, https://10.20.199.4:8008,https://10.20.199.5:8008
+cert_file = ./ssl/benoit-dalibo-cert.pem
+key_file = ./ssl/benoit-dalibo-key.pem
+ca_file = ./ssl/CA-cert.pem
+timeout = 0
+
+[options.node_is_replica]
+lag=100
+```
+_EOF_
+readme
 readme "## cluster services" 
 readme "### cluster_config_has_changed"
 helpme cluster_config_has_changed

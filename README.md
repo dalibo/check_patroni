@@ -32,6 +32,22 @@ Commands:
   node_tl_has_changed         Check if the timeline has changed.
 ```
 
+## config file
+
+All global and service specific parameters can be specified via a config file has follows:
+
+```
+[options]
+endpoints = https://10.20.199.3:8008, https://10.20.199.4:8008,https://10.20.199.5:8008
+cert_file = ./ssl/benoit-dalibo-cert.pem
+key_file = ./ssl/benoit-dalibo-key.pem
+ca_file = ./ssl/CA-cert.pem
+timeout = 0
+
+[options.node_is_replica]
+lag=100
+```
+
 ## cluster services
 ### cluster_config_has_changed
 
