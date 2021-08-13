@@ -32,6 +32,16 @@ Commands:
   node_tl_has_changed         Check if the timeline has changed.
 ```
 
+## install
+
+Clone the repo, then install with pip from it :
+
+```
+pip install .
+pip install .[dev]
+pip install .[test]
+```
+
 ## config file
 
 All global and service specific parameters can be specified via a config file has follows:

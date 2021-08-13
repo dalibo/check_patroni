@@ -18,6 +18,16 @@ cat << '_EOF_' > $README
 _EOF_
 helpme
 cat << '_EOF_' >> $README
+## install
+
+Clone the repo, then install with pip from it :
+
+```
+pip install .
+pip install .[dev]
+pip install .[test]
+```
+
 ## config file
 
 All global and service specific parameters can be specified via a config file has follows:
