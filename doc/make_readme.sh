@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if ! command -v check_patroni &>/dev/null; then
+	echo "check_partroni must be installed to generate the documentation"
+	exit 1
+fi
+
 README="../README.md"
 function readme(){
 	echo "$1" >> $README
@@ -53,6 +58,25 @@ timeout = 0
 
 [options.node_is_replica]
 lag=100
+```
+## thresholds
+
+The format for the threshold parameters is "[@][start:][end]".
+
+* "start:" may be omitted if start==0
+* "~:" means that start is negative infinity
+* If `end` is omitted, infinity is assumed
+* To invert the match condition, prefix the range expression with "@".
+
+A match is found when : start <= VALUE <= end
+
+For example, the followinf command will raise :
+
+* a warning if there is less than 1 nodes
+* a critical if there are no nodes
+
+```
+check_patroni -e https://10.20.199.3:8008 cluster_has_replica --warning @1 --critical @0
 ```
 _EOF_
 readme
