@@ -109,6 +109,7 @@ def configure(ctx: click.Context, param: str, filename: str) -> None:
     "--verbose",
     "verbose",
     count=True,
+    default=0,
     help="Increase verbosity -v (info)/-vv (warning)/-vvv (debug)",
 )
 @click.option(
@@ -129,12 +130,11 @@ def main(
     cert_file: str,
     key_file: str,
     ca_file: str,
-    verbose: bool,
+    verbose: int,
     timeout: int,
 ) -> None:
     """Nagios plugin for patroni."""
     ctx.obj = ConnectionInfo(endpoints, cert_file, key_file, ca_file)
-
     # FIXME Not all "is/has" services have the same return code for ok. Check if it's ok
 
 
