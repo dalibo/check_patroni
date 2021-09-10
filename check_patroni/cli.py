@@ -28,7 +28,7 @@ from .node import (
     NodeTLHasChanged,
     NodeTLHasChangedSummary,
 )
-from .types import ConnectionInfo
+from .types import ConnectionInfo, Parameters
 from .convert import size_to_byte
 
 
@@ -137,8 +137,18 @@ def main(
     timeout: int,
 ) -> None:
     """Nagios plugin for patroni."""
-    ctx.obj = ConnectionInfo(endpoints, cert_file, key_file, ca_file)
     # FIXME Not all "is/has" services have the same return code for ok. Check if it's ok
+
+    # We use this to pass parameters instead of ctx.parent.params because the
+    # latter is typed as Optional[Context] and mypy complains with the following
+    # error unless we test if ctx.parent is none which looked ugly.
+    #
+    # error: Item "None" of "Optional[Context]" has an attribute "params"  [union-attr]
+    ctx.obj = Parameters(
+        ConnectionInfo(endpoints, cert_file, key_file, ca_file),
+        timeout,
+        verbose,
+    )
 
 
 @main.command(name="cluster_node_count")  # required otherwise _ are converted to -
@@ -192,7 +202,7 @@ def cluster_node_count(
     """
     check = nagiosplugin.Check()
     check.add(
-        ClusterNodeCount(ctx.obj),
+        ClusterNodeCount(ctx.obj.connection_info),
         nagiosplugin.ScalarContext(
             "members",
             warning,
@@ -206,9 +216,7 @@ def cluster_node_count(
         nagiosplugin.ScalarContext("members_roles"),
         nagiosplugin.ScalarContext("members_statuses"),
     )
-    check.main(
-        verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]
-    )
+    check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
 
 @main.command(name="cluster_has_leader")
@@ -227,13 +235,11 @@ def cluster_has_leader(ctx: click.Context) -> None:
     # FIXME: Manage primary or standby leader in the same place ?
     check = nagiosplugin.Check()
     check.add(
-        ClusterHasLeader(ctx.obj),
+        ClusterHasLeader(ctx.obj.connection_info),
         nagiosplugin.ScalarContext("has_leader", None, "@0:0"),
         ClusterHasLeaderSummary(),
     )
-    check.main(
-        verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]
-    )
+    check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
 
 @main.command(name="cluster_has_replica")
@@ -278,7 +284,7 @@ def cluster_has_replica(
     tmax_lag = size_to_byte(max_lag) if max_lag is not None else None
     check = nagiosplugin.Check()
     check.add(
-        ClusterHasReplica(ctx.obj, tmax_lag),
+        ClusterHasReplica(ctx.obj.connection_info, tmax_lag),
         nagiosplugin.ScalarContext(
             "healthy_replica",
             warning,
@@ -287,9 +293,7 @@ def cluster_has_replica(
         nagiosplugin.ScalarContext("unhealthy_replica"),
         nagiosplugin.ScalarContext("replica_lag"),
     )
-    check.main(
-        verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]
-    )
+    check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
 
 @main.command(name="cluster_config_has_changed")
@@ -329,13 +333,11 @@ def cluster_config_has_changed(
 
     check = nagiosplugin.Check()
     check.add(
-        ClusterConfigHasChanged(ctx.obj, config_hash, state_file),
+        ClusterConfigHasChanged(ctx.obj.connection_info, config_hash, state_file),
         nagiosplugin.ScalarContext("is_configuration_changed", None, "@1:1"),
         ClusterConfigHasChangedSummary(),
     )
-    check.main(
-        verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]
-    )
+    check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
 
 @main.command(name="cluster_is_in_maintenance")
@@ -355,12 +357,10 @@ def cluster_is_in_maintenance(ctx: click.Context) -> None:
     """
     check = nagiosplugin.Check()
     check.add(
-        ClusterIsInMaintenance(ctx.obj),
+        ClusterIsInMaintenance(ctx.obj.connection_info),
         nagiosplugin.ScalarContext("is_in_maintenance", None, "0:0"),
     )
-    check.main(
-        verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]
-    )
+    check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
 
 @main.command(name="node_is_primary")
@@ -378,13 +378,11 @@ def node_is_primary(ctx: click.Context) -> None:
     """
     check = nagiosplugin.Check()
     check.add(
-        NodeIsPrimary(ctx.obj),
+        NodeIsPrimary(ctx.obj.connection_info),
         nagiosplugin.ScalarContext("is_primary", None, "@0:0"),
         NodeIsPrimarySummary(),
     )
-    check.main(
-        verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]
-    )
+    check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
 
 @main.command(name="node_is_replica")
@@ -404,13 +402,11 @@ def node_is_replica(ctx: click.Context, max_lag: str) -> None:
     # FIXME add a lag check ??
     check = nagiosplugin.Check()
     check.add(
-        NodeIsReplica(ctx.obj, max_lag),
+        NodeIsReplica(ctx.obj.connection_info, max_lag),
         nagiosplugin.ScalarContext("is_replica", None, "@0:0"),
         NodeIsReplicaSummary(max_lag),
     )
-    check.main(
-        verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]
-    )
+    check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
 
 @main.command(name="node_is_pending_restart")
@@ -431,13 +427,11 @@ def node_is_pending_restart(ctx: click.Context) -> None:
     """
     check = nagiosplugin.Check()
     check.add(
-        NodeIsPendingRestart(ctx.obj),
+        NodeIsPendingRestart(ctx.obj.connection_info),
         nagiosplugin.ScalarContext("is_pending_restart", None, "@1:1"),
         NodeIsPendingRestartSummary(),
     )
-    check.main(
-        verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]
-    )
+    check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
 
 @main.command(name="node_tl_has_changed")
@@ -476,14 +470,12 @@ def node_tl_has_changed(ctx: click.Context, timeline: str, state_file: str) -> N
 
     check = nagiosplugin.Check()
     check.add(
-        NodeTLHasChanged(ctx.obj, timeline, state_file),
+        NodeTLHasChanged(ctx.obj.connection_info, timeline, state_file),
         nagiosplugin.ScalarContext("is_timeline_changed", None, "@1:1"),
         nagiosplugin.ScalarContext("timeline"),
         NodeTLHasChangedSummary(timeline),
     )
-    check.main(
-        verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]
-    )
+    check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
 
 @main.command(name="node_patroni_version")
@@ -511,14 +503,12 @@ def node_patroni_version(ctx: click.Context, patroni_version: str) -> None:
     # TODO the version cannot be written in perfdata find something else ?
     check = nagiosplugin.Check()
     check.add(
-        NodePatroniVersion(ctx.obj, patroni_version),
+        NodePatroniVersion(ctx.obj.connection_info, patroni_version),
         nagiosplugin.ScalarContext("is_version_ok", None, "@0:0"),
         nagiosplugin.ScalarContext("patroni_version"),
         NodePatroniVersionSummary(patroni_version),
     )
-    check.main(
-        verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]
-    )
+    check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
 
 @main.command(name="node_is_alive")
@@ -538,10 +528,8 @@ def node_is_alive(ctx: click.Context) -> None:
     """
     check = nagiosplugin.Check()
     check.add(
-        NodeIsAlive(ctx.obj),
+        NodeIsAlive(ctx.obj.connection_info),
         nagiosplugin.ScalarContext("is_alive", None, "@0:0"),
         NodeIsAliveSummary(),
     )
-    check.main(
-        verbose=ctx.parent.params["verbose"], timeout=ctx.parent.params["timeout"]
-    )
+    check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)

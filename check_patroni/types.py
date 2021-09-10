@@ -15,6 +15,13 @@ class ConnectionInfo:
     ca_cert: str = "./ssl/CA-cert.pem"
 
 
+@attr.s(auto_attribs=True, frozen=True, slots=True)
+class Parameters:
+    connection_info: ConnectionInfo
+    timeout: int
+    verbose: int
+
+
 @attr.s(auto_attribs=True, slots=True)
 class PatroniResource(nagiosplugin.Resource):
     conn_info: ConnectionInfo
