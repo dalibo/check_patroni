@@ -85,6 +85,7 @@ def configure(ctx: click.Context, param: str, filename: str) -> None:
     multiple=True,
     default=["http://127.0.0.1:8008"],
     help="API endpoint. Can be specified multiple times.",
+    show_default=True,
 )
 @click.option(
     "--cert_file",
@@ -111,6 +112,7 @@ def configure(ctx: click.Context, param: str, filename: str) -> None:
     count=True,
     default=0,
     help="Increase verbosity -v (info)/-vv (warning)/-vvv (debug)",
+    show_default=False,
 )
 @click.option(
     "--version", is_flag=True, callback=print_version, expose_value=False, is_eager=True
@@ -121,6 +123,7 @@ def configure(ctx: click.Context, param: str, filename: str) -> None:
     default=2,
     type=int,
     help="Timeout in seconds for the API queries (0 to disable)",
+    show_default=True,
 )
 @click.pass_context
 @nagiosplugin.guarded
