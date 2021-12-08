@@ -307,7 +307,8 @@ Usage: check_patroni node_tl_has_changed [OPTIONS]
   * `CRITICAL`: The tl is not the same.
 
   Perfdata :
-  * `is_configuration_changed` is 1 if the configuration has changed, 0 otherwise
+  * `is_timeline_changed` is 1 if the tl has changed, 0 otherwise
+  * the timeline
 
 Options:
   --timeline TEXT        A timeline number to compare with.
