@@ -303,7 +303,7 @@ def cluster_has_replica(
     "--state-file",
     "state_file",
     type=str,
-    help="A state file to store the tl number into.",
+    help="A state file to store the hash of the configuration.",
 )
 @click.pass_context
 @nagiosplugin.guarded

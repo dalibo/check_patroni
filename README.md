@@ -108,7 +108,7 @@ Usage: check_patroni cluster_config_has_changed [OPTIONS]
 
 Options:
   --hash TEXT            A hash to compare with.
-  -s, --state-file TEXT  A state file to store the tl number into.
+  -s, --state-file TEXT  A state file to store the hash of the configuration.
   --help                 Show this message and exit.
 ```
 
