@@ -1,0 +1,62 @@
+require 'ipaddr'
+#require 'yaml'
+
+ENV["LC_ALL"] = 'en_US.utf8'
+
+myBox         = 'debian/buster64'
+myProvider    = 'libvirt'
+
+pgver         = 11
+start_ip      = '10.20.89.51'
+etcd_nodes    = []
+patroni_nodes = []
+sup_nodes     = ['s1']
+
+Vagrant.configure(2) do |config|
+    config.vm.provider myProvider
+
+    next_ip    = IPAddr.new(start_ip).succ
+    host_ip    = (IPAddr.new(start_ip) & "255.255.255.0").succ.to_s
+    nodes_ips  = {}
+
+    ( patroni_nodes + etcd_nodes + sup_nodes ).each do |node|
+        nodes_ips[node] = next_ip.to_s
+        next_ip = next_ip.succ
+    end
+
+    # don't mind about insecure ssh key
+    config.ssh.insert_key = false
+
+    # https://vagrantcloud.com/search.
+    config.vm.box = myBox
+
+    # hardware and host settings
+    config.vm.provider 'libvirt' do |lv|
+        lv.cpus = 1
+        lv.memory = 512
+        lv.watchdog model: 'i6300esb'
+        lv.default_prefix = 'patroni_'
+        lv.qemu_use_session = false
+    end
+
+    # disable default share (NFS is not working directly in DEBIAN 10)
+    config.vm.synced_folder ".", "/vagrant", type: "rsync"
+    config.vm.synced_folder "/home/benoit/git/dalibo/check_patroni", "/check_patroni", type: "rsync"
+
+    ## allow root@vm to ssh to ssh_login@network_1
+    #config.vm.synced_folder 'ssh', '/root/.ssh', type: 'rsync',
+    #    owner: 'root', group: 'root',
+    #    rsync__args: [ "--verbose", "--archive", "--delete", "--copy-links", "--no-perms" ]
+
+    # system setup for sup nodes
+    (sup_nodes).each do |node|
+        config.vm.define node do |conf|
+            conf.vm.network 'private_network', ip: nodes_ips[node]
+            conf.vm.provision 'icinga2-setup', type: 'shell', path: 'provision/icinga2.bash',
+                args: [ node ],
+                preserve_order: true
+            conf.vm.provision 'check_patroni', type: 'shell', path: 'provision/check_patroni.bash',
+                preserve_order: true
+        end
+    end
+end
