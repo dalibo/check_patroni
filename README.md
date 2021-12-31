@@ -81,11 +81,11 @@ A match is found when : start <= VALUE <= end
 
 For example, the followinf command will raise :
 
-* a warning if there is less than 1 nodes
-* a critical if there are no nodes
+* a warning if there is less than 1 nodes, wich can be translated to outside of range [2;+INF[
+* a critical if there are no nodes, wich can be translated to outside of range [1;+INF[
 
 ```
-check_patroni -e https://10.20.199.3:8008 cluster_has_replica --warning @1 --critical @0
+check_patroni -e https://10.20.199.3:8008 cluster_has_replica --warning 2: --critical 1:
 ```
 
 ## cluster services
@@ -136,8 +136,10 @@ Usage: check_patroni cluster_has_replica [OPTIONS]
 
   Check if the cluster has healthy replicates.
 
-  A healthy replicate : * is in running state * has a replica role * has a lag
-  lower or equal to max_lag
+  A healthy replicate :
+  * is in running state
+  * has a replica role
+  * has a lag lower or equal to max_lag
 
   Check:
   * `OK`: if the healthy_replica count and their lag are compatible with the replica count threshold.

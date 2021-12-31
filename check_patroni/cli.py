@@ -265,6 +265,7 @@ def cluster_has_replica(
 ) -> None:
     """Check if the cluster has healthy replicates.
 
+    \b
     A healthy replicate :
     * is in running state
     * has a replica role
