@@ -319,3 +319,12 @@ Options:
 ```
 
 
+## test
+
+The pytests are in `./test` and use a moker to provide a json response instead
+of having to call the patroni API.
+
+A vagrant file is available to create a icinga / opm / grafana stack and
+install check_patroni. You can then add a server to the supervision and
+watch the graphs in grafana. It's in `./test/vagrant`.
+
