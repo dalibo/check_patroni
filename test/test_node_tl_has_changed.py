@@ -3,6 +3,8 @@ from pytest_mock import MockerFixture
 
 from check_patroni.cli import main
 
+import nagiosplugin
+
 from tools import my_mock, here
 
 
@@ -102,3 +104,11 @@ def test_node_tl_has_changed_ko_with_state_file(mocker: MockerFixture) -> None:
         ],
     )
     assert result.exit_code == 2
+
+    # the new timeline was saved
+    cookie = nagiosplugin.Cookie(here / "node_tl_has_changed.state_file")
+    cookie.open()
+    new_tl = cookie.get("timeline")
+    cookie.close()
+
+    assert new_tl == 58

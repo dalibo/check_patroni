@@ -333,11 +333,18 @@ def cluster_config_has_changed(
             "Either --hash or --state-file should be provided for this service", ctx
         )
 
+    old_config_hash = config_hash
+    if state_file is not None:
+        cookie = nagiosplugin.Cookie(state_file)
+        cookie.open()
+        old_config_hash = cookie.get("hash")
+        cookie.close()
+
     check = nagiosplugin.Check()
     check.add(
-        ClusterConfigHasChanged(ctx.obj.connection_info, config_hash, state_file),
+        ClusterConfigHasChanged(ctx.obj.connection_info, old_config_hash, state_file),
         nagiosplugin.ScalarContext("is_configuration_changed", None, "@1:1"),
-        ClusterConfigHasChangedSummary(),
+        ClusterConfigHasChangedSummary(old_config_hash),
     )
     check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
@@ -471,12 +478,19 @@ def node_tl_has_changed(ctx: click.Context, timeline: str, state_file: str) -> N
             "Either --timeline or --state-file should be provided for this service", ctx
         )
 
+    old_timeline = timeline
+    if state_file is not None:
+        cookie = nagiosplugin.Cookie(state_file)
+        cookie.open()
+        old_timeline = cookie.get("timeline")
+        cookie.close()
+
     check = nagiosplugin.Check()
     check.add(
-        NodeTLHasChanged(ctx.obj.connection_info, timeline, state_file),
+        NodeTLHasChanged(ctx.obj.connection_info, old_timeline, state_file),
         nagiosplugin.ScalarContext("is_timeline_changed", None, "@1:1"),
         nagiosplugin.ScalarContext("timeline"),
-        NodeTLHasChangedSummary(timeline),
+        NodeTLHasChangedSummary(old_timeline),
     )
     check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 

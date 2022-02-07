@@ -4,6 +4,8 @@ from pytest_mock import MockerFixture
 from check_patroni.cli import main
 from tools import my_mock, here
 
+import nagiosplugin
+
 
 def test_cluster_config_has_changed_params(mocker: MockerFixture) -> None:
     runner = CliRunner()
@@ -101,3 +103,11 @@ def test_cluster_config_has_changed_ko_with_state_file(mocker: MockerFixture) ->
         ],
     )
     assert result.exit_code == 2
+
+    # the new hash was saved
+    cookie = nagiosplugin.Cookie(here / "cluster_config_has_changed.state_file")
+    cookie.open()
+    new_config_hash = cookie.get("hash")
+    cookie.close()
+
+    assert new_config_hash == "640df9f0211c791723f18fc3ed9dbb95"

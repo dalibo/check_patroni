@@ -129,8 +129,8 @@ class ClusterConfigHasChanged(PatroniResource):
     def __init__(
         self: "ClusterConfigHasChanged",
         connection_info: ConnectionInfo,
-        config_hash: str,
-        state_file: str,
+        config_hash: str,  # Always contains the old hash
+        state_file: str,   # Only used to update the hash in the state_file (when needed)
     ):
         super().__init__(connection_info)
         self.state_file = state_file
@@ -143,16 +143,14 @@ class ClusterConfigHasChanged(PatroniResource):
 
         new_hash = hashlib.md5(r.data).hexdigest()
 
+        old_hash = self.config_hash
         if self.state_file is not None:
-            _log.debug(f"Using state file / cookie {self.state_file}")
+            _log.debug(f"Saving new hash to state file / cookie {self.state_file}")
             cookie = nagiosplugin.Cookie(self.state_file)
             cookie.open()
-            old_hash = cookie.get("hash")
             cookie["hash"] = new_hash
             cookie.commit()
-        else:
-            _log.debug(f"Using input value {self.config_hash}")
-            old_hash = self.config_hash
+            cookie.close()
 
         _log.debug(f"hash info: old hash {old_hash}, new hash {new_hash}")
 
@@ -165,15 +163,19 @@ class ClusterConfigHasChanged(PatroniResource):
 
 
 class ClusterConfigHasChangedSummary(nagiosplugin.Summary):
-    # TODO: It would be helpful to display the old / new hash here, but it's not a metric.
+    def __init__(self: "ClusterConfigHasChangedSummary", config_hash: str) -> None:
+        self.old_config_hash = config_hash
+
+    # Note: It would be helpful to display the old / new hash here. Unfortunately, it's not a metric.
+    # So we only have the old / expected one.
     def ok(self: "ClusterConfigHasChangedSummary", results: nagiosplugin.Result) -> str:
-        return "The hash of patroni's dynamic configuration has not changed."
+        return f"The hash of patroni's dynamic configuration has not changed ({self.old_config_hash})."
 
     @handle_unknown
     def problem(
         self: "ClusterConfigHasChangedSummary", results: nagiosplugin.Result
     ) -> str:
-        return "The hash of patroni's dynamic configuration has changed."
+        return "The hash of patroni's dynamic configuration has changed. The old hash was {self.old_config_hash}."
 
 
 class ClusterIsInMaintenance(PatroniResource):
