@@ -1,10 +1,11 @@
-from click.testing import CliRunner
 from pytest_mock import MockerFixture
+
+import nagiosplugin
+from click.testing import CliRunner
 
 from check_patroni.cli import main
 from tools import my_mock, here
 
-import nagiosplugin
 
 
 def test_cluster_config_has_changed_params(mocker: MockerFixture) -> None:

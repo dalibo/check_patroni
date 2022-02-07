@@ -1,8 +1,8 @@
-from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
-from check_patroni.cli import main
+from click.testing import CliRunner
 
+from check_patroni.cli import main
 from tools import my_mock
 
 

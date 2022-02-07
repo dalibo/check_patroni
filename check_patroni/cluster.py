@@ -1,7 +1,8 @@
-from collections import Counter
 import hashlib
 import json
 import logging
+from collections import Counter
+
 import nagiosplugin
 from typing import Iterable, Union
 

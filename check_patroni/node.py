@@ -1,5 +1,6 @@
 import json
 import logging
+
 import nagiosplugin
 from typing import Iterable
 

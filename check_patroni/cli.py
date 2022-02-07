@@ -1,7 +1,8 @@
-import click
-from configparser import ConfigParser
-import nagiosplugin
 import re
+from configparser import ConfigParser
+
+import click
+import nagiosplugin
 from typing import List
 
 from . import __version__

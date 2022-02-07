@@ -1,7 +1,8 @@
-import attr
 import logging
-import nagiosplugin
 import urllib3
+
+import attr
+import nagiosplugin
 from typing import Any, Callable, List
 
 _log = logging.getLogger("nagiosplugin")
