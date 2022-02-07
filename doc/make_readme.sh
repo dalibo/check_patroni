@@ -28,7 +28,7 @@ cat << '_EOF_' >> $README
 Installation from the git repository:
 
 ```
-$ git clone <FIXME>
+$ git clone https://github.com/dalibo/check_patroni
 ```
 
 Change the branch if necessary. Then create a dedicated environment,
