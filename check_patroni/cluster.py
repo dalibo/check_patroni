@@ -39,14 +39,14 @@ class ClusterNodeCount(PatroniResource):
         # The performance data : role
         for role in role_counters:
             yield nagiosplugin.Metric(
-                f"role_{role}", role_counters[role], context="members_roles"
+                f"role_{role}", role_counters[role], context="member_roles"
             )
 
         # The performance data : statuses (except running)
         for state in status_counters:
             if state != "running":
                 yield nagiosplugin.Metric(
-                    f"state_{state}", status_counters[state], context="members_statuses"
+                    f"state_{state}", status_counters[state], context="member_statuses"
                 )
 
 
@@ -111,7 +111,7 @@ class ClusterHasReplica(PatroniResource):
         # The actual check
         yield nagiosplugin.Metric("healthy_replica", healthy_replica)
 
-        # The performance data : unheakthy replica count, replicas lag
+        # The performance data : unhealthy replica count, replicas lag
         yield nagiosplugin.Metric("unhealthy_replica", unhealthy_replica)
         for replica in replicas:
             yield nagiosplugin.Metric(
@@ -165,6 +165,7 @@ class ClusterConfigHasChanged(PatroniResource):
 
 
 class ClusterConfigHasChangedSummary(nagiosplugin.Summary):
+    # TODO: It would be helpful to display the old / new hash here, but it's not a metric.
     def ok(self: "ClusterConfigHasChangedSummary", results: nagiosplugin.Result) -> str:
         return "The hash of patroni's dynamic configuration has not changed."
 

@@ -164,7 +164,7 @@ def main(
     "--critical",
     "critical",
     type=str,
-    help="Critical threshold for the nimber of nodes.",
+    help="Critical threshold for the number of nodes.",
 )
 @click.option(
     "--running-warning",
@@ -176,7 +176,7 @@ def main(
     "--running-critical",
     "running_critical",
     type=str,
-    help="Critical threshold for the nimber of running nodes.",
+    help="Critical threshold for the number of running nodes.",
 )
 @click.pass_context
 @nagiosplugin.guarded
@@ -192,7 +192,7 @@ def cluster_node_count(
     \b
     Check:
     * Compares the number of nodes against the normal and running node warning and critical thresholds.
-    * `OK`!  If they are not provided.
+    * `OK`:  If they are not provided.
 
     \b
     Perfdata:
@@ -213,8 +213,8 @@ def cluster_node_count(
             running_warning,
             running_critical,
         ),
-        nagiosplugin.ScalarContext("members_roles"),
-        nagiosplugin.ScalarContext("members_statuses"),
+        nagiosplugin.ScalarContext("member_roles"),
+        nagiosplugin.ScalarContext("member_statuses"),
     )
     check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
@@ -225,6 +225,8 @@ def cluster_node_count(
 def cluster_has_leader(ctx: click.Context) -> None:
     """Check if the cluster has a leader.
 
+    Note: there is no difference between a normal and standby leader.
+
     \b
     Check:
     * `OK`: if there is a leader node.
@@ -232,7 +234,6 @@ def cluster_has_leader(ctx: click.Context) -> None:
 
     Perfdata: `has_leader` is 1 if there is a leader node, 0 otherwise
     """
-    # FIXME: Manage primary or standby leader in the same place ?
     check = nagiosplugin.Check()
     check.add(
         ClusterHasLeader(ctx.obj.connection_info),
@@ -248,14 +249,14 @@ def cluster_has_leader(ctx: click.Context) -> None:
     "--warning",
     "warning",
     type=str,
-    help="Warning threshold for the number of nodes.",
+    help="Warning threshold for the number of healthy replica nodes.",
 )
 @click.option(
     "-c",
     "--critical",
     "critical",
     type=str,
-    help="Critical threshold for the number of replica nodes.",
+    help="Critical threshold for the number of healthy replica nodes.",
 )
 @click.option("--max-lag", "max_lag", type=str, help="maximum allowed lag")
 @click.pass_context
@@ -263,10 +264,10 @@ def cluster_has_leader(ctx: click.Context) -> None:
 def cluster_has_replica(
     ctx: click.Context, warning: str, critical: str, max_lag: str
 ) -> None:
-    """Check if the cluster has healthy replicates.
+    """Check if the cluster has healthy replicas.
 
     \b
-    A healthy replicate:
+    A healthy replica:
     * is in running state
     * has a replica role
     * has a lag lower or equal to max_lag
@@ -324,7 +325,7 @@ def cluster_config_has_changed(
     Perfdata:
     * `is_configuration_changed` is 1 if the configuration has changed
     """
-    # FIXME hash in perfdata ?
+    # Note: hash cannot be in the perf data = not a number
     if (config_hash is None and state_file is None) or (
         config_hash is not None and state_file is not None
     ):

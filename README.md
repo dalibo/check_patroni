@@ -23,7 +23,7 @@ Options:
 Commands:
   cluster_config_has_changed  Check if the hash of the configuration has...
   cluster_has_leader          Check if the cluster has a leader.
-  cluster_has_replica         Check if the cluster has healthy replicates.
+  cluster_has_replica         Check if the cluster has healthy replicas.
   cluster_is_in_maintenance   Check if the cluster is in maintenance mode...
   cluster_node_count          Count the number of nodes in the cluster.
   node_is_alive               Check if the node is alive ie patroni is...
@@ -133,6 +133,8 @@ Usage: check_patroni cluster_has_leader [OPTIONS]
 
   Check if the cluster has a leader.
 
+  Note: there is no difference between a normal and standby leader.
+
   Check:
   * `OK`: if there is a leader node.
   * `CRITICAL`: otherwise
@@ -148,9 +150,9 @@ Options:
 ```
 Usage: check_patroni cluster_has_replica [OPTIONS]
 
-  Check if the cluster has healthy replicates.
+  Check if the cluster has healthy replicas.
 
-  A healthy replicate:
+  A healthy replica:
   * is in running state
   * has a replica role
   * has a lag lower or equal to max_lag
@@ -164,8 +166,10 @@ Usage: check_patroni cluster_has_replica [OPTIONS]
   * the lag of each replica labelled with  "member name"_lag
 
 Options:
-  -w, --warning TEXT   Warning threshold for the number of nodes.
-  -c, --critical TEXT  Critical threshold for the number of replica nodes.
+  -w, --warning TEXT   Warning threshold for the number of healthy replica
+                       nodes.
+  -c, --critical TEXT  Critical threshold for the number of healthy replica
+                       nodes.
   --max-lag TEXT       maximum allowed lag
   --help               Show this message and exit.
 ```
@@ -197,7 +201,7 @@ Usage: check_patroni cluster_node_count [OPTIONS]
 
   Check:
   * Compares the number of nodes against the normal and running node warning and critical thresholds.
-  * `OK`!  If they are not provided.
+  * `OK`:  If they are not provided.
 
   Perfdata:
   * `members`: the member count.
@@ -206,9 +210,9 @@ Usage: check_patroni cluster_node_count [OPTIONS]
 
 Options:
   -w, --warning TEXT       Warning threshold for the number of nodes.
-  -c, --critical TEXT      Critical threshold for the nimber of nodes.
+  -c, --critical TEXT      Critical threshold for the number of nodes.
   --running-warning TEXT   Warning threshold for the number of running nodes.
-  --running-critical TEXT  Critical threshold for the nimber of running nodes.
+  --running-critical TEXT  Critical threshold for the number of running nodes.
   --help                   Show this message and exit.
 ```
 
