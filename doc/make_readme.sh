@@ -23,28 +23,39 @@ cat << '_EOF_' > $README
 _EOF_
 helpme
 cat << '_EOF_' >> $README
-## install
+## Install
 
-The check requers python3. Using a virtual env is advised for testing :
-
-```
-pip -m venv ~/venv
-source ~venv/bin/activate
-```
-
-Clone the repo, then install with pip3 from it :
+Installation from the git repository:
 
 ```
-pip3 install .
-pip3 install .[dev]
-pip3 install .[test]
+$ git clone <FIXME>
 ```
 
-Links : 
+Change the branch if necessary. Then create a dedicated environment,
+install dependencies and then check_patroni from the repo:
+
+```
+$ cd check_patroni
+$ python3 -m venv .venv
+$ . .venv/bin/activate
+(.venv) $ pip3 install .
+(.venv) $ pip3 install .[dev]   # for dev purposes
+(.venv) $ pip3 install .[test]  # for testing purposes
+(.venv) $ check_patroni
+```
+
+To quit this env and destroy it:
+
+```
+$ deactivate
+$ rm -r .venv
+```
+
+Links:
 * [pip & centos 7](https://linuxize.com/post/how-to-install-pip-on-centos-7/)
 * [pip & debian10](https://linuxize.com/post/how-to-install-pip-on-debian-10/)
 
-## config file
+## Config file
 
 All global and service specific parameters can be specified via a config file has follows:
 
@@ -59,7 +70,7 @@ timeout = 0
 [options.node_is_replica]
 lag=100
 ```
-## thresholds
+## Thresholds
 
 The format for the threshold parameters is "[@][start:][end]".
 
@@ -68,9 +79,9 @@ The format for the threshold parameters is "[@][start:][end]".
 * If `end` is omitted, infinity is assumed
 * To invert the match condition, prefix the range expression with "@".
 
-A match is found when : start <= VALUE <= end
+A match is found when: start <= VALUE <= end
 
-For example, the followinf command will raise :
+For example, the followinf command will raise:
 
 * a warning if there is less than 1 nodes, wich can be translated to outside of range [2;+INF[
 * a critical if there are no nodes, wich can be translated to outside of range [1;+INF[
@@ -80,7 +91,8 @@ check_patroni -e https://10.20.199.3:8008 cluster_has_replica --warning 2: --cri
 ```
 _EOF_
 readme
-readme "## cluster services" 
+readme "## Cluster services"
+readme
 readme "### cluster_config_has_changed"
 helpme cluster_config_has_changed
 readme "### cluster_has_leader"
@@ -91,7 +103,8 @@ readme "### cluster_is_in_maintenance"
 helpme  cluster_is_in_maintenance
 readme "### cluster_node_count"
 helpme  cluster_node_count
-readme "## node services" 
+readme "## Node services"
+readme
 readme "### node_is_alive"
 helpme node_is_alive
 readme "### node_is_pending_restart"

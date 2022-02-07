@@ -9,6 +9,7 @@ Options:
   --config FILE         Read option defaults from the specified INI file
                         [default: config.ini]
   -e, --endpoints TEXT  API endpoint. Can be specified multiple times.
+                        [default: http://127.0.0.1:8008]
   --cert_file TEXT      File with the client certificate.
   --key_file TEXT       File with the client key.
   --ca_file TEXT        The CA certificate.
@@ -16,6 +17,7 @@ Options:
                         (debug)  [x>=0]
   --version
   --timeout INTEGER     Timeout in seconds for the API queries (0 to disable)
+                        [default: 2]
   --help                Show this message and exit.
 
 Commands:
@@ -32,28 +34,39 @@ Commands:
   node_tl_has_changed         Check if the timeline has changed.
 ```
 
-## install
+## Install
 
-The check requers python3. Using a virtual env is advised for testing :
-
-```
-pip -m venv ~/venv
-source ~venv/bin/activate
-```
-
-Clone the repo, then install with pip3 from it :
+Installation from the git repository:
 
 ```
-pip3 install .
-pip3 install .[dev]
-pip3 install .[test]
+$ git clone <FIXME>
 ```
 
-Links : 
+Change the branch if necessary. Then create a dedicated environment,
+install dependencies and then check_patroni from the repo:
+
+```
+$ cd check_patroni
+$ python3 -m venv .venv
+$ . .venv/bin/activate
+(.venv) $ pip3 install .
+(.venv) $ pip3 install .[dev]   # for dev purposes
+(.venv) $ pip3 install .[test]  # for testing purposes
+(.venv) $ check_patroni
+```
+
+To quit this env and destroy it:
+
+```
+$ deactivate
+$ rm -r .venv
+```
+
+Links:
 * [pip & centos 7](https://linuxize.com/post/how-to-install-pip-on-centos-7/)
 * [pip & debian10](https://linuxize.com/post/how-to-install-pip-on-debian-10/)
 
-## config file
+## Config file
 
 All global and service specific parameters can be specified via a config file has follows:
 
@@ -68,7 +81,7 @@ timeout = 0
 [options.node_is_replica]
 lag=100
 ```
-## thresholds
+## Thresholds
 
 The format for the threshold parameters is "[@][start:][end]".
 
@@ -77,9 +90,9 @@ The format for the threshold parameters is "[@][start:][end]".
 * If `end` is omitted, infinity is assumed
 * To invert the match condition, prefix the range expression with "@".
 
-A match is found when : start <= VALUE <= end
+A match is found when: start <= VALUE <= end
 
-For example, the followinf command will raise :
+For example, the followinf command will raise:
 
 * a warning if there is less than 1 nodes, wich can be translated to outside of range [2;+INF[
 * a critical if there are no nodes, wich can be translated to outside of range [1;+INF[
@@ -88,7 +101,8 @@ For example, the followinf command will raise :
 check_patroni -e https://10.20.199.3:8008 cluster_has_replica --warning 2: --critical 1:
 ```
 
-## cluster services
+## Cluster services
+
 ### cluster_config_has_changed
 
 ```
@@ -103,7 +117,7 @@ Usage: check_patroni cluster_config_has_changed [OPTIONS]
   * `OK`: The hash didn't change
   * `CRITICAL`: The hash of the configuration has changed compared to the input (`--hash`) or last time (`--state_file`)
 
-  Perfdata :
+  Perfdata:
   * `is_configuration_changed` is 1 if the configuration has changed
 
 Options:
@@ -123,7 +137,7 @@ Usage: check_patroni cluster_has_leader [OPTIONS]
   * `OK`: if there is a leader node.
   * `CRITICAL`: otherwise
 
-  Perfdata : `has_leader` is 1 if there is a leader node, 0 otherwise
+  Perfdata: `has_leader` is 1 if there is a leader node, 0 otherwise
 
 Options:
   --help  Show this message and exit.
@@ -136,7 +150,7 @@ Usage: check_patroni cluster_has_replica [OPTIONS]
 
   Check if the cluster has healthy replicates.
 
-  A healthy replicate :
+  A healthy replicate:
   * is in running state
   * has a replica role
   * has a lag lower or equal to max_lag
@@ -145,7 +159,7 @@ Usage: check_patroni cluster_has_replica [OPTIONS]
   * `OK`: if the healthy_replica count and their lag are compatible with the replica count threshold.
   * `WARNING` / `CRITICAL`: otherwise
 
-  Perfdata :
+  Perfdata:
   * healthy_replica & unhealthy_replica count
   * the lag of each replica labelled with  "member name"_lag
 
@@ -161,13 +175,13 @@ Options:
 ```
 Usage: check_patroni cluster_is_in_maintenance [OPTIONS]
 
-  Check if the cluster is in maintenance mode ie paused.
+  Check if the cluster is in maintenance mode or paused.
 
   Check:
   * `OK`: If the cluster is in maintenance mode.
   * `CRITICAL`: otherwise.
 
-  Perfdata :
+  Perfdata:
   * `is_in_maintenance` is 1 the cluster is in maintenance mode,  0 otherwise
 
 Options:
@@ -198,7 +212,8 @@ Options:
   --help                   Show this message and exit.
 ```
 
-## node services
+## Node services
+
 ### node_is_alive
 
 ```
@@ -210,7 +225,7 @@ Usage: check_patroni node_is_alive [OPTIONS]
   * `OK`: If patroni is running.
   * `CRITICAL`: otherwise.
 
-  Perfdata :
+  Perfdata:
   * `is_running` is 1 if patroni is running, 0 otherwise
 
 Options:
@@ -267,7 +282,7 @@ Usage: check_patroni node_is_replica [OPTIONS]
   * `OK`: if the node is a running replica with noloadbalance tag and the lag is under the maximum threshold.
   * `CRITICAL`:  otherwise
 
-  Perfdata : `is_replica` is 1 if the node is a running replica with
+  Perfdata: `is_replica` is 1 if the node is a running replica with
   noloadbalance tag and the lag is under the maximum threshold, 0 otherwise.
 
 Options:
@@ -286,7 +301,7 @@ Usage: check_patroni node_patroni_version [OPTIONS]
   * `OK`: The version is the same as the input `--patroni-version`
   * `CRITICAL`: otherwise.
 
-  Perfdata :
+  Perfdata:
   * `is_version_ok` is 1 if version is ok, 0 otherwise
 
 Options:
@@ -308,7 +323,7 @@ Usage: check_patroni node_tl_has_changed [OPTIONS]
   * `OK`: The timeline is the same as last time (`--state_file`) or the inputed timeline (`--timeline`)
   * `CRITICAL`: The tl is not the same.
 
-  Perfdata :
+  Perfdata:
   * `is_timeline_changed` is 1 if the tl has changed, 0 otherwise
   * the timeline
 

@@ -230,7 +230,7 @@ def cluster_has_leader(ctx: click.Context) -> None:
     * `OK`: if there is a leader node.
     * `CRITICAL`: otherwise
 
-    Perfdata : `has_leader` is 1 if there is a leader node, 0 otherwise
+    Perfdata: `has_leader` is 1 if there is a leader node, 0 otherwise
     """
     # FIXME: Manage primary or standby leader in the same place ?
     check = nagiosplugin.Check()
@@ -266,7 +266,7 @@ def cluster_has_replica(
     """Check if the cluster has healthy replicates.
 
     \b
-    A healthy replicate :
+    A healthy replicate:
     * is in running state
     * has a replica role
     * has a lag lower or equal to max_lag
@@ -277,7 +277,7 @@ def cluster_has_replica(
     * `WARNING` / `CRITICAL`: otherwise
 
     \b
-    Perfdata :
+    Perfdata:
     * healthy_replica & unhealthy_replica count
     * the lag of each replica labelled with  "member name"_lag
     """
@@ -321,7 +321,7 @@ def cluster_config_has_changed(
     * `CRITICAL`: The hash of the configuration has changed compared to the input (`--hash`) or last time (`--state_file`)
 
     \b
-    Perfdata :
+    Perfdata:
     * `is_configuration_changed` is 1 if the configuration has changed
     """
     # FIXME hash in perfdata ?
@@ -345,7 +345,7 @@ def cluster_config_has_changed(
 @click.pass_context
 @nagiosplugin.guarded
 def cluster_is_in_maintenance(ctx: click.Context) -> None:
-    """Check if the cluster is in maintenance mode ie paused.
+    """Check if the cluster is in maintenance mode or paused.
 
     \b
     Check:
@@ -353,7 +353,7 @@ def cluster_is_in_maintenance(ctx: click.Context) -> None:
     * `CRITICAL`: otherwise.
 
     \b
-    Perfdata :
+    Perfdata:
     * `is_in_maintenance` is 1 the cluster is in maintenance mode,  0 otherwise
     """
     check = nagiosplugin.Check()
@@ -398,7 +398,7 @@ def node_is_replica(ctx: click.Context, max_lag: str) -> None:
     * `OK`: if the node is a running replica with noloadbalance tag and the lag is under the maximum threshold.
     * `CRITICAL`:  otherwise
 
-    Perfdata : `is_replica` is 1 if the node is a running replica with noloadbalance tag and the lag is under the maximum threshold, 0 otherwise.
+    Perfdata: `is_replica` is 1 if the node is a running replica with noloadbalance tag and the lag is under the maximum threshold, 0 otherwise.
     """
     # FIXME add a lag check ??
     check = nagiosplugin.Check()
@@ -459,7 +459,7 @@ def node_tl_has_changed(ctx: click.Context, timeline: str, state_file: str) -> N
     * `CRITICAL`: The tl is not the same.
 
     \b
-    Perfdata :
+    Perfdata:
     * `is_timeline_changed` is 1 if the tl has changed, 0 otherwise
     * the timeline
     """
@@ -499,7 +499,7 @@ def node_patroni_version(ctx: click.Context, patroni_version: str) -> None:
     * `CRITICAL`: otherwise.
 
     \b
-    Perfdata :
+    Perfdata:
     * `is_version_ok` is 1 if version is ok, 0 otherwise
     """
     # TODO the version cannot be written in perfdata find something else ?
@@ -525,7 +525,7 @@ def node_is_alive(ctx: click.Context) -> None:
     * `CRITICAL`: otherwise.
 
     \b
-    Perfdata :
+    Perfdata:
     * `is_running` is 1 if patroni is running, 0 otherwise
     """
     check = nagiosplugin.Check()
