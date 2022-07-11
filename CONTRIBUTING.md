@@ -47,5 +47,5 @@ The `README.md` can be geneated with `./docs/make_readme.sh`.
 
 ## Executing Tests
 
-The pytests are in `./test` and use a moker to provide a json response instead
+The pytests are in `./tests` and use a moker to provide a json response instead
 of having to call the patroni API.
