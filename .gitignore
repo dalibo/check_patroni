@@ -3,3 +3,4 @@ check_patroni.egg-info
 test/*.state_file
 test/vagrant/.vagrant
 .*.swp
+.venv/
