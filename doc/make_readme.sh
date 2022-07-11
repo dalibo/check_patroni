@@ -5,7 +5,8 @@ if ! command -v check_patroni &>/dev/null; then
 	exit 1
 fi
 
-README="../README.md"
+top_srcdir="$(readlink -m "$0/../..")"
+README="${top_srcdir}/README.md"
 function readme(){
 	echo "$1" >> $README
 }
