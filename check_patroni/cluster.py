@@ -131,7 +131,7 @@ class ClusterConfigHasChanged(PatroniResource):
         self: "ClusterConfigHasChanged",
         connection_info: ConnectionInfo,
         config_hash: str,  # Always contains the old hash
-        state_file: str,   # Only used to update the hash in the state_file (when needed)
+        state_file: str,  # Only used to update the hash in the state_file (when needed)
     ):
         super().__init__(connection_info)
         self.state_file = state_file
