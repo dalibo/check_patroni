@@ -5,7 +5,8 @@ if ! command -v check_patroni &>/dev/null; then
 	exit 1
 fi
 
-README="../README.md"
+top_srcdir="$(readlink -m "$0/../..")"
+README="${top_srcdir}/README.md"
 function readme(){
 	echo "$1" >> $README
 }
@@ -20,40 +21,35 @@ function helpme(){
 
 cat << '_EOF_' > $README
 # check_patroni
+
+A nagios plugin for patroni.
+
+## Features
+
+- Check presence of leader, replicas, node counts.
+- Check each node for replication status.
+
 _EOF_
 helpme
 cat << '_EOF_' >> $README
 ## Install
 
-Installation from the git repository:
+check_patroni is licensed under PostgreSQL license.
 
 ```
-$ git clone https://github.com/dalibo/check_patroni
-```
-
-Change the branch if necessary. Then create a dedicated environment,
-install dependencies and then check_patroni from the repo:
-
-```
-$ cd check_patroni
-$ python3 -m venv .venv
-$ . .venv/bin/activate
-(.venv) $ pip3 install .
-(.venv) $ pip3 install .[dev]   # for dev purposes
-(.venv) $ pip3 install .[test]  # for testing purposes
-(.venv) $ check_patroni
-```
-
-To quit this env and destroy it:
-
-```
-$ deactivate
-$ rm -r .venv
+$ pip install git+https://github.com/dalibo/check_patroni.git
 ```
 
 Links:
 * [pip & centos 7](https://linuxize.com/post/how-to-install-pip-on-centos-7/)
 * [pip & debian10](https://linuxize.com/post/how-to-install-pip-on-debian-10/)
+
+## Support
+
+If you hit a bug or need help, open a [GitHub
+issue](https://github.com/dalibo/check_patroni/issues/new). Dalibo has no
+commitment on response time for public free support. Thanks for you
+contribution !
 
 ## Config file
 
@@ -120,20 +116,3 @@ helpme node_tl_has_changed
 cat << _EOF_ >> $README
 
 _EOF_
-
-cat << '_EOF_' >> $README
-## test
-
-The pytests are in `./test` and use a moker to provide a json response instead
-of having to call the patroni API.
-
-A vagrant file is available to create a icinga / opm / grafana stack and
-install check_patroni. You can then add a server to the supervision and
-watch the graphs in grafana. It's in `./test/vagrant`.
-
-A vagrant file can be found in [this
-repository](https://github.com/ioguix/vagrant-patroni to generate a
-patroni/etcd setup.
-
-_EOF_
-
