@@ -62,8 +62,8 @@ All global and service specific parameters can be specified via a config file ha
 ```
 [options]
 endpoints = https://10.20.199.3:8008, https://10.20.199.4:8008,https://10.20.199.5:8008
-cert_file = ./ssl/benoit-dalibo-cert.pem
-key_file = ./ssl/benoit-dalibo-key.pem
+cert_file = ./ssl/my-cert.pem
+key_file = ./ssl/my-key.pem
 ca_file = ./ssl/CA-cert.pem
 timeout = 0
 
@@ -72,16 +72,16 @@ lag=100
 ```
 ## Thresholds
 
-The format for the threshold parameters is "[@][start:][end]".
+The format for the threshold parameters is `[@][start:][end]`.
 
-* "start:" may be omitted if start==0
-* "~:" means that start is negative infinity
+* `start:` may be omitted if `start == 0`
+* `~:` means that start is negative infinity
 * If `end` is omitted, infinity is assumed
-* To invert the match condition, prefix the range expression with "@".
+* To invert the match condition, prefix the range expression with `@`.
 
-A match is found when: start <= VALUE <= end
+A match is found when: `start <= VALUE <= end`.
 
-For example, the followinf command will raise:
+For example, the following command will raise:
 
 * a warning if there is less than 1 nodes, wich can be translated to outside of range [2;+INF[
 * a critical if there are no nodes, wich can be translated to outside of range [1;+INF[
@@ -130,6 +130,10 @@ of having to call the patroni API.
 A vagrant file is available to create a icinga / opm / grafana stack and
 install check_patroni. You can then add a server to the supervision and
 watch the graphs in grafana. It's in `./test/vagrant`.
+
+A vagrant file can be found in [this
+repository](https://github.com/ioguix/vagrant-patroni to generate a
+patroni/etcd setup.
 
 _EOF_
 
