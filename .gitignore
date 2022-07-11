@@ -4,3 +4,4 @@ test/*.state_file
 test/vagrant/.vagrant
 .*.swp
 .venv/
+dist/
