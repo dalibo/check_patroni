@@ -32,7 +32,6 @@ $ deactivate
 $ rm -r .venv
 ```
 
-
 ## Development Environment
 
 A vagrant file is available to create a icinga / opm / grafana stack and
@@ -42,6 +41,8 @@ watch the graphs in grafana. It's in the `vagrant` directory.
 A vagrant file can be found in [this
 repository](https://github.com/ioguix/vagrant-patroni to generate a patroni/etcd
 setup.
+
+The `README.md` can be geneated with `./docs/make_readme.sh`.
 
 
 ## Executing Tests
