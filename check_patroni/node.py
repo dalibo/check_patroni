@@ -93,7 +93,7 @@ class NodeTLHasChanged(PatroniResource):
     def __init__(
         self: "NodeTLHasChanged",
         connection_info: ConnectionInfo,
-        timeline: str,    # Always contains the old timeline
+        timeline: str,  # Always contains the old timeline
         state_file: str,  # Only used to update the timeline in the state_file (when needed)
     ) -> None:
         super().__init__(connection_info)
