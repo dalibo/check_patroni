@@ -37,7 +37,7 @@ $ rm -r .venv
 
 A vagrant file is available to create a icinga / opm / grafana stack and
 install check_patroni. You can then add a server to the supervision and
-watch the graphs in grafana. It's in `./test/vagrant`.
+watch the graphs in grafana. It's in the `vagrant` directory.
 
 A vagrant file can be found in [this
 repository](https://github.com/ioguix/vagrant-patroni to generate a patroni/etcd
