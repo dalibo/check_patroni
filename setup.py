@@ -21,7 +21,7 @@ setup(
     version=get_version(),
     author="Dalibo",
     author_email="contact@dalibo.com",
-    packages=find_packages("."),
+    packages=find_packages(include=['check_patroni*']),
     include_package_data=True,
     url="https://github.com/dalibo/check_patroni",
     license="PostgreSQL",
