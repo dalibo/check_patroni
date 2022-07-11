@@ -32,19 +32,20 @@ $ deactivate
 $ rm -r .venv
 ```
 
-
 ## Development Environment
 
 A vagrant file is available to create a icinga / opm / grafana stack and
 install check_patroni. You can then add a server to the supervision and
-watch the graphs in grafana. It's in `./test/vagrant`.
+watch the graphs in grafana. It's in the `vagrant` directory.
 
 A vagrant file can be found in [this
 repository](https://github.com/ioguix/vagrant-patroni to generate a patroni/etcd
 setup.
 
+The `README.md` can be geneated with `./docs/make_readme.sh`.
+
 
 ## Executing Tests
 
-The pytests are in `./test` and use a moker to provide a json response instead
+The pytests are in `./tests` and use a moker to provide a json response instead
 of having to call the patroni API.
