@@ -49,7 +49,7 @@ setup(
             "black",
             "check-manifest",
             "flake8",
-            "mypy",
+            "mypy == 0.961",
         ],
         "test": [
             "pytest",
