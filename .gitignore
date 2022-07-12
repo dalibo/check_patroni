@@ -5,5 +5,6 @@ tests/config.ini
 vagrant/.vagrant
 .*.swp
 .venv/
+.tox/
 dist/
 build/
