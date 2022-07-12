@@ -45,7 +45,6 @@ setup(
     ],
     extras_require={
         "dev": [
-            "wheel",
             "black",
             "check-manifest",
             "flake8",
@@ -54,6 +53,11 @@ setup(
         "test": [
             "pytest",
             "pytest-mock",
+        ],
+        "release": [
+            "wheel",
+            "setuptools",
+            "twine",
         ],
     },
     entry_points={
