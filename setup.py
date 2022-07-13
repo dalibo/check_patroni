@@ -44,13 +44,6 @@ setup(
         "click >= 8.0.1",
     ],
     extras_require={
-        "dev": [
-            "wheel",
-            "black",
-            "check-manifest",
-            "flake8",
-            "mypy == 0.961",
-        ],
         "test": [
             "pytest",
             "pytest-mock",

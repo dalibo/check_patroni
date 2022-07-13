@@ -21,7 +21,8 @@ from the repo:
 ```
 $ python3 -m venv .venv
 $ . .venv/bin/activate
-(.venv) $ pip3 install .[dev,test]
+(.venv) $ pip3 install .[test]
+(.venv) $ pip3 install -r requirements-dev.txt
 (.venv) $ check_patroni
 ```
 
@@ -48,4 +49,26 @@ The `README.md` can be geneated with `./docs/make_readme.sh`.
 ## Executing Tests
 
 The pytests are in `./tests` and use a moker to provide a json response instead
-of having to call the patroni API.
+of having to call the patroni API. To manually run the tests use one of these
+commands :
+
+```
+pytest ./tests  # just the tests
+tox             # pytests for all supported version of python + mypy + flake8
+tox -e py       # pytests + mypy + flake8 or the default version of python
+```
+
+The tests are executed automatically for each PR using the ci (see
+`.github/workflow/lint.yml` and `.github/workflow/tests.yml`).
+
+## Release
+
+The package is generated and uploaded to pypi when a `v*` tag is created (see
+`.github/workflow/publish.yml`).
+
+Alternatively, the release can be done manually with:
+
+```
+tox -e build
+tox -e upload
+```
