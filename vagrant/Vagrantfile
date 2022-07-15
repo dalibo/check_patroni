@@ -12,6 +12,10 @@ etcd_nodes    = []
 patroni_nodes = []
 sup_nodes     = ['s1']
 
+# install check_patroni from the local repo (test) or from pip (official)
+cp_origin     = 'test'  # [test, official]
+
+
 Vagrant.configure(2) do |config|
     config.vm.provider myProvider
 
@@ -56,6 +60,7 @@ Vagrant.configure(2) do |config|
                 args: [ node ],
                 preserve_order: true
             conf.vm.provision 'check_patroni', type: 'shell', path: 'provision/check_patroni.bash',
+                args: [ cp_origin ],
                 preserve_order: true
         end
     end
