@@ -10,7 +10,7 @@ here = pathlib.Path(__file__).parent
 def getjson(name: str) -> bytes:
     path = here / "json" / f"{name}.json"
     if not path.exists():
-        raise Exception(f"path doesnt exist : {path}")
+        raise Exception(f"path does not exist : {path}")
 
     with path.open() as f:
         return f.read().encode("utf-8")
