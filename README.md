@@ -61,7 +61,6 @@ issue](https://github.com/dalibo/check_patroni/issues/new). Dalibo has no
 commitment on response time for public free support. Thanks for you
 contribution !
 
-
 ## Config file
 
 All global and service specific parameters can be specified via a config file has follows:
@@ -119,6 +118,8 @@ Usage: check_patroni cluster_config_has_changed [OPTIONS]
 Options:
   --hash TEXT            A hash to compare with.
   -s, --state-file TEXT  A state file to store the hash of the configuration.
+  --save                 Set the current configuration hash as the reference
+                         for future calls.
   --help                 Show this message and exit.
 ```
 
@@ -320,7 +321,7 @@ Usage: check_patroni node_tl_has_changed [OPTIONS]
   work.
 
   Check:
-  * `OK`: The timeline is the same as last time (`--state_file`) or the inputed timeline (`--timeline`)
+  * `OK`: The timeline is the same as last time (`--state_file`) or the inputted timeline (`--timeline`)
   * `CRITICAL`: The tl is not the same.
 
   Perfdata:
@@ -330,6 +331,8 @@ Usage: check_patroni node_tl_has_changed [OPTIONS]
 Options:
   --timeline TEXT        A timeline number to compare with.
   -s, --state-file TEXT  A state file to store the last tl number into.
+  --save                 Set the current timeline number as the reference for
+                         future calls.
   --help                 Show this message and exit.
 ```
 

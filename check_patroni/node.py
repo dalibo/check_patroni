@@ -95,10 +95,12 @@ class NodeTLHasChanged(PatroniResource):
         connection_info: ConnectionInfo,
         timeline: str,  # Always contains the old timeline
         state_file: str,  # Only used to update the timeline in the state_file (when needed)
+        save: bool,  # save timeline in state file
     ) -> None:
         super().__init__(connection_info)
         self.state_file = state_file
         self.timeline = timeline
+        self.save = save
 
     def probe(self: "NodeTLHasChanged") -> Iterable[nagiosplugin.Metric]:
         r = self.rest_api("patroni")
@@ -108,9 +110,10 @@ class NodeTLHasChanged(PatroniResource):
         item_dict = json.loads(r.data)
         new_tl = item_dict["timeline"]
 
+        _log.debug(f"save result: {self.save}")
         old_tl = self.timeline
-        if self.state_file is not None:
-            _log.debug(f"Saving new timeline to state file / cookie {self.state_file}")
+        if self.state_file is not None and self.save:
+            _log.debug(f"saving new timeline to state file / cookie {self.state_file}")
             cookie = nagiosplugin.Cookie(self.state_file)
             cookie.open()
             cookie["timeline"] = new_tl

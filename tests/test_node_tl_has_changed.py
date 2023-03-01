@@ -86,13 +86,14 @@ def test_node_tl_has_changed_ko_with_timeline(mocker: MockerFixture) -> None:
     assert result.exit_code == 2
 
 
-def test_node_tl_has_changed_ko_with_state_file(mocker: MockerFixture) -> None:
+def test_node_tl_has_changed_ko_with_state_file_and_save(mocker: MockerFixture) -> None:
     runner = CliRunner()
 
     with open(here / "node_tl_has_changed.state_file", "w") as f:
         f.write('{"timeline": 700}')
 
     my_mock(mocker, "node_tl_has_changed", 200)
+    # test without saving the new tl
     result = runner.invoke(
         main,
         [
@@ -105,7 +106,27 @@ def test_node_tl_has_changed_ko_with_state_file(mocker: MockerFixture) -> None:
     )
     assert result.exit_code == 2
 
-    # the new timeline was saved
+    cookie = nagiosplugin.Cookie(here / "node_tl_has_changed.state_file")
+    cookie.open()
+    new_tl = cookie.get("timeline")
+    cookie.close()
+
+    assert new_tl == 700
+
+    # test when we save the hash
+    result = runner.invoke(
+        main,
+        [
+            "-e",
+            "https://10.20.199.3:8008",
+            "node_tl_has_changed",
+            "--state-file",
+            str(here / "node_tl_has_changed.state_file"),
+            "--save",
+        ],
+    )
+    assert result.exit_code == 2
+
     cookie = nagiosplugin.Cookie(here / "node_tl_has_changed.state_file")
     cookie.open()
     new_tl = cookie.get("timeline")
