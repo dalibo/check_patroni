@@ -482,7 +482,7 @@ def node_tl_has_changed(
 
     \b
     Check:
-    * `OK`: The timeline is the same as last time (`--state_file`) or the inputed timeline (`--timeline`)
+    * `OK`: The timeline is the same as last time (`--state_file`) or the inputted timeline (`--timeline`)
     * `CRITICAL`: The tl is not the same.
 
     \b

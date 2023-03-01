@@ -1,8 +1,10 @@
 black
+codespell
 flake8
 mypy==0.961
 pytest
 pytest-mock
 setuptools
+tox
 twine
 wheel
