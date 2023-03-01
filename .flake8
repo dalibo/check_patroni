@@ -1,7 +1,8 @@
 [flake8]
 doctests = True
 ignore =
-  E501, # line too long
+  # line too long
+  E501, 
 exclude =
   .git,
   .mypy_cache,
