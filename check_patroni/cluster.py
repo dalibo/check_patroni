@@ -132,10 +132,12 @@ class ClusterConfigHasChanged(PatroniResource):
         connection_info: ConnectionInfo,
         config_hash: str,  # Always contains the old hash
         state_file: str,  # Only used to update the hash in the state_file (when needed)
+        save: bool = False,  # Save the configuration
     ):
         super().__init__(connection_info)
         self.state_file = state_file
         self.config_hash = config_hash
+        self.save = save
 
     def probe(self: "ClusterConfigHasChanged") -> Iterable[nagiosplugin.Metric]:
         r = self.rest_api("config")
@@ -144,9 +146,10 @@ class ClusterConfigHasChanged(PatroniResource):
 
         new_hash = hashlib.md5(r.data).hexdigest()
 
+        _log.debug(f"save result: {self.save}")
         old_hash = self.config_hash
-        if self.state_file is not None:
-            _log.debug(f"Saving new hash to state file / cookie {self.state_file}")
+        if self.state_file is not None and self.save:
+            _log.debug(f"saving new hash to state file / cookie {self.state_file}")
             cookie = nagiosplugin.Cookie(self.state_file)
             cookie.open()
             cookie["hash"] = new_hash

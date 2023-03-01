@@ -308,10 +308,17 @@ def cluster_has_replica(
     type=str,
     help="A state file to store the hash of the configuration.",
 )
+@click.option(
+    "--save",
+    "save_config",
+    is_flag=True,
+    default=False,
+    help="Set the current configuration hash as the reference for future calls.",
+)
 @click.pass_context
 @nagiosplugin.guarded
 def cluster_config_has_changed(
-    ctx: click.Context, config_hash: str, state_file: str
+    ctx: click.Context, config_hash: str, state_file: str, save_config: bool
 ) -> None:
     """Check if the hash of the configuration has changed.
 
@@ -343,7 +350,9 @@ def cluster_config_has_changed(
 
     check = nagiosplugin.Check()
     check.add(
-        ClusterConfigHasChanged(ctx.obj.connection_info, old_config_hash, state_file),
+        ClusterConfigHasChanged(
+            ctx.obj.connection_info, old_config_hash, state_file, save_config
+        ),
         nagiosplugin.ScalarContext("is_configuration_changed", None, "@1:1"),
         ClusterConfigHasChangedSummary(old_config_hash),
     )
@@ -455,9 +464,18 @@ def node_is_pending_restart(ctx: click.Context) -> None:
     type=str,
     help="A state file to store the last tl number into.",
 )
+@click.option(
+    "--save",
+    "save_tl",
+    is_flag=True,
+    default=False,
+    help="Set the current timeline number as the reference for future calls.",
+)
 @click.pass_context
 @nagiosplugin.guarded
-def node_tl_has_changed(ctx: click.Context, timeline: str, state_file: str) -> None:
+def node_tl_has_changed(
+    ctx: click.Context, timeline: str, state_file: str, save_tl: bool
+) -> None:
     """Check if the timeline has changed.
 
     Note: either a timeline or a state file must be provided for this service to work.
@@ -488,7 +506,7 @@ def node_tl_has_changed(ctx: click.Context, timeline: str, state_file: str) -> N
 
     check = nagiosplugin.Check()
     check.add(
-        NodeTLHasChanged(ctx.obj.connection_info, old_timeline, state_file),
+        NodeTLHasChanged(ctx.obj.connection_info, old_timeline, state_file, save_tl),
         nagiosplugin.ScalarContext("is_timeline_changed", None, "@1:1"),
         nagiosplugin.ScalarContext("timeline"),
         NodeTLHasChangedSummary(old_timeline),
