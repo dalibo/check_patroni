@@ -179,7 +179,7 @@ class ClusterConfigHasChangedSummary(nagiosplugin.Summary):
     def problem(
         self: "ClusterConfigHasChangedSummary", results: nagiosplugin.Result
     ) -> str:
-        return "The hash of patroni's dynamic configuration has changed. The old hash was {self.old_config_hash}."
+        return f"The hash of patroni's dynamic configuration has changed. The old hash was {self.old_config_hash}."
 
 
 class ClusterIsInMaintenance(PatroniResource):
