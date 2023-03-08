@@ -11,7 +11,7 @@ A nagios plugin for patroni.
 ```
 Usage: check_patroni [OPTIONS] COMMAND [ARGS]...
 
-  Nagios plugin for patroni.
+  Nagios plugin that uses Patroni's REST API to monitor a Patroni cluster.
 
 Options:
   --config FILE         Read option defaults from the specified INI file
