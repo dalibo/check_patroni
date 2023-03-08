@@ -137,7 +137,7 @@ def main(
     verbose: int,
     timeout: int,
 ) -> None:
-    """Nagios plugin for patroni."""
+    """Nagios plugin that uses Patroni's REST API to monitor a Patroni cluster."""
     # FIXME Not all "is/has" services have the same return code for ok. Check if it's ok
 
     # We use this to pass parameters instead of ctx.parent.params because the
