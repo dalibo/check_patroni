@@ -16,8 +16,14 @@ Usage: check_patroni [OPTIONS] COMMAND [ARGS]...
 Options:
   --config FILE         Read option defaults from the specified INI file
                         [default: config.ini]
-  -e, --endpoints TEXT  API endpoint. Can be specified multiple times.
-                        [default: http://127.0.0.1:8008]
+  -e, --endpoints TEXT  Patroni API endpoint. Can be specified multiple times
+                        or as a list of comma separated addresses. The node
+                        services checks the status of one node, therefore if
+                        several addresses are specified they should point to
+                        different interfaces on the same node. The cluster
+                        services check the status of the cluster, therefore
+                        it's better to give a list of all Patroni node
+                        addresses.  [default: http://127.0.0.1:8008]
   --cert_file TEXT      File with the client certificate.
   --key_file TEXT       File with the client key.
   --ca_file TEXT        The CA certificate.

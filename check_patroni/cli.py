@@ -85,7 +85,15 @@ def configure(ctx: click.Context, param: str, filename: str) -> None:
     type=str,
     multiple=True,
     default=["http://127.0.0.1:8008"],
-    help="API endpoint. Can be specified multiple times.",
+    help=(
+        "Patroni API endpoint. Can be specified multiple times or as a list "
+        "of comma separated addresses. "
+        "The node services checks the status of one node, therefore if "
+        "several addresses are specified they should point to different "
+        "interfaces on the same node. The cluster services check the "
+        "status of the cluster, therefore it's better to give a list of "
+        "all Patroni node addresses."
+    ),
     show_default=True,
 )
 @click.option(
@@ -145,6 +153,14 @@ def main(
     # error unless we test if ctx.parent is none which looked ugly.
     #
     # error: Item "None" of "Optional[Context]" has an attribute "params"  [union-attr]
+
+    # The config file allows endpoints to be specified as a comma separated list of endpoints
+    # To avoid confusion, We allow the same in command line parameters
+    tendpoints: List[str] = []
+    for e in endpoints:
+        tendpoints += re.split(r"\s*,\s*", e)
+    endpoints = tendpoints
+
     ctx.obj = Parameters(
         ConnectionInfo(endpoints, cert_file, key_file, ca_file),
         timeout,
