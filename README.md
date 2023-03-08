@@ -202,14 +202,32 @@ Usage: check_patroni cluster_node_count [OPTIONS]
 
   Count the number of nodes in the cluster.
 
+  The state refers to the state of PostgreSQL. Possible values are:
+  * initalizing new cluster, initdb failed
+  * running custom bootstrap script, custom bootstrap failed
+  * starting, start failed
+  * restarting, restart failed
+  * running
+  * stopping, stopped, stop failed
+  * creating replica
+  * crashed
+
+  The role refers to the role of the server in the cluster. Possible values
+  are:
+  * master or leader (V3.0.0+)
+  * replica
+  * demoted
+  * promoted
+  * uninitialized
+
   Check:
   * Compares the number of nodes against the normal and running node warning and critical thresholds.
   * `OK`:  If they are not provided.
 
   Perfdata:
   * `members`: the member count.
-  * all the roles of the nodes in the cluster with their number.
-  * all the statuses of the nodes in the cluster with their number.
+  * all the roles of the nodes in the cluster with their number (start with "role_").
+  * all the statuses of the nodes in the cluster with their number (start with "state_").
 
 Options:
   -w, --warning TEXT       Warning threshold for the number of nodes.
