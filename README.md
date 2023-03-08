@@ -226,7 +226,8 @@ Options:
 ```
 Usage: check_patroni node_is_alive [OPTIONS]
 
-  Check if the node is alive ie patroni is running.
+  Check if the node is alive ie patroni is running. This is a liveness check
+  as defined in Patroni's documentation.
 
   Check:
   * `OK`: If patroni is running.
