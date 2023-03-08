@@ -207,6 +207,26 @@ def cluster_node_count(
     """Count the number of nodes in the cluster.
 
     \b
+    The state refers to the state of PostgreSQL. Possible values are:
+    * initializing new cluster, initdb failed
+    * running custom bootstrap script, custom bootstrap failed
+    * starting, start failed
+    * restarting, restart failed
+    * running
+    * stopping, stopped, stop failed
+    * creating replica
+    * crashed
+
+    \b
+    The role refers to the role of the server in the cluster. Possible values
+    are:
+    * master or leader (V3.0.0+)
+    * replica
+    * demoted
+    * promoted
+    * uninitialized
+
+    \b
     Check:
     * Compares the number of nodes against the normal and running node warning and critical thresholds.
     * `OK`:  If they are not provided.
@@ -214,8 +234,8 @@ def cluster_node_count(
     \b
     Perfdata:
     * `members`: the member count.
-    * all the roles of the nodes in the cluster with their number.
-    * all the statuses of the nodes in the cluster with their number.
+    * all the roles of the nodes in the cluster with their number (start with "role_").
+    * all the statuses of the nodes in the cluster with their number (start with "state_").
     """
     check = nagiosplugin.Check()
     check.add(
