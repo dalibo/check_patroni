@@ -567,7 +567,8 @@ def node_patroni_version(ctx: click.Context, patroni_version: str) -> None:
 @click.pass_context
 @nagiosplugin.guarded
 def node_is_alive(ctx: click.Context) -> None:
-    """Check if the node is alive ie patroni is running.
+    """Check if the node is alive ie patroni is running. This is
+    a liveness check as defined in Patroni's documentation.
 
     \b
     Check:
