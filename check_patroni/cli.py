@@ -476,7 +476,7 @@ def node_is_pending_restart(ctx: click.Context) -> None:
 
     \b
     Check:
-    * `OK`: if the node has pending restart tag.
+    * `OK`: if the node has no pending restart tag.
     * `CRITICAL`: otherwise
 
     Perfdata: `is_pending_restart` is 1 if the node has pending restart tag, 0 otherwise.
@@ -484,7 +484,7 @@ def node_is_pending_restart(ctx: click.Context) -> None:
     check = nagiosplugin.Check()
     check.add(
         NodeIsPendingRestart(ctx.obj.connection_info),
-        nagiosplugin.ScalarContext("is_pending_restart", None, "@1:1"),
+        nagiosplugin.ScalarContext("is_pending_restart", None, "0:0"),
         NodeIsPendingRestartSummary(),
     )
     check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
