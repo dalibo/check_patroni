@@ -1,19 +1,26 @@
 import logging
-import urllib3
 
 import attr
 import nagiosplugin
-from typing import Any, Callable, List
+import requests
+import urllib3
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 _log = logging.getLogger("nagiosplugin")
+
+
+class APIError(requests.exceptions.RequestException):
+    """This exception is raised when the rest api couldn't
+    be reached and we got a http status code different from 200.
+    """
 
 
 @attr.s(auto_attribs=True, frozen=True, slots=True)
 class ConnectionInfo:
     endpoints: List[str] = ["http://127.0.0.1:8008"]
-    cert_file: str = "./ssl/benoit-dalibo-cert.pem"
-    key_file: str = "./ssl/benoit-dalibo-key.pem"
-    ca_cert: str = "./ssl/CA-cert.pem"
+    cert_file: Optional[str] = None
+    key_file: Optional[str] = None
+    ca_cert: Optional[str] = None
 
 
 @attr.s(auto_attribs=True, frozen=True, slots=True)
@@ -27,27 +34,52 @@ class Parameters:
 class PatroniResource(nagiosplugin.Resource):
     conn_info: ConnectionInfo
 
-    def rest_api(
-        self: "PatroniResource", service: str
-    ) -> urllib3.response.HTTPResponse:
+    def rest_api(self: "PatroniResource", service: str) -> Any:
         """Try to connect to all the provided endpoints for the requested service"""
         for endpoint in self.conn_info.endpoints:
             try:
+                cert: Optional[Union[Tuple[str, str], str]] = None
+                verify: Optional[Union[str, bool]] = None
                 if endpoint[:5] == "https":
-                    pool = urllib3.PoolManager(
-                        cert_reqs="CERT_REQUIRED",
-                        cert_file=self.conn_info.cert_file,
-                        key_file=self.conn_info.key_file,
-                        ca_certs=self.conn_info.ca_cert,
-                    )
-                else:
-                    pool = urllib3.PoolManager()
+                    if (
+                        self.conn_info.cert_file is not None
+                        and self.conn_info.key_file is not None  # noqa W503
+                    ):
+                        # we provide a certificate and a private key
+                        cert = (self.conn_info.cert_file, self.conn_info.key_file)
+                    elif (
+                        self.conn_info.cert_file is not None
+                        and self.conn_info.key_file is None  # noqa W503
+                    ):
+                        # we provide a pem file with the private key and the certificate
+                        cert = self.conn_info.cert_file
 
-                _log.debug(f"Trying to connect to {endpoint}/{service}")
-                return pool.request(
-                    "GET",
-                    f"{endpoint}/{service}",
+                    if self.conn_info.ca_cert is not None:
+                        # if cert is not None: this is the CA certificate
+                        # otherwise this is a ca bundle with root certificate
+                        # then some optional intermediate certificate and finally
+                        # the cerver certificate to validate the certification chain
+                        verify = self.conn_info.ca_cert
+                    else:
+                        if cert is None:
+                            # if cert is None we want to bypass https verification,
+                            # this is in secure and should be avoided for production use
+                            verify = False
+
+                _log.debug(
+                    f"Trying to connect to {endpoint}/{service} with cert: {cert} verify: {verify}"
                 )
+
+                r = requests.get(f"{endpoint}/{service}", verify=verify, cert=cert)
+                _log.debug(f"api call status: {r.status_code}")
+                _log.debug(f"api call data: {r.text}")
+
+                if r.status_code != 200:
+                    raise APIError(
+                        f"Failed to connect to {endpoint}/{service} status code {r.status_code}"
+                    )
+
+                return r.json()
             except nagiosplugin.Timeout as e:
                 raise e
             except Exception as e:

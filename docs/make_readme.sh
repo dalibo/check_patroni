@@ -85,6 +85,33 @@ For example, the following command will raise:
 ```
 check_patroni -e https://10.20.199.3:8008 cluster_has_replica --warning 2: --critical 1:
 ```
+## SSL
+
+Several option are available:
+
+* you have a self-signed certificate:
+  * `--ca_cert`: your certification chain `cat CA-certificate server-certificate > cabundle`
+* you have a valid root certificate:
+  * `--cert_file`: your certificate or the concatenation of your certificate and private key
+  * `--key_file`: your private key (optional)
+  * `--ca_cert`: if your CA certificate is not installed on the server you can provide it here (optional)
+* unsafe access: dont provide any info, you will get a warning as described below.
+
+If you configuration is unsafe you might get warning message such as:
+
+```
+$ check_patroni -e https://p1:8008 cluster_node_count
+/home/vagrant/.local/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host 'p1'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+  warnings.warn(
+CLUSTERNODECOUNT OK - members is 2 | members=2 role_leader=1 role_replica=1 state_running=2
+```
+
+After checking on the message, you can choose to ignore it by redirecting the
+standart output to /dev/null:
+```
+$ check_patroni -e https://p1:8008 cluster_node_count 2>/dev/null
+CLUSTERNODECOUNT OK - members is 2 | members=2 role_leader=1 role_replica=1 state_running=2
+```
 _EOF_
 readme
 readme "## Cluster services"

@@ -39,7 +39,7 @@ setup(
     python_requires=">=3.6",
     install_requires=[
         "attrs >= 17, !=21.1",
-        "urllib3 >= 1.26.6",
+        "requests",
         "nagiosplugin >= 1.3.2",
         "click >= 8.0.1",
     ],
