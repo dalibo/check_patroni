@@ -17,11 +17,7 @@ def replace_chars(text: str) -> str:
 
 class ClusterNodeCount(PatroniResource):
     def probe(self: "ClusterNodeCount") -> Iterable[nagiosplugin.Metric]:
-        r = self.rest_api("cluster")
-        _log.debug(f"api call status: {r.status}")
-        _log.debug(f"api call data: {r.data}")
-
-        item_dict = json.loads(r.data)
+        item_dict = self.rest_api("cluster")
         role_counters: Counter[str] = Counter()
         roles = []
         status_counters: Counter[str] = Counter()
@@ -53,11 +49,8 @@ class ClusterNodeCount(PatroniResource):
 
 class ClusterHasLeader(PatroniResource):
     def probe(self: "ClusterHasLeader") -> Iterable[nagiosplugin.Metric]:
-        r = self.rest_api("cluster")
-        _log.debug(f"api call status: {r.status}")
-        _log.debug(f"api call data: {r.data}")
+        item_dict = self.rest_api("cluster")
 
-        item_dict = json.loads(r.data)
         is_leader_found = False
         for member in item_dict["members"]:
             if member["role"] == "leader" and member["state"] == "running":
@@ -91,11 +84,8 @@ class ClusterHasReplica(PatroniResource):
         self.max_lag = max_lag
 
     def probe(self: "ClusterHasReplica") -> Iterable[nagiosplugin.Metric]:
-        r = self.rest_api("cluster")
-        _log.debug(f"api call status: {r.status}")
-        _log.debug(f"api call data: {r.data}")
+        item_dict = self.rest_api("cluster")
 
-        item_dict = json.loads(r.data)
         replicas = []
         healthy_replica = 0
         unhealthy_replica = 0
@@ -140,11 +130,9 @@ class ClusterConfigHasChanged(PatroniResource):
         self.save = save
 
     def probe(self: "ClusterConfigHasChanged") -> Iterable[nagiosplugin.Metric]:
-        r = self.rest_api("config")
-        _log.debug(f"api call status: {r.status}")
-        _log.debug(f"api call data: {r.data}")
+        item_dict = self.rest_api("config")
 
-        new_hash = hashlib.md5(r.data).hexdigest()
+        new_hash = hashlib.md5(json.dumps(item_dict).encode()).hexdigest()
 
         _log.debug(f"save result: {self.save}")
         old_hash = self.config_hash
@@ -184,11 +172,7 @@ class ClusterConfigHasChangedSummary(nagiosplugin.Summary):
 
 class ClusterIsInMaintenance(PatroniResource):
     def probe(self: "ClusterIsInMaintenance") -> Iterable[nagiosplugin.Metric]:
-        r = self.rest_api("cluster")
-        _log.debug(f"api call status: {r.status}")
-        _log.debug(f"api call data: {r.data}")
-
-        item_dict = json.loads(r.data)
+        item_dict = self.rest_api("cluster")
 
         # The actual check
         return [

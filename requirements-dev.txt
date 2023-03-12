@@ -4,6 +4,7 @@ flake8
 mypy==0.961
 pytest
 pytest-mock
+types-requests
 setuptools
 tox
 twine

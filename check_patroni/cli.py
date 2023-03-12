@@ -1,3 +1,4 @@
+import logging
 import re
 from configparser import ConfigParser
 
@@ -32,15 +33,15 @@ from .node import (
 from .types import ConnectionInfo, Parameters
 from .convert import size_to_byte
 
+_log = logging.getLogger("nagiosplugin")
+DEFAULT_CFG = "config.ini"
+
 
 def print_version(ctx: click.Context, param: str, value: str) -> None:
     if not value or ctx.resilient_parsing:
         return
     click.echo(f"Version {__version__}")
     ctx.exit()
-
-
-DEFAULT_CFG = "config.ini"
 
 
 def configure(ctx: click.Context, param: str, filename: str) -> None:

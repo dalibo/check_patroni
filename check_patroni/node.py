@@ -1,22 +1,20 @@
-import json
 import logging
 
 import nagiosplugin
 from typing import Iterable
 
-from .types import ConnectionInfo, handle_unknown, PatroniResource
-
+from .types import APIError, ConnectionInfo, handle_unknown, PatroniResource
 
 _log = logging.getLogger("nagiosplugin")
 
 
 class NodeIsPrimary(PatroniResource):
     def probe(self: "NodeIsPrimary") -> Iterable[nagiosplugin.Metric]:
-        r = self.rest_api("primary")
-        _log.debug(f"api call status: {r.status}")
-        _log.debug(f"api call data: {r.data}")
-
-        return [nagiosplugin.Metric("is_primary", 1 if r.status == 200 else 0)]
+        try:
+            self.rest_api("primary")
+        except APIError:
+            return [nagiosplugin.Metric("is_primary", 0)]
+        return [nagiosplugin.Metric("is_primary", 1)]
 
 
 class NodeIsPrimarySummary(nagiosplugin.Summary):
@@ -36,14 +34,14 @@ class NodeIsReplica(PatroniResource):
         self.max_lag = max_lag
 
     def probe(self: "NodeIsReplica") -> Iterable[nagiosplugin.Metric]:
-        if self.max_lag is None:
-            r = self.rest_api("replica")
-        else:
-            r = self.rest_api(f"replica?lag={self.max_lag}")
-        _log.debug(f"api call status: {r.status}")
-        _log.debug(f"api call data: {r.data}")
-
-        return [nagiosplugin.Metric("is_replica", 1 if r.status == 200 else 0)]
+        try:
+            if self.max_lag is None:
+                self.rest_api("replica")
+            else:
+                self.rest_api(f"replica?lag={self.max_lag}")
+        except APIError:
+            return [nagiosplugin.Metric("is_replica", 0)]
+        return [nagiosplugin.Metric("is_replica", 1)]
 
 
 class NodeIsReplicaSummary(nagiosplugin.Summary):
@@ -64,11 +62,8 @@ class NodeIsReplicaSummary(nagiosplugin.Summary):
 
 class NodeIsPendingRestart(PatroniResource):
     def probe(self: "NodeIsPendingRestart") -> Iterable[nagiosplugin.Metric]:
-        r = self.rest_api("patroni")
-        _log.debug(f"api call status: {r.status}")
-        _log.debug(f"api call data: {r.data}")
+        item_dict = self.rest_api("patroni")
 
-        item_dict = json.loads(r.data)
         is_pending_restart = item_dict.get("pending_restart", False)
         return [
             nagiosplugin.Metric(
@@ -103,11 +98,7 @@ class NodeTLHasChanged(PatroniResource):
         self.save = save
 
     def probe(self: "NodeTLHasChanged") -> Iterable[nagiosplugin.Metric]:
-        r = self.rest_api("patroni")
-        _log.debug(f"api call status: {r.status}")
-        _log.debug(f"api call data: {r.data}")
-
-        item_dict = json.loads(r.data)
+        item_dict = self.rest_api("patroni")
         new_tl = item_dict["timeline"]
 
         _log.debug(f"save result: {self.save}")
@@ -154,12 +145,8 @@ class NodePatroniVersion(PatroniResource):
         self.patroni_version = patroni_version
 
     def probe(self: "NodePatroniVersion") -> Iterable[nagiosplugin.Metric]:
-        r = self.rest_api("patroni")
+        item_dict = self.rest_api("patroni")
 
-        _log.debug(f"api call status: {r.status}")
-        _log.debug(f"api call data: {r.data}")
-
-        item_dict = json.loads(r.data)
         version = item_dict["patroni"]["version"]
         _log.debug(
             f"Version data: patroni version  {version} input version {self.patroni_version}"
@@ -190,11 +177,11 @@ class NodePatroniVersionSummary(nagiosplugin.Summary):
 
 class NodeIsAlive(PatroniResource):
     def probe(self: "NodeIsAlive") -> Iterable[nagiosplugin.Metric]:
-        r = self.rest_api("liveness")
-        _log.debug(f"api call status: {r.status}")
-        _log.debug(f"api call data: {r.data}")
-
-        return [nagiosplugin.Metric("is_alive", 1 if r.status == 200 else 0)]
+        try:
+            self.rest_api("liveness")
+        except APIError:
+            return [nagiosplugin.Metric("is_alive", 0)]
+        return [nagiosplugin.Metric("is_alive", 1)]
 
 
 class NodeIsAliveSummary(nagiosplugin.Summary):
