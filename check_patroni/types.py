@@ -3,10 +3,9 @@ import logging
 import attr
 import nagiosplugin
 import requests
-import urllib3
 from typing import Any, Callable, List, Optional, Tuple, Union
 
-_log = logging.getLogger("nagiosplugin")
+_log = logging.getLogger(__name__)
 
 
 class APIError(requests.exceptions.RequestException):
@@ -71,7 +70,7 @@ class PatroniResource(nagiosplugin.Resource):
                 )
 
                 r = requests.get(f"{endpoint}/{service}", verify=verify, cert=cert)
-                _log.debug(f"api call status: {r.status_code}")
+                # The status code is already handled by urllib3
                 _log.debug(f"api call data: {r.text}")
 
                 if r.status_code != 200:

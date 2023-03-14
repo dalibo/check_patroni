@@ -33,7 +33,7 @@ from .node import (
 from .types import ConnectionInfo, Parameters
 from .convert import size_to_byte
 
-_log = logging.getLogger("nagiosplugin")
+_log = logging.getLogger(__name__)
 DEFAULT_CFG = "config.ini"
 
 
@@ -161,6 +161,10 @@ def main(
     for e in endpoints:
         tendpoints += re.split(r"\s*,\s*", e)
     endpoints = tendpoints
+
+    if verbose == 3:
+        logging.basicConfig(format="%(levelname)s - %(message)s", level=logging.DEBUG)
+        logging.getLogger("urllib3").setLevel(logging.DEBUG)
 
     ctx.obj = Parameters(
         ConnectionInfo(endpoints, cert_file, key_file, ca_file),

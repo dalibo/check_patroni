@@ -5,7 +5,7 @@ from typing import Iterable
 
 from .types import APIError, ConnectionInfo, handle_unknown, PatroniResource
 
-_log = logging.getLogger("nagiosplugin")
+_log = logging.getLogger(__name__)
 
 
 class NodeIsPrimary(PatroniResource):

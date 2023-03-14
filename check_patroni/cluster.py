@@ -8,7 +8,7 @@ from typing import Iterable, Union
 
 from .types import PatroniResource, ConnectionInfo, handle_unknown
 
-_log = logging.getLogger("nagiosplugin")
+_log = logging.getLogger(__name__)
 
 
 def replace_chars(text: str) -> str:
