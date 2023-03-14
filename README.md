@@ -24,9 +24,9 @@ Options:
                         services check the status of the cluster, therefore
                         it's better to give a list of all Patroni node
                         addresses.  [default: http://127.0.0.1:8008]
-  --cert_file TEXT      File with the client certificate.
-  --key_file TEXT       File with the client key.
-  --ca_file TEXT        The CA certificate.
+  --cert_file PATH      File with the client certificate.
+  --key_file PATH       File with the client key.
+  --ca_file PATH        The CA certificate.
   -v, --verbose         Increase verbosity -v (info)/-vv (warning)/-vvv
                         (debug)
   --version
@@ -103,30 +103,13 @@ check_patroni -e https://10.20.199.3:8008 cluster_has_replica --warning 2: --cri
 ```
 ## SSL
 
-Several option are available:
+Several options are available:
 
-* you have a self-signed certificate:
+* the server's CA certificate is not available or trusted by the client system:
   * `--ca_cert`: your certification chain `cat CA-certificate server-certificate > cabundle`
-* you have a valid root certificate:
+* you have a client certificate for authenticating with Patroni's REST API:
   * `--cert_file`: your certificate or the concatenation of your certificate and private key
   * `--key_file`: your private key (optional)
-  * `--ca_cert`: if your CA certificate is not installed on the server you can provide it here (optional)
-* unsafe access: dont provide any info, you will get a warning as described below.
-
-If you configuration is unsafe you might get warning message such as:
-
-```
-$ check_patroni -e https://p1:8008 cluster_node_count
-/home/vagrant/.local/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host 'p1'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-CLUSTERNODECOUNT OK - members is 2 | members=2 role_leader=1 role_replica=1 state_running=2
-```
-
-After checking on the message, you can choose to ignore it by redirecting the
-standart output to /dev/null:
-```
-$ check_patroni -e https://p1:8008 cluster_node_count 2>/dev/null
-CLUSTERNODECOUNT OK - members is 2 | members=2 role_leader=1 role_replica=1 state_running=2
 ```
 
 ## Cluster services
@@ -230,7 +213,7 @@ Usage: check_patroni cluster_node_count [OPTIONS]
   Count the number of nodes in the cluster.
 
   The state refers to the state of PostgreSQL. Possible values are:
-  * initalizing new cluster, initdb failed
+  * initializing new cluster, initdb failed
   * running custom bootstrap script, custom bootstrap failed
   * starting, start failed
   * restarting, restart failed
