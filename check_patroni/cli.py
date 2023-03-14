@@ -100,19 +100,22 @@ def configure(ctx: click.Context, param: str, filename: str) -> None:
 @click.option(
     "--cert_file",
     "cert_file",
-    type=str,
+    type=click.Path(exists=True),
+    default=None,
     help="File with the client certificate.",
 )
 @click.option(
     "--key_file",
     "key_file",
-    type=str,
+    type=click.Path(exists=True),
+    default=None,
     help="File with the client key.",
 )
 @click.option(
     "--ca_file",
     "ca_file",
-    type=str,
+    type=click.Path(exists=True),
+    default=None,
     help="The CA certificate.",
 )
 @click.option(
@@ -166,8 +169,14 @@ def main(
         logging.basicConfig(format="%(levelname)s - %(message)s", level=logging.DEBUG)
         logging.getLogger("urllib3").setLevel(logging.DEBUG)
 
+    connection_info: ConnectionInfo
+    if cert_file is None and key_file is None:
+        connection_info = ConnectionInfo(endpoints, None, ca_file)
+    else:
+        connection_info = ConnectionInfo(endpoints, (cert_file, key_file), ca_file)
+
     ctx.obj = Parameters(
-        ConnectionInfo(endpoints, cert_file, key_file, ca_file),
+        connection_info,
         timeout,
         verbose,
     )
