@@ -6,7 +6,7 @@ import click
 import nagiosplugin
 from typing import List
 
-from . import __version__
+from . import __version__, _log
 from .cluster import (
     ClusterConfigHasChanged,
     ClusterConfigHasChangedSummary,
@@ -33,8 +33,11 @@ from .node import (
 from .types import ConnectionInfo, Parameters
 from .convert import size_to_byte
 
-_log = logging.getLogger(__name__)
+
 DEFAULT_CFG = "config.ini"
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter("%(levelname)s - %(message)s"))
+_log.addHandler(handler)
 
 
 def print_version(ctx: click.Context, param: str, value: str) -> None:
@@ -166,8 +169,9 @@ def main(
     endpoints = tendpoints
 
     if verbose == 3:
-        logging.basicConfig(format="%(levelname)s - %(message)s", level=logging.DEBUG)
+        logging.getLogger("urllib3").addHandler(handler)
         logging.getLogger("urllib3").setLevel(logging.DEBUG)
+        _log.setLevel(logging.DEBUG)
 
     connection_info: ConnectionInfo
     if cert_file is None and key_file is None:
