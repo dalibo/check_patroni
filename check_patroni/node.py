@@ -1,11 +1,8 @@
-import logging
-
 import nagiosplugin
 from typing import Iterable
 
+from . import _log
 from .types import APIError, ConnectionInfo, handle_unknown, PatroniResource
-
-_log = logging.getLogger(__name__)
 
 
 class NodeIsPrimary(PatroniResource):
@@ -101,17 +98,23 @@ class NodeTLHasChanged(PatroniResource):
         item_dict = self.rest_api("patroni")
         new_tl = item_dict["timeline"]
 
-        _log.debug(f"save result: {self.save}")
+        _log.debug("save result: %(issave)s", {"issave": self.save})
         old_tl = self.timeline
         if self.state_file is not None and self.save:
-            _log.debug(f"saving new timeline to state file / cookie {self.state_file}")
+            _log.debug(
+                "saving new timeline to state file / cookie %(state_file)s",
+                {"state_file": self.state_file},
+            )
             cookie = nagiosplugin.Cookie(self.state_file)
             cookie.open()
             cookie["timeline"] = new_tl
             cookie.commit()
             cookie.close()
 
-        _log.debug(f"Tl data: old tl {old_tl}, new tl {new_tl}")
+        _log.debug(
+            "Tl data: old tl %(old_tl)s, new tl %(new_tl)s",
+            {"old_tl": old_tl, "new_tl": new_tl},
+        )
 
         # The actual check
         yield nagiosplugin.Metric(
@@ -149,7 +152,8 @@ class NodePatroniVersion(PatroniResource):
 
         version = item_dict["patroni"]["version"]
         _log.debug(
-            f"Version data: patroni version  {version} input version {self.patroni_version}"
+            "Version data: patroni version  %(version)s input version %(patroni_version)s",
+            {"version": version, "patroni_version": self.patroni_version},
         )
 
         # The actual check

@@ -1,4 +1,3 @@
-import logging
 from urllib.parse import urlparse
 
 import attr
@@ -6,7 +5,7 @@ import nagiosplugin
 import requests
 from typing import Any, Callable, List, Optional, Tuple, Union
 
-_log = logging.getLogger(__name__)
+from . import _log
 
 
 class APIError(requests.exceptions.RequestException):
@@ -46,7 +45,13 @@ class PatroniResource(nagiosplugin.Resource):
                     verify = self.conn_info.ca_cert
 
             _log.debug(
-                f"Trying to connect to {endpoint}/{service} with cert: {cert} verify: {verify}"
+                "Trying to connect to %(endpoint)s/%(service)s with cert: %(cert)s verify: %(verify)s",
+                {
+                    "endpoint": endpoint,
+                    "service": service,
+                    "cert": cert,
+                    "verify": verify,
+                },
             )
 
             try:
@@ -54,8 +59,8 @@ class PatroniResource(nagiosplugin.Resource):
             except Exception as e:
                 _log.debug(e)
                 continue
-            # The status code is already handled by urllib3
-            _log.debug(f"api call data: {r.text}")
+            # The status code is already displayed by urllib3
+            _log.debug("api call data: %(data)s", {"data": r.text})
 
             if r.status_code != 200:
                 raise APIError(

@@ -1,14 +1,12 @@
 import hashlib
 import json
-import logging
 from collections import Counter
 
 import nagiosplugin
 from typing import Iterable, Union
 
+from . import _log
 from .types import PatroniResource, ConnectionInfo, handle_unknown
-
-_log = logging.getLogger(__name__)
 
 
 def replace_chars(text: str) -> str:
@@ -134,17 +132,23 @@ class ClusterConfigHasChanged(PatroniResource):
 
         new_hash = hashlib.md5(json.dumps(item_dict).encode()).hexdigest()
 
-        _log.debug(f"save result: {self.save}")
+        _log.debug("save result: %(save)s", {"issave": self.save})
         old_hash = self.config_hash
         if self.state_file is not None and self.save:
-            _log.debug(f"saving new hash to state file / cookie {self.state_file}")
+            _log.debug(
+                "saving new hash to state file / cookie %(state_file)s",
+                {"state_file": self.state_file},
+            )
             cookie = nagiosplugin.Cookie(self.state_file)
             cookie.open()
             cookie["hash"] = new_hash
             cookie.commit()
             cookie.close()
 
-        _log.debug(f"hash info: old hash {old_hash}, new hash {new_hash}")
+        _log.debug(
+            "hash info: old hash %(old_hash)s, new hash %(new_hash)s",
+            {"old_hash": old_hash, "new_hash": new_hash},
+        )
 
         return [
             nagiosplugin.Metric(
