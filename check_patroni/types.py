@@ -1,9 +1,9 @@
+from typing import Any, Callable, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
 import attr
 import nagiosplugin
 import requests
-from typing import Any, Callable, List, Optional, Tuple, Union
 
 from . import _log
 

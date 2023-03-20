@@ -1,11 +1,10 @@
+import nagiosplugin
 from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
 from check_patroni.cli import main
 
-import nagiosplugin
-
-from tools import my_mock, here
+from .tools import here, my_mock
 
 
 def test_node_tl_has_changed_params(mocker: MockerFixture) -> None:

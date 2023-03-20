@@ -1,9 +1,9 @@
+from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
-from click.testing import CliRunner
-
 from check_patroni.cli import main
-from tools import my_mock
+
+from .tools import my_mock
 
 
 # TODO Lag threshold tests

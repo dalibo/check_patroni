@@ -1,8 +1,9 @@
-import nagiosplugin
 from typing import Iterable
 
+import nagiosplugin
+
 from . import _log
-from .types import APIError, ConnectionInfo, handle_unknown, PatroniResource
+from .types import APIError, ConnectionInfo, PatroniResource, handle_unknown
 
 
 class NodeIsPrimary(PatroniResource):

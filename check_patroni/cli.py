@@ -1,10 +1,10 @@
 import logging
 import re
 from configparser import ConfigParser
+from typing import List
 
 import click
 import nagiosplugin
-from typing import List
 
 from . import __version__, _log
 from .cluster import (
@@ -13,9 +13,10 @@ from .cluster import (
     ClusterHasLeader,
     ClusterHasLeaderSummary,
     ClusterHasReplica,
-    ClusterNodeCount,
     ClusterIsInMaintenance,
+    ClusterNodeCount,
 )
+from .convert import size_to_byte
 from .node import (
     NodeIsAlive,
     NodeIsAliveSummary,
@@ -31,8 +32,6 @@ from .node import (
     NodeTLHasChangedSummary,
 )
 from .types import ConnectionInfo, Parameters
-from .convert import size_to_byte
-
 
 DEFAULT_CFG = "config.ini"
 handler = logging.StreamHandler()
