@@ -94,7 +94,6 @@ Several options are available:
 * you have a client certificate for authenticating with Patroni's REST API:
   * `--cert_file`: your certificate or the concatenation of your certificate and private key
   * `--key_file`: your private key (optional)
-```
 _EOF_
 readme
 readme "## Cluster services"
