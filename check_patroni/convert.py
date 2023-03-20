@@ -1,6 +1,7 @@
-import click
 import re
-from typing import Union, Tuple
+from typing import Tuple, Union
+
+import click
 
 
 def size_to_byte(value: str) -> int:

@@ -1,12 +1,12 @@
 import hashlib
 import json
 from collections import Counter
-
-import nagiosplugin
 from typing import Iterable, Union
 
+import nagiosplugin
+
 from . import _log
-from .types import PatroniResource, ConnectionInfo, handle_unknown
+from .types import ConnectionInfo, PatroniResource, handle_unknown
 
 
 def replace_chars(text: str) -> str:

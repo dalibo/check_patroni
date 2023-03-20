@@ -1,9 +1,9 @@
+from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
-from click.testing import CliRunner
-
 from check_patroni.cli import main
-from tools import my_mock
+
+from .tools import my_mock
 
 
 def test_api_status_code_200(mocker: MockerFixture) -> None:

@@ -1,7 +1,8 @@
 import json
 import pathlib
-from pytest_mock import MockerFixture
 from typing import Any
+
+from pytest_mock import MockerFixture
 
 from check_patroni.types import APIError, PatroniResource
 
