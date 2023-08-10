@@ -89,7 +89,7 @@ class ClusterHasReplica(PatroniResource):
         unhealthy_replica = 0
         for member in item_dict["members"]:
             # FIXME are there other acceptable states
-            if member["role"] == "replica":
+            if member["role"] == "replica" or member["role"] == "sync_standby":
                 if member["state"] == "running" and member["lag"] != "unknown":
                     replicas.append({"name": member["name"], "lag": member["lag"]})
                     if self.max_lag is None or self.max_lag >= int(member["lag"]):
