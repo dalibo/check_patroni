@@ -229,7 +229,7 @@ def cluster_node_count(
     * running custom bootstrap script, custom bootstrap failed
     * starting, start failed
     * restarting, restart failed
-    * running
+    * running, streaming (for a replica V3.0.4)
     * stopping, stopped, stop failed
     * creating replica
     * crashed
@@ -322,7 +322,7 @@ def cluster_has_replica(
 
     \b
     A healthy replica:
-    * is in running state
+    * is in running or streaming state (V3.0.4)
     * has a replica role
     * has a lag lower or equal to max_lag
 
