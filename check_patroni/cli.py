@@ -201,16 +201,16 @@ def main(
     help="Critical threshold for the number of nodes.",
 )
 @click.option(
-    "--running-warning",
-    "running_warning",
+    "--healthy-warning",
+    "healthy_warning",
     type=str,
-    help="Warning threshold for the number of running nodes.",
+    help="Warning threshold for the number of healthy nodes (running + streaming).",
 )
 @click.option(
-    "--running-critical",
-    "running_critical",
+    "--healthy-critical",
+    "healthy_critical",
     type=str,
-    help="Critical threshold for the number of running nodes.",
+    help="Critical threshold for the number of healthy nodes (running + streaming).",
 )
 @click.pass_context
 @nagiosplugin.guarded
@@ -218,8 +218,8 @@ def cluster_node_count(
     ctx: click.Context,
     warning: str,
     critical: str,
-    running_warning: str,
-    running_critical: str,
+    healthy_warning: str,
+    healthy_critical: str,
 ) -> None:
     """Count the number of nodes in the cluster.
 
@@ -245,14 +245,15 @@ def cluster_node_count(
 
     \b
     Check:
-    * Compares the number of nodes against the normal and running node warning and critical thresholds.
+    * Compares the number of nodes against the normal and healthy (running + streaming) nodes warning and critical thresholds.
     * `OK`:  If they are not provided.
 
     \b
     Perfdata:
     * `members`: the member count.
-    * all the roles of the nodes in the cluster with their number (start with "role_").
-    * all the statuses of the nodes in the cluster with their number (start with "state_").
+    * `healthy_members`: the running and streaming member count.
+    * all the roles of the nodes in the cluster with their count (start with "role_").
+    * all the statuses of the nodes in the cluster with their count (start with "state_").
     """
     check = nagiosplugin.Check()
     check.add(
@@ -263,9 +264,9 @@ def cluster_node_count(
             critical,
         ),
         nagiosplugin.ScalarContext(
-            "state_running",
-            running_warning,
-            running_critical,
+            "healthy_members",
+            healthy_warning,
+            healthy_critical,
         ),
         nagiosplugin.ScalarContext("member_roles"),
         nagiosplugin.ScalarContext("member_statuses"),

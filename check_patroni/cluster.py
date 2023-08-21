@@ -27,9 +27,12 @@ class ClusterNodeCount(PatroniResource):
         role_counters.update(roles)
         status_counters.update(statuses)
 
-        # The actual check: members, running state
+        # The actual check: members, healthy_members
         yield nagiosplugin.Metric("members", len(item_dict["members"]))
-        yield nagiosplugin.Metric("state_running", status_counters["running"])
+        yield nagiosplugin.Metric(
+            "healthy_members",
+            status_counters["running"] + status_counters.get("streaming", 0),
+        )
 
         # The performance data : role
         for role in role_counters:
@@ -39,10 +42,9 @@ class ClusterNodeCount(PatroniResource):
 
         # The performance data : statuses (except running)
         for state in status_counters:
-            if state != "running":
-                yield nagiosplugin.Metric(
-                    f"state_{state}", status_counters[state], context="member_statuses"
-                )
+            yield nagiosplugin.Metric(
+                f"state_{state}", status_counters[state], context="member_statuses"
+            )
 
 
 class ClusterHasLeader(PatroniResource):
