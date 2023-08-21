@@ -69,7 +69,10 @@ class PatroniResource(nagiosplugin.Resource):
                     f"Failed to connect to {endpoint}/{service} status code {r.status_code}"
                 )
 
-            return r.json() if r.text else None
+            try:
+                return r.json()
+            except requests.exceptions.JSONDecodeError:
+                return None
         raise nagiosplugin.CheckError("Connection failed for all provided endpoints")
 
 
