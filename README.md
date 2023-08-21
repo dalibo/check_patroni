@@ -166,7 +166,7 @@ Usage: check_patroni cluster_has_replica [OPTIONS]
 
   A healthy replica:
   * is in running or streaming state (V3.0.4)
-  * has a replica role
+  * has a replica or sync_standby role
   * has a lag lower or equal to max_lag
 
   Check:
