@@ -91,7 +91,7 @@ class ClusterHasReplica(PatroniResource):
         unhealthy_replica = 0
         for member in item_dict["members"]:
             # FIXME are there other acceptable states
-            if member["role"] == "replica":
+            if member["role"] in ["replica", "sync_standby"]:
                 # patroni 3.0.4 changed the standby state from running to streaming
                 if (
                     member["state"] in ["running", "streaming"]
