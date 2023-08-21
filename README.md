@@ -230,19 +230,22 @@ Usage: check_patroni cluster_node_count [OPTIONS]
   * uninitialized
 
   Check:
-  * Compares the number of nodes against the normal and running node warning and critical thresholds.
+  * Compares the number of nodes against the normal and healthy (running + streaming) nodes warning and critical thresholds.
   * `OK`:  If they are not provided.
 
   Perfdata:
   * `members`: the member count.
-  * all the roles of the nodes in the cluster with their number (start with "role_").
-  * all the statuses of the nodes in the cluster with their number (start with "state_").
+  * `healthy_members`: the running and streaming member count.
+  * all the roles of the nodes in the cluster with their count (start with "role_").
+  * all the statuses of the nodes in the cluster with their count (start with "state_").
 
 Options:
   -w, --warning TEXT       Warning threshold for the number of nodes.
   -c, --critical TEXT      Critical threshold for the number of nodes.
-  --running-warning TEXT   Warning threshold for the number of running nodes.
-  --running-critical TEXT  Critical threshold for the number of running nodes.
+  --healthy-warning TEXT   Warning threshold for the number of healthy nodes
+                           (running + streaming).
+  --healthy-critical TEXT  Critical threshold for the number of healthy nodes
+                           (running + streaming).
   --help                   Show this message and exit.
 ```
 
