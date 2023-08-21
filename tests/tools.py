@@ -22,7 +22,7 @@ def my_mock(mocker: MockerFixture, json_file: str, status: int) -> None:
     def mock_rest_api(self: PatroniResource, service: str) -> Any:
         if status != 200:
             raise APIError("Test en erreur pour status code 200")
-        return getjson(json_file)
+        return getjson(json_file) if json_file else None
 
     mocker.resetall()
     mocker.patch("check_patroni.types.PatroniResource.rest_api", mock_rest_api)

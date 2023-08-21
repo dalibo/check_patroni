@@ -60,14 +60,16 @@ class PatroniResource(nagiosplugin.Resource):
                 _log.debug(e)
                 continue
             # The status code is already displayed by urllib3
-            _log.debug("api call data: %(data)s", {"data": r.text})
+            _log.debug(
+                "api call data: %(data)s", {"data": r.text if r.text else "<Empty>"}
+            )
 
             if r.status_code != 200:
                 raise APIError(
                     f"Failed to connect to {endpoint}/{service} status code {r.status_code}"
                 )
 
-            return r.json()
+            return r.json() if r.text else None
         raise nagiosplugin.CheckError("Connection failed for all provided endpoints")
 
 
