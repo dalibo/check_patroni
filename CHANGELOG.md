@@ -16,6 +16,7 @@
 
 * Move packaging metadata into pyproject.toml 
 * Create CHANGELOG.md
+* Add tests for the output of the scripts in addition to the return code
 
 ## check_patroni 0.2.0 - 2023-03-20
 
