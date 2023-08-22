@@ -12,6 +12,7 @@ check_patroni -e "$1" cluster_config_has_changed --state-file cluster.sate_file
 check_patroni -e "$1" cluster_has_leader
 check_patroni -e "$1" cluster_has_replica
 check_patroni -e "$1" cluster_is_in_maintenance
+check_patroni -e "$1" cluster_has_scheduled_action
 check_patroni -e "$1" cluster_node_count
 echo "-- Node checks"
 check_patroni -e "$1" node_is_alive

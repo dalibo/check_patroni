@@ -13,6 +13,7 @@ from .cluster import (
     ClusterHasLeader,
     ClusterHasLeaderSummary,
     ClusterHasReplica,
+    ClusterHasScheduledAction,
     ClusterIsInMaintenance,
     ClusterNodeCount,
 )
@@ -432,6 +433,33 @@ def cluster_is_in_maintenance(ctx: click.Context) -> None:
     check.add(
         ClusterIsInMaintenance(ctx.obj.connection_info),
         nagiosplugin.ScalarContext("is_in_maintenance", None, "0:0"),
+    )
+    check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
+
+
+@main.command(name="cluster_has_scheduled_action")
+@click.pass_context
+@nagiosplugin.guarded
+def cluster_has_scheduled_action(ctx: click.Context) -> None:
+    """Check if the cluster has a scheduled action (switchover or restart)
+
+    \b
+    Check:
+    * `OK`: If the cluster has no scheduled action
+    * `CRITICAL`: otherwise.
+
+    \b
+    Perfdata:
+    * `scheduled_actions` is 1 if the cluster has scheduled actions.
+    * `scheduled_switchover` is 1 if the cluster has a scheduled switchover.
+    * `scheduled_restart` counts the number of scheduled restart in the cluster.
+    """
+    check = nagiosplugin.Check()
+    check.add(
+        ClusterHasScheduledAction(ctx.obj.connection_info),
+        nagiosplugin.ScalarContext("has_scheduled_actions", None, "0:0"),
+        nagiosplugin.ScalarContext("scheduled_switchover"),
+        nagiosplugin.ScalarContext("scheduled_restart"),
     )
     check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
