@@ -101,6 +101,7 @@ For example, the following command will raise:
 ```
 check_patroni -e https://10.20.199.3:8008 cluster_has_replica --warning 2: --critical 1:
 ```
+
 ## SSL
 
 Several options are available:
@@ -110,6 +111,43 @@ Several options are available:
 * you have a client certificate for authenticating with Patroni's REST API:
   * `--cert_file`: your certificate or the concatenation of your certificate and private key
   * `--key_file`: your private key (optional)
+
+## Tests
+
+The tests are located in `./tests`. For ease of coding, they are mocked. The
+json files are in `./tests/json`. There is an evident drawback, if the json is
+wrong or modifications have been made in patroni but not reported here: the
+tests still work fine.
+
+To run the tests:
+
+1) download check_patroni, create a virtual env and install the script:
+```bash
+git clone https://github.com/dalibo/check_patroni.git
+cd check_patroni
+python -m venv .venv
+. .venv/bin/activate
+pip install -e check_patroni[test]
+```
+
+2) run the tests
+```bash
+pytest ./tests                          # nominal replica state is streaming (since v3.0.4)
+pytest --use-old-replica-state ./tests  # nominal replica state is running
+```
+
+Note: for any service that checks the state of a node in the `cluster` endpoint,
+the json test file must be added in `./test/tools.py`.
+
+A bash script is provided to perform all tests on a patroni endpoint 
+(`./vagrant/check_patroni.sh`), it takes one parameter: the endpoint
+we give to the `-e/--endpoints` of check_patroni. Nothing fancy, it's
+just a list of all service calls in a bash script.
+
+```bash
+./vagrant/check_patroni.sh http://10.20.30.51:8008
+```
+
 
 ## Cluster services
 
