@@ -191,3 +191,27 @@ class ClusterIsInMaintenance(PatroniResource):
                 1 if "pause" in item_dict and item_dict["pause"] else 0,
             )
         ]
+
+
+class ClusterHasScheduledAction(PatroniResource):
+    def probe(self: "ClusterIsInMaintenance") -> Iterable[nagiosplugin.Metric]:
+        item_dict = self.rest_api("cluster")
+
+        scheduled_switchover = 0
+        scheduled_restart = 0
+        if "scheduled_switchover" in item_dict:
+            scheduled_switchover = 1
+
+        for member in item_dict["members"]:
+            if "scheduled_restart" in member:
+                scheduled_restart += 1
+
+        # The actual check
+        yield nagiosplugin.Metric(
+            "has_scheduled_actions",
+            1 if (scheduled_switchover + scheduled_restart) > 0 else 0,
+        )
+
+        # The performance data : scheduled_switchover, scheduled action count
+        yield nagiosplugin.Metric("scheduled_switchover", scheduled_switchover)
+        yield nagiosplugin.Metric("scheduled_restart", scheduled_restart)

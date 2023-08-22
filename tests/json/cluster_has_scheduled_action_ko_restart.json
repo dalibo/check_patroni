@@ -1,0 +1,27 @@
+{
+  "members": [
+    {
+      "name": "p1",
+      "role": "sync_standby",
+      "state": "streaming",
+      "api_url": "http://10.20.30.51:8008/patroni",
+      "host": "10.20.30.51",
+      "port": 5432,
+      "timeline": 3,
+      "scheduled_restart": {
+        "schedule": "2023-10-08T11:30:00+00:00",
+        "postmaster_start_time": "2023-08-21 08:08:33.415237+00:00"
+      },
+      "lag": 0
+    },
+    {
+      "name": "p2",
+      "role": "leader",
+      "state": "running",
+      "api_url": "http://10.20.30.52:8008/patroni",
+      "host": "10.20.30.52",
+      "port": 5432,
+      "timeline": 3
+    }
+  ]
+}

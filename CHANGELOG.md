@@ -5,6 +5,7 @@
 ### Added
 
 * Add `sync_standby` as a valid replica type for `cluster_has_replica`. (contributed by @mattpoel)
+* Add a new service `cluster_has_scheduled_action` to warn of any scheduled switchover or restart.
 
 ### Fixed
 
