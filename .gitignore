@@ -3,6 +3,7 @@ check_patroni.egg-info
 tests/*.state_file
 tests/config.ini
 vagrant/.vagrant
+vagrant/*.state_file
 .*.swp
 .venv/
 .tox/

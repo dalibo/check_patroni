@@ -22,7 +22,7 @@
     {
       "name": "srv3",
       "role": "replica",
-      "state": "running",
+      "state": "streaming",
       "api_url": "https://10.20.199.5:8008/patroni",
       "host": "10.20.199.5",
       "port": 5432,

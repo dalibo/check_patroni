@@ -6,7 +6,9 @@ from check_patroni.cli import main
 from .tools import my_mock
 
 
-def test_api_status_code_200(mocker: MockerFixture) -> None:
+def test_api_status_code_200(
+    mocker: MockerFixture, use_old_replica_state: bool
+) -> None:
     runner = CliRunner()
 
     my_mock(mocker, "node_is_pending_restart_ok", 200)
@@ -16,7 +18,9 @@ def test_api_status_code_200(mocker: MockerFixture) -> None:
     assert result.exit_code == 0
 
 
-def test_api_status_code_404(mocker: MockerFixture) -> None:
+def test_api_status_code_404(
+    mocker: MockerFixture, use_old_replica_state: bool
+) -> None:
     runner = CliRunner()
 
     my_mock(mocker, "Fake test", 404)

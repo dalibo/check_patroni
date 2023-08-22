@@ -95,7 +95,7 @@ class ClusterHasReplica(PatroniResource):
                 # patroni 3.0.4 changed the standby state from running to streaming
                 if (
                     member["state"] in ["running", "streaming"]
-                    and member["lag"] != "unknown"  # noqa: W503
+                    and member["lag"] != "unknown"
                 ):
                     replicas.append({"name": member["name"], "lag": member["lag"]})
                     if self.max_lag is None or self.max_lag >= int(member["lag"]):

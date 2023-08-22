@@ -12,7 +12,7 @@
     {
       "name": "srv2",
       "role": "replica",
-      "state": "running",
+      "state": "streaming",
       "api_url": "https://10.20.199.4:8008/patroni",
       "host": "10.20.199.4",
       "port": 5432,
@@ -22,7 +22,7 @@
     {
       "name": "srv3",
       "role": "sync_standby",
-      "state": "running",
+      "state": "streaming",
       "api_url": "https://10.20.199.5:8008/patroni",
       "host": "10.20.199.5",
       "port": 5432,

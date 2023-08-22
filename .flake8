@@ -3,6 +3,8 @@ doctests = True
 ignore =
   # line too long
   E501, 
+  # line break before binary operator (added by black)
+  W503,
 exclude =
   .git,
   .mypy_cache,
