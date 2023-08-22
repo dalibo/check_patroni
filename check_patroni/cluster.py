@@ -138,7 +138,7 @@ class ClusterConfigHasChanged(PatroniResource):
 
         new_hash = hashlib.md5(json.dumps(item_dict).encode()).hexdigest()
 
-        _log.debug("save result: %(save)s", {"issave": self.save})
+        _log.debug("save result: %(issave)s", {"issave": self.save})
         old_hash = self.config_hash
         if self.state_file is not None and self.save:
             _log.debug(
