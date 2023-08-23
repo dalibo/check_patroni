@@ -21,6 +21,8 @@ from .convert import size_to_byte
 from .node import (
     NodeIsAlive,
     NodeIsAliveSummary,
+    NodeIsLeader,
+    NodeIsLeaderSummary,
     NodeIsPendingRestart,
     NodeIsPendingRestartSummary,
     NodeIsPrimary,
@@ -470,6 +472,8 @@ def cluster_has_scheduled_action(ctx: click.Context) -> None:
 def node_is_primary(ctx: click.Context) -> None:
     """Check if the node is the primary with the leader lock.
 
+    This service is not valid for a standby leader, because this kind of node is not a primary.
+
     \b
     Check:
     * `OK`: if the node is a primary with the leader lock.
@@ -482,6 +486,38 @@ def node_is_primary(ctx: click.Context) -> None:
         NodeIsPrimary(ctx.obj.connection_info),
         nagiosplugin.ScalarContext("is_primary", None, "@0:0"),
         NodeIsPrimarySummary(),
+    )
+    check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
+
+
+@main.command(name="node_is_leader")
+@click.option(
+    "--is-standby-leader",
+    "check_standby_leader",
+    is_flag=True,
+    default=False,
+    help="Check for a standby leader",
+)
+@click.pass_context
+@nagiosplugin.guarded
+def node_is_leader(ctx: click.Context, check_standby_leader: bool) -> None:
+    """Check if the node is a leader node.
+
+    This check applies to any kind of leaders including standby leaders.
+    To check explicitly for a standby leader use the `--is-standby-leader` option.
+
+    \b
+    Check:
+    * `OK`: if the node is a leader.
+    * `CRITICAL:` otherwise
+
+    Perfdata: `is_leader` is 1 if the node is a leader node, 0 otherwise.
+    """
+    check = nagiosplugin.Check()
+    check.add(
+        NodeIsLeader(ctx.obj.connection_info, check_standby_leader),
+        nagiosplugin.ScalarContext("is_leader", None, "@0:0"),
+        NodeIsLeaderSummary(check_standby_leader),
     )
     check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 

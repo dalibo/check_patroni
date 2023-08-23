@@ -8,6 +8,7 @@
 * Add a new service `cluster_has_scheduled_action` to warn of any scheduled switchover or restart.
 * Add options to `node_is_replica` to check specifically for a synchronous (`--is-sync`) or asynchronous node (`--is-async`).
 * Add `standby-leader` as a valid leader type for `cluster_has_leader`.
+* Add a new service `node_is_leader` to check if a node is a leader (which includes standby leader nodes)
 
 ### Fixed
 

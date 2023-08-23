@@ -172,6 +172,8 @@ readme "### node_is_alive"
 helpme node_is_alive
 readme "### node_is_pending_restart"
 helpme node_is_pending_restart
+readme "### node_is_leader"
+helpme node_is_leader
 readme "### node_is_primary"
 helpme node_is_primary
 readme "### node_is_replica"

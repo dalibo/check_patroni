@@ -42,6 +42,7 @@ Commands:
   cluster_is_in_maintenance     Check if the cluster is in maintenance...
   cluster_node_count            Count the number of nodes in the cluster.
   node_is_alive                 Check if the node is alive ie patroni is...
+  node_is_leader                Check if the node is a leader node.
   node_is_pending_restart       Check if the node is in pending restart...
   node_is_primary               Check if the node is the primary with the...
   node_is_replica               Check if the node is a running replica...
@@ -350,12 +351,36 @@ Options:
   --help  Show this message and exit.
 ```
 
+### node_is_leader
+
+```
+Usage: check_patroni node_is_leader [OPTIONS]
+
+  Check if the node is a leader node.
+
+  This check applies to any kind of leaders including standby leaders. To
+  check explicitly for a standby leader use the `--is-standby-leader` option.
+
+  Check:
+  * `OK`: if the node is a leader.
+  * `CRITICAL:` otherwise
+
+  Perfdata: `is_leader` is 1 if the node is a leader node, 0 otherwise.
+
+Options:
+  --is-standby-leader  Check for a standby leader
+  --help               Show this message and exit.
+```
+
 ### node_is_primary
 
 ```
 Usage: check_patroni node_is_primary [OPTIONS]
 
   Check if the node is the primary with the leader lock.
+
+  This service is not valid for a standby leader, because this kind of node is
+  not a primary.
 
   Check:
   * `OK`: if the node is a primary with the leader lock.
