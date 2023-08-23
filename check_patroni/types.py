@@ -73,7 +73,7 @@ class PatroniResource(nagiosplugin.Resource):
                 return r.json()
             except requests.exceptions.JSONDecodeError:
                 return None
-        raise APIError("Connection failed for all provided endpoints")
+        raise nagiosplugin.CheckError("Connection failed for all provided endpoints")
 
 
 HandleUnknown = Callable[[nagiosplugin.Summary, nagiosplugin.Results], Any]
