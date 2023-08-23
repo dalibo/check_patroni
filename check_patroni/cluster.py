@@ -53,7 +53,10 @@ class ClusterHasLeader(PatroniResource):
 
         is_leader_found = False
         for member in item_dict["members"]:
-            if member["role"] == "leader" and member["state"] == "running":
+            if (
+                member["role"] in ("leader", "standby_leader")
+                and member["state"] == "running"
+            ):
                 is_leader_found = True
                 break
 
