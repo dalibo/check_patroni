@@ -26,36 +26,62 @@ class NodeIsPrimarySummary(nagiosplugin.Summary):
 
 class NodeIsReplica(PatroniResource):
     def __init__(
-        self: "NodeIsReplica", connection_info: ConnectionInfo, max_lag: str
+        self: "NodeIsReplica",
+        connection_info: ConnectionInfo,
+        max_lag: str,
+        check_is_sync: bool,
+        check_is_async: bool,
     ) -> None:
         super().__init__(connection_info)
         self.max_lag = max_lag
+        self.check_is_sync = check_is_sync
+        self.check_is_async = check_is_async
 
     def probe(self: "NodeIsReplica") -> Iterable[nagiosplugin.Metric]:
         try:
-            if self.max_lag is None:
-                self.rest_api("replica")
+            if self.check_is_sync:
+                api_name = "synchronous"
+            elif self.check_is_async:
+                api_name = "asynchronous"
             else:
-                self.rest_api(f"replica?lag={self.max_lag}")
+                api_name = "replica"
+
+            if self.max_lag is None:
+                self.rest_api(api_name)
+            else:
+                self.rest_api(f"{api_name}?lag={self.max_lag}")
         except APIError:
             return [nagiosplugin.Metric("is_replica", 0)]
         return [nagiosplugin.Metric("is_replica", 1)]
 
 
 class NodeIsReplicaSummary(nagiosplugin.Summary):
-    def __init__(self: "NodeIsReplicaSummary", lag: str) -> None:
+    def __init__(
+        self: "NodeIsReplicaSummary",
+        lag: str,
+        check_is_sync: bool,
+        check_is_async: bool,
+    ) -> None:
         self.lag = lag
+        if check_is_sync:
+            self.replica_kind = "synchronous replica"
+        elif check_is_async:
+            self.replica_kind = "asynchronous replica"
+        else:
+            self.replica_kind = "replica"
 
     def ok(self: "NodeIsReplicaSummary", results: nagiosplugin.Result) -> str:
         if self.lag is None:
-            return "This node is a running replica with no noloadbalance tag."
-        return f"This node is a running replica with no noloadbalance tag and the lag is under {self.lag}."
+            return (
+                f"This node is a running {self.replica_kind} with no noloadbalance tag."
+            )
+        return f"This node is a running {self.replica_kind} with no noloadbalance tag and the lag is under {self.lag}."
 
     @handle_unknown
     def problem(self: "NodeIsReplicaSummary", results: nagiosplugin.Result) -> str:
         if self.lag is None:
-            return "This node is not a running replica with no noloadbalance tag."
-        return f"This node is not a running replica with no noloadbalance tag and a lag under {self.lag}."
+            return f"This node is not a running {self.replica_kind} with no noloadbalance tag."
+        return f"This node is not a running {self.replica_kind} with no noloadbalance tag and a lag under {self.lag}."
 
 
 class NodeIsPendingRestart(PatroniResource):

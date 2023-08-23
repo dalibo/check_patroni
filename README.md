@@ -35,17 +35,18 @@ Options:
   --help                Show this message and exit.
 
 Commands:
-  cluster_config_has_changed  Check if the hash of the configuration has...
-  cluster_has_leader          Check if the cluster has a leader.
-  cluster_has_replica         Check if the cluster has healthy replicas.
-  cluster_is_in_maintenance   Check if the cluster is in maintenance mode...
-  cluster_node_count          Count the number of nodes in the cluster.
-  node_is_alive               Check if the node is alive ie patroni is...
-  node_is_pending_restart     Check if the node is in pending restart state.
-  node_is_primary             Check if the node is the primary with the...
-  node_is_replica             Check if the node is a running replica with...
-  node_patroni_version        Check if the version is equal to the input
-  node_tl_has_changed         Check if the timeline has changed.
+  cluster_config_has_changed    Check if the hash of the configuration...
+  cluster_has_leader            Check if the cluster has a leader.
+  cluster_has_replica           Check if the cluster has healthy replicas.
+  cluster_has_scheduled_action  Check if the cluster has a scheduled...
+  cluster_is_in_maintenance     Check if the cluster is in maintenance...
+  cluster_node_count            Count the number of nodes in the cluster.
+  node_is_alive                 Check if the node is alive ie patroni is...
+  node_is_pending_restart       Check if the node is in pending restart...
+  node_is_primary               Check if the node is the primary with the...
+  node_is_replica               Check if the node is a running replica...
+  node_patroni_version          Check if the version is equal to the input
+  node_tl_has_changed           Check if the timeline has changed.
 ```
 
 ## Install
@@ -374,6 +375,10 @@ Usage: check_patroni node_is_replica [OPTIONS]
 
   Check if the node is a running replica with no noloadbalance tag.
 
+  It is possible to check if the node is synchronous or asynchronous. If
+  nothing is specified any kind of replica is accepted. When checking for a
+  synchronous replica, it's not possible to specify a lag.
+
   Check:
   * `OK`: if the node is a running replica with noloadbalance tag and the lag is under the maximum threshold.
   * `CRITICAL`:  otherwise
@@ -383,6 +388,8 @@ Usage: check_patroni node_is_replica [OPTIONS]
 
 Options:
   --max-lag TEXT  maximum allowed lag
+  --is-sync       check if the replica is synchronous
+  --is-async      check if the replica is asynchronous
   --help          Show this message and exit.
 ```
 
