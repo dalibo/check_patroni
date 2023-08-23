@@ -19,6 +19,7 @@ check_patroni -e "$1" node_is_alive
 check_patroni -e "$1" node_is_pending_restart
 check_patroni -e "$1" node_is_primary
 check_patroni -e "$1" node_is_replica
+check_patroni -e "$1" node_is_replica --is-sync
 check_patroni -e "$1" node_patroni_version --patroni-version 3.1.0
 check_patroni -e "$1" node_tl_has_changed --state-file cluster.sate_file --save &>/dev/null
 check_patroni -e "$1" node_tl_has_changed --state-file cluster.sate_file

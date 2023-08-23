@@ -488,10 +488,29 @@ def node_is_primary(ctx: click.Context) -> None:
 
 @main.command(name="node_is_replica")
 @click.option("--max-lag", "max_lag", type=str, help="maximum allowed lag")
+@click.option(
+    "--is-sync",
+    "check_is_sync",
+    is_flag=True,
+    default=False,
+    help="check if the replica is synchronous",
+)
+@click.option(
+    "--is-async",
+    "check_is_async",
+    is_flag=True,
+    default=False,
+    help="check if the replica is asynchronous",
+)
 @click.pass_context
 @nagiosplugin.guarded
-def node_is_replica(ctx: click.Context, max_lag: str) -> None:
+def node_is_replica(
+    ctx: click.Context, max_lag: str, check_is_sync: bool, check_is_async: bool
+) -> None:
     """Check if the node is a running replica with no noloadbalance tag.
+
+    It is possible to check if the node is synchronous or asynchronous. If nothing is specified any kind of replica is accepted.
+    When checking for a synchronous replica, it's not possible to specify a lag.
 
     \b
     Check:
@@ -500,12 +519,24 @@ def node_is_replica(ctx: click.Context, max_lag: str) -> None:
 
     Perfdata: `is_replica` is 1 if the node is a running replica with noloadbalance tag and the lag is under the maximum threshold, 0 otherwise.
     """
-    # FIXME add a lag check ??
+
+    if check_is_sync and max_lag is not None:
+        raise click.UsageError(
+            "--is-sync and --max-lag cannot be provided at the same time for this service",
+            ctx,
+        )
+
+    if check_is_sync and check_is_async:
+        raise click.UsageError(
+            "--is-sync and --is-async cannot be provided at the same time for this service",
+            ctx,
+        )
+
     check = nagiosplugin.Check()
     check.add(
-        NodeIsReplica(ctx.obj.connection_info, max_lag),
+        NodeIsReplica(ctx.obj.connection_info, max_lag, check_is_sync, check_is_async),
         nagiosplugin.ScalarContext("is_replica", None, "@0:0"),
-        NodeIsReplicaSummary(max_lag),
+        NodeIsReplicaSummary(max_lag, check_is_sync, check_is_async),
     )
     check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
