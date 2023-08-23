@@ -98,35 +98,55 @@ Several options are available:
 
 ## Tests
 
-The tests are located in `./tests`. For ease of coding, they are mocked. The
-json files are in `./tests/json`. There is an evident drawback, if the json is
-wrong or modifications have been made in patroni but not reported here: the
-tests still work fine.
+Crafting repeatable tests using a live Patroni cluster can be intricate. To
+simplify the development process, interactions with Patroni's API are
+substituted with a mock function that yields an HTTP return code and a JSON
+object outlining the cluster's status. The JSON files containing this
+information are housed in the ./tests/json directory.
+
+An important consideration is that there is a potential drawback: if the JSON
+data is incorrect or if modifications have been made to Patroni without
+corresponding updates to the tests documented here, the tests might still pass
+erroneously.
 
 To run the tests:
 
-1) download check_patroni, create a virtual env and install the script:
-```bash
-git clone https://github.com/dalibo/check_patroni.git
-cd check_patroni
-python -m venv .venv
-. .venv/bin/activate
-pip install -e check_patroni[test]
-```
+1. Clone the `check_patroni` repository, create a virtual environment, and
+   install the script:
 
-2) run the tests
-```bash
-pytest ./tests                          # nominal replica state is streaming (since v3.0.4)
-pytest --use-old-replica-state ./tests  # nominal replica state is running
-```
+   ```bash
+   git clone https://github.com/dalibo/check_patroni.git
+   cd check_patroni
+   python -m venv .venv
+   . .venv/bin/activate
+   pip install -e check_patroni[test]
+   	```
 
-Note: for any service that checks the state of a node in the `cluster` endpoint,
-the json test file must be added in `./test/tools.py`.
+2) Run the tests
 
-A bash script is provided to perform all tests on a patroni endpoint 
-(`./vagrant/check_patroni.sh`), it takes one parameter: the endpoint
-we give to the `-e/--endpoints` of check_patroni. Nothing fancy, it's
-just a list of all service calls in a bash script.
+   - Using patroni's nominal replica state of `streaming` (since v3.0.4):
+
+   ```bash
+   pytest ./tests
+   ```
+
+   - Using patroni's nominal replica state of `running` (before v3.0.4):
+
+   ```bash
+   pytest --use-old-replica-state ./tests
+   ```
+
+Please note that when dealing with any service that checks the state of a node
+in patroni's `cluster` endpoint, the corresponding JSON test file must be added
+in `./test/tools.py`.
+
+A bash script, `check_patroni.sh`, is provided to facilitate testing all
+services on a Patroni endpoint (`./vagrant/check_patroni.sh`). It requires one
+parameter: the endpoint URL that will be used as the argument for the
+`-e/--endpoints` option of `check_patroni`. This script essentially compiles a
+list of service calls and executes them sequentially in a bash script.
+
+Here's an example usage:
 
 ```bash
 ./vagrant/check_patroni.sh http://10.20.30.51:8008
