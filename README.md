@@ -246,6 +246,26 @@ Options:
   --help               Show this message and exit.
 ```
 
+### cluster_has_scheduled_action
+
+```
+Usage: check_patroni cluster_has_scheduled_action [OPTIONS]
+
+  Check if the cluster has a scheduled action (switchover or restart)
+
+  Check:
+  * `OK`: If the cluster has no scheduled action
+  * `CRITICAL`: otherwise.
+
+  Perfdata:
+  * `scheduled_actions` is 1 if the cluster has scheduled actions.
+  * `scheduled_switchover` is 1 if the cluster has a scheduled switchover.
+  * `scheduled_restart` counts the number of scheduled restart in the cluster.
+
+Options:
+  --help  Show this message and exit.
+```
+
 ### cluster_is_in_maintenance
 
 ```
