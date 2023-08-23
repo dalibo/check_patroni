@@ -1,0 +1,19 @@
+{
+  "state": "running",
+  "postmaster_start_time": "2023-08-23 14:30:50.201691+00:00",
+  "role": "standby_leader",
+  "server_version": 140009,
+  "xlog": {
+    "received_location": 889192448,
+    "replayed_location": 889192448,
+    "replayed_timestamp": null,
+    "paused": false
+  },
+  "timeline": 1,
+  "dcs_last_seen": 1692805971,
+  "database_system_identifier": "7270495803765492571",
+  "patroni": {
+    "version": "3.1.0",
+    "scope": "patroni-demo-sb"
+  }
+}

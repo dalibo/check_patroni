@@ -24,6 +24,45 @@ class NodeIsPrimarySummary(nagiosplugin.Summary):
         return "This node is not the primary with the leader lock."
 
 
+class NodeIsLeader(PatroniResource):
+    def __init__(
+        self: "NodeIsLeader",
+        connection_info: ConnectionInfo,
+        check_is_standby_leader: bool,
+    ) -> None:
+        super().__init__(connection_info)
+        self.check_is_standby_leader = check_is_standby_leader
+
+    def probe(self: "NodeIsLeader") -> Iterable[nagiosplugin.Metric]:
+        apiname = "leader"
+        if self.check_is_standby_leader:
+            apiname = "standby-leader"
+
+        try:
+            self.rest_api(apiname)
+        except APIError:
+            return [nagiosplugin.Metric("is_leader", 0)]
+        return [nagiosplugin.Metric("is_leader", 1)]
+
+
+class NodeIsLeaderSummary(nagiosplugin.Summary):
+    def __init__(
+        self: "NodeIsLeaderSummary",
+        check_is_standby_leader: bool,
+    ) -> None:
+        if check_is_standby_leader:
+            self.leader_kind = "standby leader"
+        else:
+            self.leader_kind = "leader"
+
+    def ok(self: "NodeIsLeaderSummary", results: nagiosplugin.Result) -> str:
+        return f"This node is a {self.leader_kind} node."
+
+    @handle_unknown
+    def problem(self: "NodeIsLeaderSummary", results: nagiosplugin.Result) -> str:
+        return f"This node is not a {self.leader_kind} node."
+
+
 class NodeIsReplica(PatroniResource):
     def __init__(
         self: "NodeIsReplica",

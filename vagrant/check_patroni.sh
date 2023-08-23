@@ -18,6 +18,7 @@ echo "-- Node checks"
 check_patroni -e "$1" node_is_alive
 check_patroni -e "$1" node_is_pending_restart
 check_patroni -e "$1" node_is_primary
+check_patroni -e "$1" node_is_leader --is-standby-leader
 check_patroni -e "$1" node_is_replica
 check_patroni -e "$1" node_is_replica --is-sync
 check_patroni -e "$1" node_patroni_version --patroni-version 3.1.0
