@@ -204,7 +204,7 @@ Usage: check_patroni cluster_has_leader [OPTIONS]
 
   Check if the cluster has a leader.
 
-  Note: there is no difference between a normal and standby leader.
+  This check applies to any kind of leaders including standby leaders.
 
   Check:
   * `OK`: if there is a leader node.

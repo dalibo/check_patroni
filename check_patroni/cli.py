@@ -281,7 +281,7 @@ def cluster_node_count(
 def cluster_has_leader(ctx: click.Context) -> None:
     """Check if the cluster has a leader.
 
-    Note: there is no difference between a normal and standby leader.
+    This check applies to any kind of leaders including standby leaders.
 
     \b
     Check:
