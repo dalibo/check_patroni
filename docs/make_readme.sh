@@ -162,6 +162,8 @@ readme "### cluster_has_leader"
 helpme cluster_has_leader
 readme "### cluster_has_replica"
 helpme cluster_has_replica
+readme "### cluster_has_scheduled_action"
+helpme cluster_has_scheduled_action
 readme "### cluster_is_in_maintenance"
 helpme  cluster_is_in_maintenance
 readme "### cluster_node_count"
