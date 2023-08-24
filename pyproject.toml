@@ -1,62 +1,6 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
-
-[project]
-name = "check_patroni"
-dynamic = ["version"]
-description = "Nagios plugin to check on patroni"
-readme = "README.md"
-license = { text = "PostgreSQL" }
-requires-python = ">=3.6"
-authors = [
-    { name = "Benoit Lobréau", email = "benoit.lobreau@dalibo.com" },
-    { name = "Dalibo", email = "contact@dalibo.com" },
-]
-maintainers = [
-    { name = "Benoit Lobréau", email = "benoit.lobreau@dalibo.com" },
-]
-keywords = [
-    "cli",
-    "monitoring",
-    "patroni",
-    "nagios",
-    "check",
-]
-classifiers = [
-    "Development Status :: 4 - Beta",   # "Development Status :: 5 - Production/Stable",
-    "Environment :: Console",
-    "License :: OSI Approved :: PostgreSQL License",
-    "Programming Language :: Python :: 3",
-    "Topic :: System :: Monitoring",
-]
-dependencies = [
-    "attrs >= 17, !=21.1",
-    "requests",
-    "nagiosplugin >= 1.3.2",
-    "click >= 8.0.1",
-]
-
-[project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-mock",
-]
-
-[project.scripts]
-check_patroni = "check_patroni.cli:main"
-
-[project.urls]
-"Bug Tracker" = "https://github.com/dalibo/check_patroni/issues"
-Changelog = "https://github.com/dalibo/check_patroni/blob/master/CHANGELOG.md"
-Homepage = "https://github.com/dalibo/check_patroni"
-"Source code" = "https://github.com/dalibo/check_patroni"
-
-[tool.setuptools.dynamic]
-version = { attr = "check_patroni.__version__" }
-
-[tool.setuptools.packages.find]
-where = ["."]
 
 [tool.isort]
 profile = "black"

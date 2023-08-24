@@ -58,9 +58,10 @@ check_patroni is licensed under PostgreSQL license.
 $ pip install git+https://github.com/dalibo/check_patroni.git
 ```
 
-Links:
-* [pip & centos 7](https://linuxize.com/post/how-to-install-pip-on-centos-7/)
-* [pip & debian10](https://linuxize.com/post/how-to-install-pip-on-debian-10/)
+check_patroni works on python 3.6, we keep it that way because patroni also
+supports it and there are still lots of RH 7 variants around. That being said
+python 3.6 has been EOL for age and there is no support for it in the github
+CI.
 
 ## Support
 
