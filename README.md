@@ -37,7 +37,7 @@ Options:
 Commands:
   cluster_config_has_changed    Check if the hash of the configuration...
   cluster_has_leader            Check if the cluster has a leader.
-  cluster_has_replica           Check if the cluster has healthy replicas.
+  cluster_has_replica           Check if the cluster has healthy replicas...
   cluster_has_scheduled_action  Check if the cluster has a scheduled...
   cluster_is_in_maintenance     Check if the cluster is in maintenance...
   cluster_node_count            Count the number of nodes in the cluster.
@@ -223,7 +223,7 @@ Options:
 ```
 Usage: check_patroni cluster_has_replica [OPTIONS]
 
-  Check if the cluster has healthy replicas.
+  Check if the cluster has healthy replicas and/or if some are sync standbies
 
   A healthy replica:
   * is in running or streaming state (V3.0.4)
@@ -232,19 +232,24 @@ Usage: check_patroni cluster_has_replica [OPTIONS]
 
   Check:
   * `OK`: if the healthy_replica count and their lag are compatible with the replica count threshold.
+          and if the sync_replica count is compatible with the sync replica count threshold.
   * `WARNING` / `CRITICAL`: otherwise
 
   Perfdata:
   * healthy_replica & unhealthy_replica count
+  * the number of sync_replica, they are included in the previous count
   * the lag of each replica labelled with  "member name"_lag
+  * a boolean to tell if the node is a sync stanbdy labelled with  "member name"_sync
 
 Options:
-  -w, --warning TEXT   Warning threshold for the number of healthy replica
-                       nodes.
-  -c, --critical TEXT  Critical threshold for the number of healthy replica
-                       nodes.
-  --max-lag TEXT       maximum allowed lag
-  --help               Show this message and exit.
+  -w, --warning TEXT    Warning threshold for the number of healthy replica
+                        nodes.
+  -c, --critical TEXT   Critical threshold for the number of healthy replica
+                        nodes.
+  --sync-warning TEXT   Warning threshold for the number of sync replica.
+  --sync-critical TEXT  Critical threshold for the number of sync replica.
+  --max-lag TEXT        maximum allowed lag
+  --help                Show this message and exit.
 ```
 
 ### cluster_has_scheduled_action
