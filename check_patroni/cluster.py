@@ -92,6 +92,7 @@ class ClusterHasReplica(PatroniResource):
         replicas = []
         healthy_replica = 0
         unhealthy_replica = 0
+        sync_replica = 0
         for member in item_dict["members"]:
             # FIXME are there other acceptable states
             if member["role"] in ["replica", "sync_standby"]:
@@ -100,7 +101,17 @@ class ClusterHasReplica(PatroniResource):
                     member["state"] in ["running", "streaming"]
                     and member["lag"] != "unknown"
                 ):
-                    replicas.append({"name": member["name"], "lag": member["lag"]})
+                    replicas.append(
+                        {
+                            "name": member["name"],
+                            "lag": member["lag"],
+                            "sync": 1 if member["role"] == "sync_standby" else 0,
+                        }
+                    )
+
+                    if member["role"] == "sync_standby":
+                        sync_replica += 1
+
                     if self.max_lag is None or self.max_lag >= int(member["lag"]):
                         healthy_replica += 1
                         continue
@@ -108,12 +119,16 @@ class ClusterHasReplica(PatroniResource):
 
         # The actual check
         yield nagiosplugin.Metric("healthy_replica", healthy_replica)
+        yield nagiosplugin.Metric("sync_replica", sync_replica)
 
         # The performance data : unhealthy replica count, replicas lag
         yield nagiosplugin.Metric("unhealthy_replica", unhealthy_replica)
         for replica in replicas:
             yield nagiosplugin.Metric(
                 f"{replica['name']}_lag", replica["lag"], context="replica_lag"
+            )
+            yield nagiosplugin.Metric(
+                f"{replica['name']}_sync", replica["sync"], context="replica_sync"
             )
 
 

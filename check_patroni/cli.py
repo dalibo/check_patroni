@@ -316,13 +316,30 @@ def cluster_has_leader(ctx: click.Context) -> None:
     type=str,
     help="Critical threshold for the number of healthy replica nodes.",
 )
+@click.option(
+    "--sync-warning",
+    "sync_warning",
+    type=str,
+    help="Warning threshold for the number of sync replica.",
+)
+@click.option(
+    "--sync-critical",
+    "sync_critical",
+    type=str,
+    help="Critical threshold for the number of sync replica.",
+)
 @click.option("--max-lag", "max_lag", type=str, help="maximum allowed lag")
 @click.pass_context
 @nagiosplugin.guarded
 def cluster_has_replica(
-    ctx: click.Context, warning: str, critical: str, max_lag: str
+    ctx: click.Context,
+    warning: str,
+    critical: str,
+    sync_warning: str,
+    sync_critical: str,
+    max_lag: str,
 ) -> None:
-    """Check if the cluster has healthy replicas.
+    """Check if the cluster has healthy replicas and/or if some are sync standbies
 
     \b
     A healthy replica:
@@ -333,12 +350,15 @@ def cluster_has_replica(
     \b
     Check:
     * `OK`: if the healthy_replica count and their lag are compatible with the replica count threshold.
+            and if the sync_replica count is compatible with the sync replica count threshold.
     * `WARNING` / `CRITICAL`: otherwise
 
     \b
     Perfdata:
     * healthy_replica & unhealthy_replica count
+    * the number of sync_replica, they are included in the previous count
     * the lag of each replica labelled with  "member name"_lag
+    * a boolean to tell if the node is a sync stanbdy labelled with  "member name"_sync
     """
 
     tmax_lag = size_to_byte(max_lag) if max_lag is not None else None
@@ -350,8 +370,14 @@ def cluster_has_replica(
             warning,
             critical,
         ),
+        nagiosplugin.ScalarContext(
+            "sync_replica",
+            sync_warning,
+            sync_critical,
+        ),
         nagiosplugin.ScalarContext("unhealthy_replica"),
         nagiosplugin.ScalarContext("replica_lag"),
+        nagiosplugin.ScalarContext("replica_sync"),
     )
     check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
