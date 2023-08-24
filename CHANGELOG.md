@@ -18,7 +18,6 @@
 
 ### Misc
 
-* Move packaging metadata into pyproject.toml 
 * Create CHANGELOG.md
 * Add tests for the output of the scripts in addition to the return code
 
