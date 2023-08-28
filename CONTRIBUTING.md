@@ -40,28 +40,69 @@ install check_patroni. You can then add a server to the supervision and
 watch the graphs in grafana. It's in the `vagrant` directory.
 
 A vagrant file can be found in [this
-repository](https://github.com/ioguix/vagrant-patroni to generate a patroni/etcd
+repository](https://github.com/ioguix/vagrant-patroni) to generate a patroni/etcd
 setup.
 
 The `README.md` can be geneated with `./docs/make_readme.sh`.
 
-
 ## Executing Tests
 
-The pytests are in `./tests` and use a moker to provide a json response instead
-of having to call the patroni API. To manually run the tests use one of these
-commands :
+Crafting repeatable tests using a live Patroni cluster can be intricate. To
+simplify the development process, interactions with Patroni's API are
+substituted with a mock function that yields an HTTP return code and a JSON
+object outlining the cluster's status. The JSON files containing this
+information are housed in the `./tests/json` directory.
 
-```
-pytest ./tests  # just the tests
-tox             # pytests for all supported version of python + mypy + flake8
-tox -e py       # pytests + mypy + flake8 or the default version of python
-```
+An important consideration is that there is a potential drawback: if the JSON
+data is incorrect or if modifications have been made to Patroni without
+corresponding updates to the tests documented here, the tests might still pass
+erroneously.
 
 The tests are executed automatically for each PR using the ci (see
 `.github/workflow/lint.yml` and `.github/workflow/tests.yml`).
 
+Running the tests manually:
+
+* Using patroni's nominal replica state of `streaming` (since v3.0.4):
+
+  ```bash
+  pytest ./tests
+  ```
+
+* Using patroni's nominal replica state of `running` (before v3.0.4):
+
+  ```bash
+  pytest --use-old-replica-state ./tests
+  ```
+
+* Using tox:
+
+  ```bash
+  tox -e lint    # mypy + flake8 + black + isort ° codespell
+  tox            # pytests and "lint" tests for all supported version of python
+  tox -e py      # pytests and "lint" tests for the default version of python
+  ```
+
+Please note that when dealing with any service that checks the state of a node
+in patroni's `cluster` endpoint, the corresponding JSON test file must be added
+in `./tests/tools.py`.
+
+A bash script, `check_patroni.sh`, is provided to facilitate testing all
+services on a Patroni endpoint (`./vagrant/check_patroni.sh`). It requires one
+parameter: the endpoint URL that will be used as the argument for the
+`-e/--endpoints` option of `check_patroni`. This script essentially compiles a
+list of service calls and executes them sequentially in a bash script. It
+creates a state file in the directory from which you run the script.
+
+Here's an example usage:
+
+```bash
+./vagrant/check_patroni.sh http://10.20.30.51:8008
+```
+
 ## Release
+
+Update the Changelog.
 
 The package is generated and uploaded to pypi when a `v*` tag is created (see
 `.github/workflow/publish.yml`).
