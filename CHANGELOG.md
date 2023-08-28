@@ -4,6 +4,16 @@
 
 ### Added
 
+### Fixed
+
+### Misc
+
+## check_patroni 1.0.0 - 2023-08-28
+
+Check patroni is now tagged as Production/Stable.
+
+### Added
+
 * Add `sync_standby` as a valid replica type for `cluster_has_replica`. (contributed by @mattpoel)
 * Add info and options (`--sync-warning` and `--sync-critical`) about sync replica to `cluster_has_replica`.
 * Add a new service `cluster_has_scheduled_action` to warn of any scheduled switchover or restart.
@@ -21,6 +31,7 @@
 
 * Create CHANGELOG.md
 * Add tests for the output of the scripts in addition to the return code
+* Documentation in CONTRIBUTING.md
 
 ## check_patroni 0.2.0 - 2023-03-20
 
