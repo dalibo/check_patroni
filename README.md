@@ -60,7 +60,7 @@ $ pip install git+https://github.com/dalibo/check_patroni.git
 
 check_patroni works on python 3.6, we keep it that way because patroni also
 supports it and there are still lots of RH 7 variants around. That being said
-python 3.6 has been EOL for age and there is no support for it in the github
+python 3.6 has been EOL for ages and there is no support for it in the github
 CI.
 
 ## Support
@@ -98,8 +98,8 @@ A match is found when: `start <= VALUE <= end`.
 
 For example, the following command will raise:
 
-* a warning if there is less than 1 nodes, wich can be translated to outside of range [2;+INF[
-* a critical if there are no nodes, wich can be translated to outside of range [1;+INF[
+* a warning if there is less than 1 nodes, which can be translated to outside of range [2;+INF[
+* a critical if there are no nodes, which can be translated to outside of range [1;+INF[
 
 ```
 check_patroni -e https://10.20.199.3:8008 cluster_has_replica --warning 2: --critical 1:
@@ -115,6 +115,27 @@ Several options are available:
   * `--cert_file`: your certificate or the concatenation of your certificate and private key
   * `--key_file`: your private key (optional)
 
+## Shell completion
+
+We use the [click] library which supports shell completion natively.
+
+Shell completion can be added by typing the following command or adding it to
+a file spécific to your shell of choice.
+
+* for Bash (add to `~/.bashrc`):
+  ```
+  eval "$(_CHECK_PATRONI_COMPLETE=bash_source check_patroni)"
+  ```
+* for Zsh  (add to `~/.zshrc`):
+  ```
+  eval "$(_CHECK_PATRONI_COMPLETE=zsh_source check_patroni)"
+  ```
+* for Fish (add to `~/.config/fish/completions/check_patroni.fish`):
+  ```
+  eval "$(_CHECK_PATRONI_COMPLETE=fish_source check_patroni)"
+  ```
+
+[click]: https://click.palletsprojects.com/en/8.0.x/shell-completion/?highlight=completion
 
 ## Cluster services
 

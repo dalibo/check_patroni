@@ -43,7 +43,7 @@ A vagrant file can be found in [this
 repository](https://github.com/ioguix/vagrant-patroni) to generate a patroni/etcd
 setup.
 
-The `README.md` can be geneated with `./docs/make_readme.sh`.
+The `README.md` can be generated with `./docs/make_readme.sh`.
 
 ## Executing Tests
 
@@ -98,18 +98,4 @@ Here's an example usage:
 
 ```bash
 ./vagrant/check_patroni.sh http://10.20.30.51:8008
-```
-
-## Release
-
-Update the Changelog.
-
-The package is generated and uploaded to pypi when a `v*` tag is created (see
-`.github/workflow/publish.yml`).
-
-Alternatively, the release can be done manually with:
-
-```
-tox -e build
-tox -e upload
 ```
