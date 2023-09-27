@@ -190,10 +190,27 @@ Usage: check_patroni cluster_has_replica [OPTIONS]
 
   Check if the cluster has healthy replicas and/or if some are sync standbies
 
+  For patroni (and this check):
+  * a replica is `streaming` if the `pg_stat_wal_receiver` say's so.
+  * a replica is `in archive recovery`, if it's not `streaming` and has a `restore_command`.
+
   A healthy replica:
-  * is in running or streaming state (V3.0.4)
-  * has a replica or sync_standby role
-  * has a lag lower or equal to max_lag
+  * has a `replica` or `sync_standby` role
+  * has the same timeline as the leader and
+    * is in `running` state (patroni < V3.0.4)
+    * is in `streaming` or `in archive recovery` state (patroni >= V3.0.4)
+  * has a lag lower or equal to `max_lag`
+
+  Please note that replica `in archive recovery` could be stuck because the
+  WAL are not available or applicable (the server's timeline has diverged for
+  the leader's). We already detect the latter but we will miss the former.
+  Therefore, it's preferable to check for the lag in addition to the healthy
+  state if you rely on log shipping to help lagging standbies to catch up.
+
+  Since we require a healthy replica to have the same timeline as the leader,
+  it's possible that we raise alerts when the cluster is performing a
+  switchover or failover and the standbies are in the process of catching up
+  with the new leader. The alert shouldn't last long.
 
   Check:
   * `OK`: if the healthy_replica count and their lag are compatible with the replica count threshold.
@@ -203,8 +220,9 @@ Usage: check_patroni cluster_has_replica [OPTIONS]
   Perfdata:
   * healthy_replica & unhealthy_replica count
   * the number of sync_replica, they are included in the previous count
-  * the lag of each replica labelled with  "member name"_lag
-  * a boolean to tell if the node is a sync stanbdy labelled with  "member name"_sync
+  * the lag of each replica labelled with "member name"_lag
+  * the timeline of each replica labelled with "member name"_timeline
+  * a boolean to tell if the node is a sync stanbdy labelled with "member name"_sync
 
 Options:
   -w, --warning TEXT    Warning threshold for the number of healthy replica

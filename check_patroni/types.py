@@ -1,4 +1,5 @@
 import json
+from functools import lru_cache
 from typing import Any, Callable, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
@@ -29,7 +30,7 @@ class Parameters:
     verbose: int
 
 
-@attr.s(auto_attribs=True, slots=True)
+@attr.s(auto_attribs=True, eq=False, slots=True)
 class PatroniResource(nagiosplugin.Resource):
     conn_info: ConnectionInfo
 
@@ -75,6 +76,27 @@ class PatroniResource(nagiosplugin.Resource):
             except (json.JSONDecodeError, ValueError):
                 return None
         raise nagiosplugin.CheckError("Connection failed for all provided endpoints")
+
+    @lru_cache(maxsize=None)
+    def has_detailed_states(self) -> bool:
+        # get patroni's version to find out if the "streaming" and "in archive recovery" states are available
+        patroni_item_dict = self.rest_api("patroni")
+
+        if tuple(
+            int(v) for v in patroni_item_dict["patroni"]["version"].split(".", 2)
+        ) >= (3, 0, 4):
+            _log.debug(
+                "Patroni's version is %(version)s, more detailed states can be used to check for the health of replicas.",
+                {"version": patroni_item_dict["patroni"]["version"]},
+            )
+
+            return True
+
+        _log.debug(
+            "Patroni's version is %(version)s, the running state and the timelines must be used to check for the health of replicas.",
+            {"version": patroni_item_dict["patroni"]["version"]},
+        )
+        return False
 
 
 HandleUnknown = Callable[[nagiosplugin.Summary, nagiosplugin.Results], Any]

@@ -50,12 +50,13 @@ class PatroniAPI(HTTPServer):
 
 
 def cluster_api_set_replica_running(in_json: Path, target_dir: Path) -> Path:
-    # starting from 3.0.4 the state of replicas is streaming instead of running
+    # starting from 3.0.4 the state of replicas is streaming or in archive recovery
+    # instead of running
     with in_json.open() as f:
         js = json.load(f)
     for node in js["members"]:
         if node["role"] in ["replica", "sync_standby"]:
-            if node["state"] == "streaming":
+            if node["state"] in ["streaming", "in archive recovery"]:
                 node["state"] = "running"
     assert target_dir.is_dir()
     out_json = target_dir / in_json.name

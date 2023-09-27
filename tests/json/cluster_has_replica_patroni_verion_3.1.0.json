@@ -1,0 +1,26 @@
+{
+  "state": "running",
+  "postmaster_start_time": "2021-08-11 07:02:20.732 UTC",
+  "role": "master",
+  "server_version": 110012,
+  "cluster_unlocked": false,
+  "xlog": {
+    "location": 1174407088
+  },
+  "timeline": 51,
+  "replication": [
+    {
+      "usename": "replicator",
+      "application_name": "srv1",
+      "client_addr": "10.20.199.3",
+      "state": "streaming",
+      "sync_state": "async",
+      "sync_priority": 0
+    }
+  ],
+  "database_system_identifier": "6965971025273547206",
+  "patroni": {
+    "version": "3.1.0",
+    "scope": "patroni-demo"
+  }
+}

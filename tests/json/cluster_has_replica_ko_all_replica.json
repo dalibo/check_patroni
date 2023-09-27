@@ -2,17 +2,18 @@
   "members": [
     {
       "name": "srv1",
-      "role": "leader",
+      "role": "replica",
       "state": "running",
       "api_url": "https://10.20.199.3:8008/patroni",
       "host": "10.20.199.3",
       "port": 5432,
-      "timeline": 51
+      "timeline": 51,
+      "lag": 0
     },
     {
       "name": "srv2",
       "role": "replica",
-      "state": "in archive recovery",
+      "state": "running",
       "api_url": "https://10.20.199.4:8008/patroni",
       "host": "10.20.199.4",
       "port": 5432,
@@ -21,13 +22,14 @@
     },
     {
       "name": "srv3",
-      "role": "sync_standby",
-      "state": "streaming",
+      "role": "replica",
+      "state": "running",
       "api_url": "https://10.20.199.5:8008/patroni",
       "host": "10.20.199.5",
       "port": 5432,
       "timeline": 51,
       "lag": 0
+
     }
   ]
 }
