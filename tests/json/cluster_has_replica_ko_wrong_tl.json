@@ -12,16 +12,16 @@
     {
       "name": "srv2",
       "role": "replica",
-      "state": "in archive recovery",
+      "state": "running",
       "api_url": "https://10.20.199.4:8008/patroni",
       "host": "10.20.199.4",
       "port": 5432,
-      "timeline": 51,
-      "lag": 0
+      "timeline": 50,
+      "lag": 1000000
     },
     {
       "name": "srv3",
-      "role": "sync_standby",
+      "role": "replica",
       "state": "streaming",
       "api_url": "https://10.20.199.5:8008/patroni",
       "host": "10.20.199.5",

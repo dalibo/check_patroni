@@ -1,7 +1,7 @@
 import hashlib
 import json
 from collections import Counter
-from typing import Iterable, Union
+from typing import Any, Iterable, Union
 
 import nagiosplugin
 
@@ -83,35 +83,91 @@ class ClusterHasReplica(PatroniResource):
         self.max_lag = max_lag
 
     def probe(self) -> Iterable[nagiosplugin.Metric]:
-        item_dict = self.rest_api("cluster")
+        def debug_member(member: Any, health: str) -> None:
+            _log.debug(
+                "Node %(node_name)s is %(health)s: lag %(lag)s, state %(state)s, tl %(tl)s.",
+                {
+                    "node_name": member["name"],
+                    "health": health,
+                    "lag": member["lag"],
+                    "state": member["state"],
+                    "tl": member["timeline"],
+                },
+            )
+
+        # get the cluster info
+        cluster_item_dict = self.rest_api("cluster")
 
         replicas = []
         healthy_replica = 0
         unhealthy_replica = 0
         sync_replica = 0
-        for member in item_dict["members"]:
-            # FIXME are there other acceptable states
+        leader_tl = None
+
+        # Look for replicas
+        for member in cluster_item_dict["members"]:
             if member["role"] in ["replica", "sync_standby"]:
-                # patroni 3.0.4 changed the standby state from running to streaming
-                if (
-                    member["state"] in ["running", "streaming"]
-                    and member["lag"] != "unknown"
-                ):
+                if member["lag"] == "unknown":
+                    # This could happen if the node is stopped
+                    # nagiosplugin doesn't handle strings in perfstats
+                    # so we have to ditch all the stats in that case
+                    debug_member(member, "unhealthy")
+                    unhealthy_replica += 1
+                    continue
+                else:
                     replicas.append(
                         {
                             "name": member["name"],
                             "lag": member["lag"],
+                            "timeline": member["timeline"],
                             "sync": 1 if member["role"] == "sync_standby" else 0,
                         }
                     )
 
-                    if member["role"] == "sync_standby":
-                        sync_replica += 1
+                # Get the leader tl if we haven't already
+                if leader_tl is None:
+                    # If there are no leaders, we will loop here for all
+                    # members because leader_tl will remain None. it's not
+                    # a big deal since having no leader is rare.
+                    for tmember in cluster_item_dict["members"]:
+                        if tmember["role"] == "leader":
+                            leader_tl = int(tmember["timeline"])
+                            break
 
-                    if self.max_lag is None or self.max_lag >= int(member["lag"]):
-                        healthy_replica += 1
-                        continue
-                unhealthy_replica += 1
+                    _log.debug(
+                        "Patroni's leader_timeline is %(leader_tl)s",
+                        {
+                            "leader_tl": leader_tl,
+                        },
+                    )
+
+                # Test for an unhealthy replica
+                if (
+                    self.has_detailed_states()
+                    and not (
+                        member["state"] in ["streaming", "in archive recovery"]
+                        and int(member["timeline"]) == leader_tl
+                    )
+                ) or (
+                    not self.has_detailed_states()
+                    and not (
+                        member["state"] == "running"
+                        and int(member["timeline"]) == leader_tl
+                    )
+                ):
+                    debug_member(member, "unhealthy")
+                    unhealthy_replica += 1
+                    continue
+
+                if member["role"] == "sync_standby":
+                    sync_replica += 1
+
+                if self.max_lag is None or self.max_lag >= int(member["lag"]):
+                    debug_member(member, "healthy")
+                    healthy_replica += 1
+                else:
+                    debug_member(member, "unhealthy")
+                    unhealthy_replica += 1
 
         # The actual check
         yield nagiosplugin.Metric("healthy_replica", healthy_replica)
@@ -122,6 +178,11 @@ class ClusterHasReplica(PatroniResource):
         for replica in replicas:
             yield nagiosplugin.Metric(
                 f"{replica['name']}_lag", replica["lag"], context="replica_lag"
+            )
+            yield nagiosplugin.Metric(
+                f"{replica['name']}_timeline",
+                replica["timeline"],
+                context="replica_timeline",
             )
             yield nagiosplugin.Metric(
                 f"{replica['name']}_sync", replica["sync"], context="replica_sync"

@@ -4,10 +4,14 @@
 
 ### Added
 
+* Add the timeline in the  `cluster_has_replica` perfstats. (#50)
+
 ### Fixed
 
 * Add compatibility with [requests](https://requests.readthedocs.io)
   version 2.25 and higher.
+* Fix what `cluster_has_replica` deems a healthy replica. (#50, reported by @mbanck)
+* Fix `cluster_has_replica` to display perfstats for replicas whenever it's possible (healthy or not). (#50)
 
 ### Misc
 
