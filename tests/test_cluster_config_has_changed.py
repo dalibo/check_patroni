@@ -1,9 +1,9 @@
+from pathlib import Path
+
 import nagiosplugin
 from click.testing import CliRunner
 
 from check_patroni.cli import main
-
-from .tools import here
 
 
 def test_cluster_config_has_changed_ok_with_hash(fake_restapi) -> None:
@@ -27,10 +27,13 @@ def test_cluster_config_has_changed_ok_with_hash(fake_restapi) -> None:
     )
 
 
-def test_cluster_config_has_changed_ok_with_state_file(fake_restapi) -> None:
+def test_cluster_config_has_changed_ok_with_state_file(
+    fake_restapi, tmp_path: Path
+) -> None:
     runner = CliRunner()
 
-    with open(here / "cluster_config_has_changed.state_file", "w") as f:
+    state_file = tmp_path / "cluster_config_has_changed.state_file"
+    with state_file.open("w") as f:
         f.write('{"hash": "96b12d82571473d13e890b893734e731"}')
 
     fake_restapi("cluster_config_has_changed")
@@ -41,7 +44,7 @@ def test_cluster_config_has_changed_ok_with_state_file(fake_restapi) -> None:
             "https://10.20.199.3:8008",
             "cluster_config_has_changed",
             "--state-file",
-            str(here / "cluster_config_has_changed.state_file"),
+            str(state_file),
         ],
     )
     assert result.exit_code == 0
@@ -72,10 +75,13 @@ def test_cluster_config_has_changed_ko_with_hash(fake_restapi) -> None:
     )
 
 
-def test_cluster_config_has_changed_ko_with_state_file_and_save(fake_restapi) -> None:
+def test_cluster_config_has_changed_ko_with_state_file_and_save(
+    fake_restapi, tmp_path: Path
+) -> None:
     runner = CliRunner()
 
-    with open(here / "cluster_config_has_changed.state_file", "w") as f:
+    state_file = tmp_path / "cluster_config_has_changed.state_file"
+    with state_file.open("w") as f:
         f.write('{"hash": "96b12d82571473d13e890b8937ffffff"}')
 
     fake_restapi("cluster_config_has_changed")
@@ -87,7 +93,7 @@ def test_cluster_config_has_changed_ko_with_state_file_and_save(fake_restapi) ->
             "https://10.20.199.3:8008",
             "cluster_config_has_changed",
             "--state-file",
-            str(here / "cluster_config_has_changed.state_file"),
+            str(state_file),
         ],
     )
     assert result.exit_code == 2
@@ -96,7 +102,8 @@ def test_cluster_config_has_changed_ko_with_state_file_and_save(fake_restapi) ->
         == "CLUSTERCONFIGHASCHANGED CRITICAL - The hash of patroni's dynamic configuration has changed. The old hash was 96b12d82571473d13e890b8937ffffff. | is_configuration_changed=1;;@1:1\n"
     )
 
-    cookie = nagiosplugin.Cookie(here / "cluster_config_has_changed.state_file")
+    state_file = tmp_path / "cluster_config_has_changed.state_file"
+    cookie = nagiosplugin.Cookie(state_file)
     cookie.open()
     new_config_hash = cookie.get("hash")
     cookie.close()
@@ -111,7 +118,7 @@ def test_cluster_config_has_changed_ko_with_state_file_and_save(fake_restapi) ->
             "https://10.20.199.3:8008",
             "cluster_config_has_changed",
             "--state-file",
-            str(here / "cluster_config_has_changed.state_file"),
+            str(state_file),
             "--save",
         ],
     )
@@ -121,7 +128,7 @@ def test_cluster_config_has_changed_ko_with_state_file_and_save(fake_restapi) ->
         == "CLUSTERCONFIGHASCHANGED CRITICAL - The hash of patroni's dynamic configuration has changed. The old hash was 96b12d82571473d13e890b8937ffffff. | is_configuration_changed=1;;@1:1\n"
     )
 
-    cookie = nagiosplugin.Cookie(here / "cluster_config_has_changed.state_file")
+    cookie = nagiosplugin.Cookie(state_file)
     cookie.open()
     new_config_hash = cookie.get("hash")
     cookie.close()
@@ -129,10 +136,11 @@ def test_cluster_config_has_changed_ko_with_state_file_and_save(fake_restapi) ->
     assert new_config_hash == "96b12d82571473d13e890b893734e731"
 
 
-def test_cluster_config_has_changed_params(fake_restapi) -> None:
+def test_cluster_config_has_changed_params(fake_restapi, tmp_path: Path) -> None:
     # This one is placed last because it seems like the exceptions are not flushed from stderr for the next tests.
     runner = CliRunner()
 
+    fake_state_file = tmp_path / "fake_file_name.state_file"
     fake_restapi("cluster_config_has_changed")
     result = runner.invoke(
         main,
@@ -143,7 +151,7 @@ def test_cluster_config_has_changed_params(fake_restapi) -> None:
             "--hash",
             "640df9f0211c791723f18fc3ed9dbb95",
             "--state-file",
-            str(here / "fake_file_name.state_file"),
+            str(fake_state_file),
         ],
     )
     assert result.exit_code == 3
