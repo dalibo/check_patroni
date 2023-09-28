@@ -1,11 +1,11 @@
-from functools import partial
-from typing import Any, Callable
+from pathlib import Path
+from threading import Thread
+from typing import Any, Iterator
 
 import pytest
 from click.testing import CliRunner
-from pytest_mock import MockerFixture
 
-from .tools import my_mock
+from . import PatroniAPI
 
 
 @pytest.fixture(
@@ -16,9 +16,24 @@ def old_replica_state(request: Any) -> Any:
     return request.param
 
 
-@pytest.fixture
-def fake_restapi(mocker: MockerFixture) -> Callable[..., Any]:
-    return partial(my_mock, mocker)
+@pytest.fixture(scope="session")
+def datadir() -> Path:
+    return Path(__file__).parent / "json"
+
+
+@pytest.fixture(scope="session")
+def patroni_api(
+    tmp_path_factory: pytest.TempPathFactory, datadir: Path
+) -> Iterator[PatroniAPI]:
+    """A fake HTTP server for the Patroni API serving files from a temporary
+    directory.
+    """
+    httpd = PatroniAPI(tmp_path_factory.mktemp("api"), datadir=datadir)
+    t = Thread(target=httpd.serve_forever)
+    t.start()
+    yield httpd
+    httpd.shutdown()
+    t.join()
 
 
 @pytest.fixture

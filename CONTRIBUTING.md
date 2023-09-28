@@ -48,10 +48,9 @@ The `README.md` can be generated with `./docs/make_readme.sh`.
 ## Executing Tests
 
 Crafting repeatable tests using a live Patroni cluster can be intricate. To
-simplify the development process, interactions with Patroni's API are
-substituted with a mock function that yields an HTTP return code and a JSON
-object outlining the cluster's status. The JSON files containing this
-information are housed in the `./tests/json` directory.
+simplify the development process, a fake HTTP server is set up as a test
+fixture and serves static files (either from `tests/json` directory or from
+in-memory data).
 
 An important consideration is that there is a potential drawback: if the JSON
 data is incorrect or if modifications have been made to Patroni without

@@ -46,7 +46,6 @@ setup(
     extras_require={
         "test": [
             "pytest",
-            "pytest-mock",
         ],
     },
     entry_points={

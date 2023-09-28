@@ -2,12 +2,16 @@ from click.testing import CliRunner
 
 from check_patroni.cli import main
 
+from . import PatroniAPI
 
-def test_cluster_is_in_maintenance_ok(runner: CliRunner, fake_restapi) -> None:
-    fake_restapi("cluster_is_in_maintenance_ok")
-    result = runner.invoke(
-        main, ["-e", "https://10.20.199.3:8008", "cluster_is_in_maintenance"]
-    )
+
+def test_cluster_is_in_maintenance_ok(
+    runner: CliRunner, patroni_api: PatroniAPI
+) -> None:
+    with patroni_api.routes({"cluster": "cluster_is_in_maintenance_ok.json"}):
+        result = runner.invoke(
+            main, ["-e", patroni_api.endpoint, "cluster_is_in_maintenance"]
+        )
     assert result.exit_code == 0
     assert (
         result.stdout
@@ -15,11 +19,13 @@ def test_cluster_is_in_maintenance_ok(runner: CliRunner, fake_restapi) -> None:
     )
 
 
-def test_cluster_is_in_maintenance_ko(runner: CliRunner, fake_restapi) -> None:
-    fake_restapi("cluster_is_in_maintenance_ko")
-    result = runner.invoke(
-        main, ["-e", "https://10.20.199.3:8008", "cluster_is_in_maintenance"]
-    )
+def test_cluster_is_in_maintenance_ko(
+    runner: CliRunner, patroni_api: PatroniAPI
+) -> None:
+    with patroni_api.routes({"cluster": "cluster_is_in_maintenance_ko.json"}):
+        result = runner.invoke(
+            main, ["-e", patroni_api.endpoint, "cluster_is_in_maintenance"]
+        )
     assert result.exit_code == 2
     assert (
         result.stdout
@@ -28,12 +34,14 @@ def test_cluster_is_in_maintenance_ko(runner: CliRunner, fake_restapi) -> None:
 
 
 def test_cluster_is_in_maintenance_ok_pause_false(
-    runner: CliRunner, fake_restapi
+    runner: CliRunner, patroni_api: PatroniAPI
 ) -> None:
-    fake_restapi("cluster_is_in_maintenance_ok_pause_false")
-    result = runner.invoke(
-        main, ["-e", "https://10.20.199.3:8008", "cluster_is_in_maintenance"]
-    )
+    with patroni_api.routes(
+        {"cluster": "cluster_is_in_maintenance_ok_pause_false.json"}
+    ):
+        result = runner.invoke(
+            main, ["-e", patroni_api.endpoint, "cluster_is_in_maintenance"]
+        )
     assert result.exit_code == 0
     assert (
         result.stdout

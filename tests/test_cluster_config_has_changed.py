@@ -1,20 +1,29 @@
 from pathlib import Path
+from typing import Iterator
 
 import nagiosplugin
+import pytest
 from click.testing import CliRunner
 
 from check_patroni.cli import main
 
+from . import PatroniAPI
+
+
+@pytest.fixture(scope="module", autouse=True)
+def cluster_config_has_changed(patroni_api: PatroniAPI) -> Iterator[None]:
+    with patroni_api.routes({"config": "cluster_config_has_changed.json"}):
+        yield None
+
 
 def test_cluster_config_has_changed_ok_with_hash(
-    runner: CliRunner, fake_restapi
+    runner: CliRunner, patroni_api: PatroniAPI
 ) -> None:
-    fake_restapi("cluster_config_has_changed")
     result = runner.invoke(
         main,
         [
             "-e",
-            "https://10.20.199.3:8008",
+            patroni_api.endpoint,
             "cluster_config_has_changed",
             "--hash",
             "96b12d82571473d13e890b893734e731",
@@ -28,18 +37,17 @@ def test_cluster_config_has_changed_ok_with_hash(
 
 
 def test_cluster_config_has_changed_ok_with_state_file(
-    runner: CliRunner, fake_restapi, tmp_path: Path
+    runner: CliRunner, patroni_api: PatroniAPI, tmp_path: Path
 ) -> None:
     state_file = tmp_path / "cluster_config_has_changed.state_file"
     with state_file.open("w") as f:
         f.write('{"hash": "96b12d82571473d13e890b893734e731"}')
 
-    fake_restapi("cluster_config_has_changed")
     result = runner.invoke(
         main,
         [
             "-e",
-            "https://10.20.199.3:8008",
+            patroni_api.endpoint,
             "cluster_config_has_changed",
             "--state-file",
             str(state_file),
@@ -53,14 +61,13 @@ def test_cluster_config_has_changed_ok_with_state_file(
 
 
 def test_cluster_config_has_changed_ko_with_hash(
-    runner: CliRunner, fake_restapi
+    runner: CliRunner, patroni_api: PatroniAPI
 ) -> None:
-    fake_restapi("cluster_config_has_changed")
     result = runner.invoke(
         main,
         [
             "-e",
-            "https://10.20.199.3:8008",
+            patroni_api.endpoint,
             "cluster_config_has_changed",
             "--hash",
             "96b12d82571473d13e890b8937ffffff",
@@ -74,19 +81,18 @@ def test_cluster_config_has_changed_ko_with_hash(
 
 
 def test_cluster_config_has_changed_ko_with_state_file_and_save(
-    runner: CliRunner, fake_restapi, tmp_path: Path
+    runner: CliRunner, patroni_api: PatroniAPI, tmp_path: Path
 ) -> None:
     state_file = tmp_path / "cluster_config_has_changed.state_file"
     with state_file.open("w") as f:
         f.write('{"hash": "96b12d82571473d13e890b8937ffffff"}')
 
-    fake_restapi("cluster_config_has_changed")
     # test without saving the new hash
     result = runner.invoke(
         main,
         [
             "-e",
-            "https://10.20.199.3:8008",
+            patroni_api.endpoint,
             "cluster_config_has_changed",
             "--state-file",
             str(state_file),
@@ -111,7 +117,7 @@ def test_cluster_config_has_changed_ko_with_state_file_and_save(
         main,
         [
             "-e",
-            "https://10.20.199.3:8008",
+            patroni_api.endpoint,
             "cluster_config_has_changed",
             "--state-file",
             str(state_file),
@@ -133,16 +139,15 @@ def test_cluster_config_has_changed_ko_with_state_file_and_save(
 
 
 def test_cluster_config_has_changed_params(
-    runner: CliRunner, fake_restapi, tmp_path: Path
+    runner: CliRunner, patroni_api: PatroniAPI, tmp_path: Path
 ) -> None:
     # This one is placed last because it seems like the exceptions are not flushed from stderr for the next tests.
     fake_state_file = tmp_path / "fake_file_name.state_file"
-    fake_restapi("cluster_config_has_changed")
     result = runner.invoke(
         main,
         [
             "-e",
-            "https://10.20.199.3:8008",
+            patroni_api.endpoint,
             "cluster_config_has_changed",
             "--hash",
             "640df9f0211c791723f18fc3ed9dbb95",

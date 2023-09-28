@@ -2,12 +2,16 @@ from click.testing import CliRunner
 
 from check_patroni.cli import main
 
+from . import PatroniAPI
 
-def test_cluster_has_scheduled_action_ok(runner: CliRunner, fake_restapi) -> None:
-    fake_restapi("cluster_has_scheduled_action_ok")
-    result = runner.invoke(
-        main, ["-e", "https://10.20.199.3:8008", "cluster_has_scheduled_action"]
-    )
+
+def test_cluster_has_scheduled_action_ok(
+    runner: CliRunner, patroni_api: PatroniAPI
+) -> None:
+    with patroni_api.routes({"cluster": "cluster_has_scheduled_action_ok.json"}):
+        result = runner.invoke(
+            main, ["-e", patroni_api.endpoint, "cluster_has_scheduled_action"]
+        )
     assert result.exit_code == 0
     assert (
         result.stdout
@@ -16,12 +20,14 @@ def test_cluster_has_scheduled_action_ok(runner: CliRunner, fake_restapi) -> Non
 
 
 def test_cluster_has_scheduled_action_ko_switchover(
-    runner: CliRunner, fake_restapi
+    runner: CliRunner, patroni_api: PatroniAPI
 ) -> None:
-    fake_restapi("cluster_has_scheduled_action_ko_switchover")
-    result = runner.invoke(
-        main, ["-e", "https://10.20.199.3:8008", "cluster_has_scheduled_action"]
-    )
+    with patroni_api.routes(
+        {"cluster": "cluster_has_scheduled_action_ko_switchover.json"}
+    ):
+        result = runner.invoke(
+            main, ["-e", patroni_api.endpoint, "cluster_has_scheduled_action"]
+        )
     assert result.exit_code == 2
     assert (
         result.stdout
@@ -30,12 +36,14 @@ def test_cluster_has_scheduled_action_ko_switchover(
 
 
 def test_cluster_has_scheduled_action_ko_restart(
-    runner: CliRunner, fake_restapi
+    runner: CliRunner, patroni_api: PatroniAPI
 ) -> None:
-    fake_restapi("cluster_has_scheduled_action_ko_restart")
-    result = runner.invoke(
-        main, ["-e", "https://10.20.199.3:8008", "cluster_has_scheduled_action"]
-    )
+    with patroni_api.routes(
+        {"cluster": "cluster_has_scheduled_action_ko_restart.json"}
+    ):
+        result = runner.invoke(
+            main, ["-e", patroni_api.endpoint, "cluster_has_scheduled_action"]
+        )
     assert result.exit_code == 2
     assert (
         result.stdout

@@ -5,7 +5,6 @@ flake8
 mypy==0.961
 pytest
 pytest-cov
-pytest-mock
 types-requests
 setuptools
 tox

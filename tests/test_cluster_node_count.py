@@ -1,15 +1,30 @@
+from pathlib import Path
+from typing import Iterator, Union
+
+import pytest
 from click.testing import CliRunner
 
 from check_patroni.cli import main
 
+from . import PatroniAPI, cluster_api_set_replica_running
 
+
+@pytest.fixture
+def cluster_node_count_ok(
+    patroni_api: PatroniAPI, old_replica_state: bool, datadir: Path, tmp_path: Path
+) -> Iterator[None]:
+    path: Union[str, Path] = "cluster_node_count_ok.json"
+    if old_replica_state:
+        path = cluster_api_set_replica_running(datadir / path, tmp_path)
+    with patroni_api.routes({"cluster": path}):
+        yield None
+
+
+@pytest.mark.usefixtures("cluster_node_count_ok")
 def test_cluster_node_count_ok(
-    runner: CliRunner, fake_restapi, old_replica_state: bool
+    runner: CliRunner, patroni_api: PatroniAPI, old_replica_state: bool
 ) -> None:
-    fake_restapi("cluster_node_count_ok", use_old_replica_state=old_replica_state)
-    result = runner.invoke(
-        main, ["-e", "https://10.20.199.3:8008", "cluster_node_count"]
-    )
+    result = runner.invoke(main, ["-e", patroni_api.endpoint, "cluster_node_count"])
     assert result.exit_code == 0
     if old_replica_state:
         assert (
@@ -23,15 +38,15 @@ def test_cluster_node_count_ok(
         )
 
 
+@pytest.mark.usefixtures("cluster_node_count_ok")
 def test_cluster_node_count_ok_with_thresholds(
-    runner: CliRunner, fake_restapi, old_replica_state: bool
+    runner: CliRunner, patroni_api: PatroniAPI, old_replica_state: bool
 ) -> None:
-    fake_restapi("cluster_node_count_ok", use_old_replica_state=old_replica_state)
     result = runner.invoke(
         main,
         [
             "-e",
-            "https://10.20.199.3:8008",
+            patroni_api.endpoint,
             "cluster_node_count",
             "--warning",
             "@0:1",
@@ -56,17 +71,26 @@ def test_cluster_node_count_ok_with_thresholds(
         )
 
 
+@pytest.fixture
+def cluster_node_count_healthy_warning(
+    patroni_api: PatroniAPI, old_replica_state: bool, datadir: Path, tmp_path: Path
+) -> Iterator[None]:
+    path: Union[str, Path] = "cluster_node_count_healthy_warning.json"
+    if old_replica_state:
+        path = cluster_api_set_replica_running(datadir / path, tmp_path)
+    with patroni_api.routes({"cluster": path}):
+        yield None
+
+
+@pytest.mark.usefixtures("cluster_node_count_healthy_warning")
 def test_cluster_node_count_healthy_warning(
-    runner: CliRunner, fake_restapi, old_replica_state: bool
+    runner: CliRunner, patroni_api: PatroniAPI, old_replica_state: bool
 ) -> None:
-    fake_restapi(
-        "cluster_node_count_healthy_warning", use_old_replica_state=old_replica_state
-    )
     result = runner.invoke(
         main,
         [
             "-e",
-            "https://10.20.199.3:8008",
+            patroni_api.endpoint,
             "cluster_node_count",
             "--healthy-warning",
             "@2",
@@ -87,17 +111,26 @@ def test_cluster_node_count_healthy_warning(
         )
 
 
+@pytest.fixture
+def cluster_node_count_healthy_critical(
+    patroni_api: PatroniAPI, old_replica_state: bool, datadir: Path, tmp_path: Path
+) -> Iterator[None]:
+    path: Union[str, Path] = "cluster_node_count_healthy_critical.json"
+    if old_replica_state:
+        path = cluster_api_set_replica_running(datadir / path, tmp_path)
+    with patroni_api.routes({"cluster": path}):
+        yield None
+
+
+@pytest.mark.usefixtures("cluster_node_count_healthy_critical")
 def test_cluster_node_count_healthy_critical(
-    runner: CliRunner, fake_restapi, old_replica_state: bool
+    runner: CliRunner, patroni_api: PatroniAPI
 ) -> None:
-    fake_restapi(
-        "cluster_node_count_healthy_critical", use_old_replica_state=old_replica_state
-    )
     result = runner.invoke(
         main,
         [
             "-e",
-            "https://10.20.199.3:8008",
+            patroni_api.endpoint,
             "cluster_node_count",
             "--healthy-warning",
             "@2",
@@ -112,15 +145,26 @@ def test_cluster_node_count_healthy_critical(
     )
 
 
+@pytest.fixture
+def cluster_node_count_warning(
+    patroni_api: PatroniAPI, old_replica_state: bool, datadir: Path, tmp_path: Path
+) -> Iterator[None]:
+    path: Union[str, Path] = "cluster_node_count_warning.json"
+    if old_replica_state:
+        path = cluster_api_set_replica_running(datadir / path, tmp_path)
+    with patroni_api.routes({"cluster": path}):
+        yield None
+
+
+@pytest.mark.usefixtures("cluster_node_count_warning")
 def test_cluster_node_count_warning(
-    runner: CliRunner, fake_restapi, old_replica_state: bool
+    runner: CliRunner, patroni_api: PatroniAPI, old_replica_state: bool
 ) -> None:
-    fake_restapi("cluster_node_count_warning", use_old_replica_state=old_replica_state)
     result = runner.invoke(
         main,
         [
             "-e",
-            "https://10.20.199.3:8008",
+            patroni_api.endpoint,
             "cluster_node_count",
             "--warning",
             "@2",
@@ -141,15 +185,26 @@ def test_cluster_node_count_warning(
         )
 
 
+@pytest.fixture
+def cluster_node_count_critical(
+    patroni_api: PatroniAPI, old_replica_state: bool, datadir: Path, tmp_path: Path
+) -> Iterator[None]:
+    path: Union[str, Path] = "cluster_node_count_critical.json"
+    if old_replica_state:
+        path = cluster_api_set_replica_running(datadir / path, tmp_path)
+    with patroni_api.routes({"cluster": path}):
+        yield None
+
+
+@pytest.mark.usefixtures("cluster_node_count_critical")
 def test_cluster_node_count_critical(
-    runner: CliRunner, fake_restapi, old_replica_state: bool
+    runner: CliRunner, patroni_api: PatroniAPI
 ) -> None:
-    fake_restapi("cluster_node_count_critical", use_old_replica_state=old_replica_state)
     result = runner.invoke(
         main,
         [
             "-e",
-            "https://10.20.199.3:8008",
+            patroni_api.endpoint,
             "cluster_node_count",
             "--warning",
             "@2",

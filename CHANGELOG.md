@@ -8,6 +8,9 @@
 
 ### Misc
 
+* Improve test coverage by running an HTTP server to fake the Patroni API (#55
+  by @dlax).
+
 ## check_patroni 1.0.0 - 2023-08-28
 
 Check patroni is now tagged as Production/Stable.
