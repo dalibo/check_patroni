@@ -1,17 +1,12 @@
 from click.testing import CliRunner
-from pytest_mock import MockerFixture
 
 from check_patroni.cli import main
 
-from .tools import my_mock
 
-
-def test_cluster_has_scheduled_action_ok(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_has_scheduled_action_ok(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_has_scheduled_action_ok")
+    fake_restapi("cluster_has_scheduled_action_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_scheduled_action"]
     )
@@ -22,12 +17,10 @@ def test_cluster_has_scheduled_action_ok(
     )
 
 
-def test_cluster_has_scheduled_action_ko_switchover(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_has_scheduled_action_ko_switchover(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_has_scheduled_action_ko_switchover")
+    fake_restapi("cluster_has_scheduled_action_ko_switchover")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_scheduled_action"]
     )
@@ -38,12 +31,10 @@ def test_cluster_has_scheduled_action_ko_switchover(
     )
 
 
-def test_cluster_has_scheduled_action_ko_restart(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_has_scheduled_action_ko_restart(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_has_scheduled_action_ko_restart")
+    fake_restapi("cluster_has_scheduled_action_ko_restart")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_scheduled_action"]
     )

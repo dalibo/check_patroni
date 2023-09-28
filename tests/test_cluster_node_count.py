@@ -1,19 +1,12 @@
 from click.testing import CliRunner
-from pytest_mock import MockerFixture
 
 from check_patroni.cli import main
 
-from .tools import my_mock
 
-
-def test_cluster_node_count_ok(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_node_count_ok(fake_restapi, use_old_replica_state: bool) -> None:
     runner = CliRunner()
 
-    my_mock(
-        mocker, "cluster_node_count_ok", use_old_replica_state=use_old_replica_state
-    )
+    fake_restapi("cluster_node_count_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_node_count"]
     )
@@ -31,13 +24,11 @@ def test_cluster_node_count_ok(
 
 
 def test_cluster_node_count_ok_with_thresholds(
-    mocker: MockerFixture, use_old_replica_state: bool
+    fake_restapi, use_old_replica_state: bool
 ) -> None:
     runner = CliRunner()
 
-    my_mock(
-        mocker, "cluster_node_count_ok", use_old_replica_state=use_old_replica_state
-    )
+    fake_restapi("cluster_node_count_ok")
     result = runner.invoke(
         main,
         [
@@ -68,15 +59,11 @@ def test_cluster_node_count_ok_with_thresholds(
 
 
 def test_cluster_node_count_healthy_warning(
-    mocker: MockerFixture, use_old_replica_state: bool
+    fake_restapi, use_old_replica_state: bool
 ) -> None:
     runner = CliRunner()
 
-    my_mock(
-        mocker,
-        "cluster_node_count_healthy_warning",
-        use_old_replica_state=use_old_replica_state,
-    )
+    fake_restapi("cluster_node_count_healthy_warning")
     result = runner.invoke(
         main,
         [
@@ -102,16 +89,10 @@ def test_cluster_node_count_healthy_warning(
         )
 
 
-def test_cluster_node_count_healthy_critical(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_node_count_healthy_critical(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(
-        mocker,
-        "cluster_node_count_healthy_critical",
-        use_old_replica_state=use_old_replica_state,
-    )
+    fake_restapi("cluster_node_count_healthy_critical")
     result = runner.invoke(
         main,
         [
@@ -131,16 +112,10 @@ def test_cluster_node_count_healthy_critical(
     )
 
 
-def test_cluster_node_count_warning(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_node_count_warning(fake_restapi, use_old_replica_state: bool) -> None:
     runner = CliRunner()
 
-    my_mock(
-        mocker,
-        "cluster_node_count_warning",
-        use_old_replica_state=use_old_replica_state,
-    )
+    fake_restapi("cluster_node_count_warning")
     result = runner.invoke(
         main,
         [
@@ -166,16 +141,10 @@ def test_cluster_node_count_warning(
         )
 
 
-def test_cluster_node_count_critical(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_node_count_critical(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(
-        mocker,
-        "cluster_node_count_critical",
-        use_old_replica_state=use_old_replica_state,
-    )
+    fake_restapi("cluster_node_count_critical")
     result = runner.invoke(
         main,
         [

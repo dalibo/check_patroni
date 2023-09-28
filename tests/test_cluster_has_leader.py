@@ -1,17 +1,12 @@
 from click.testing import CliRunner
-from pytest_mock import MockerFixture
 
 from check_patroni.cli import main
 
-from .tools import my_mock
 
-
-def test_cluster_has_leader_ok(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_has_leader_ok(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_has_leader_ok")
+    fake_restapi("cluster_has_leader_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_leader"]
     )
@@ -22,12 +17,10 @@ def test_cluster_has_leader_ok(
     )
 
 
-def test_cluster_has_leader_ok_standby_leader(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_has_leader_ok_standby_leader(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_has_leader_ok_standby_leader")
+    fake_restapi("cluster_has_leader_ok_standby_leader")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_leader"]
     )
@@ -38,12 +31,10 @@ def test_cluster_has_leader_ok_standby_leader(
     )
 
 
-def test_cluster_has_leader_ko(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_has_leader_ko(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_has_leader_ko")
+    fake_restapi("cluster_has_leader_ko")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_leader"]
     )

@@ -1,18 +1,15 @@
 import nagiosplugin
 from click.testing import CliRunner
-from pytest_mock import MockerFixture
 
 from check_patroni.cli import main
 
-from .tools import here, my_mock
+from .tools import here
 
 
-def test_cluster_config_has_changed_ok_with_hash(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_config_has_changed_ok_with_hash(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_config_has_changed")
+    fake_restapi("cluster_config_has_changed")
     result = runner.invoke(
         main,
         [
@@ -30,15 +27,13 @@ def test_cluster_config_has_changed_ok_with_hash(
     )
 
 
-def test_cluster_config_has_changed_ok_with_state_file(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_config_has_changed_ok_with_state_file(fake_restapi) -> None:
     runner = CliRunner()
 
     with open(here / "cluster_config_has_changed.state_file", "w") as f:
         f.write('{"hash": "96b12d82571473d13e890b893734e731"}')
 
-    my_mock(mocker, "cluster_config_has_changed")
+    fake_restapi("cluster_config_has_changed")
     result = runner.invoke(
         main,
         [
@@ -56,12 +51,10 @@ def test_cluster_config_has_changed_ok_with_state_file(
     )
 
 
-def test_cluster_config_has_changed_ko_with_hash(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_config_has_changed_ko_with_hash(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_config_has_changed")
+    fake_restapi("cluster_config_has_changed")
     result = runner.invoke(
         main,
         [
@@ -79,16 +72,13 @@ def test_cluster_config_has_changed_ko_with_hash(
     )
 
 
-def test_cluster_config_has_changed_ko_with_state_file_and_save(
-    mocker: MockerFixture,
-    use_old_replica_state: bool,
-) -> None:
+def test_cluster_config_has_changed_ko_with_state_file_and_save(fake_restapi) -> None:
     runner = CliRunner()
 
     with open(here / "cluster_config_has_changed.state_file", "w") as f:
         f.write('{"hash": "96b12d82571473d13e890b8937ffffff"}')
 
-    my_mock(mocker, "cluster_config_has_changed")
+    fake_restapi("cluster_config_has_changed")
     # test without saving the new hash
     result = runner.invoke(
         main,
@@ -139,13 +129,11 @@ def test_cluster_config_has_changed_ko_with_state_file_and_save(
     assert new_config_hash == "96b12d82571473d13e890b893734e731"
 
 
-def test_cluster_config_has_changed_params(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_config_has_changed_params(fake_restapi) -> None:
     # This one is placed last because it seems like the exceptions are not flushed from stderr for the next tests.
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_config_has_changed")
+    fake_restapi("cluster_config_has_changed")
     result = runner.invoke(
         main,
         [

@@ -1,17 +1,12 @@
 from click.testing import CliRunner
-from pytest_mock import MockerFixture
 
 from check_patroni.cli import main
 
-from .tools import my_mock
 
-
-def test_cluster_is_in_maintenance_ok(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_is_in_maintenance_ok(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_is_in_maintenance_ok")
+    fake_restapi("cluster_is_in_maintenance_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_is_in_maintenance"]
     )
@@ -22,12 +17,10 @@ def test_cluster_is_in_maintenance_ok(
     )
 
 
-def test_cluster_is_in_maintenance_ko(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_is_in_maintenance_ko(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_is_in_maintenance_ko")
+    fake_restapi("cluster_is_in_maintenance_ko")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_is_in_maintenance"]
     )
@@ -38,12 +31,10 @@ def test_cluster_is_in_maintenance_ko(
     )
 
 
-def test_cluster_is_in_maintenance_ok_pause_false(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_is_in_maintenance_ok_pause_false(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_is_in_maintenance_ok_pause_false")
+    fake_restapi("cluster_is_in_maintenance_ok_pause_false")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_is_in_maintenance"]
     )

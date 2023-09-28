@@ -1,17 +1,12 @@
 from click.testing import CliRunner
-from pytest_mock import MockerFixture
 
 from check_patroni.cli import main
 
-from .tools import my_mock
 
-
-def test_node_patroni_version_ok(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_node_patroni_version_ok(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_patroni_version")
+    fake_restapi("node_patroni_version")
     result = runner.invoke(
         main,
         [
@@ -29,12 +24,10 @@ def test_node_patroni_version_ok(
     )
 
 
-def test_node_patroni_version_ko(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_node_patroni_version_ko(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_patroni_version")
+    fake_restapi("node_patroni_version")
     result = runner.invoke(
         main,
         [

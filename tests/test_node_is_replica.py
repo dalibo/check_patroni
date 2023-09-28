@@ -1,15 +1,12 @@
 from click.testing import CliRunner
-from pytest_mock import MockerFixture
 
 from check_patroni.cli import main
 
-from .tools import my_mock
 
-
-def test_node_is_replica_ok(mocker: MockerFixture, use_old_replica_state: bool) -> None:
+def test_node_is_replica_ok(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_is_replica_ok")
+    fake_restapi("node_is_replica_ok")
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_replica"])
     assert result.exit_code == 0
     assert (
@@ -18,10 +15,10 @@ def test_node_is_replica_ok(mocker: MockerFixture, use_old_replica_state: bool) 
     )
 
 
-def test_node_is_replica_ko(mocker: MockerFixture, use_old_replica_state: bool) -> None:
+def test_node_is_replica_ko(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_is_replica_ko", status=503)
+    fake_restapi("node_is_replica_ko", status=503)
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_replica"])
     assert result.exit_code == 2
     assert (
@@ -30,13 +27,11 @@ def test_node_is_replica_ko(mocker: MockerFixture, use_old_replica_state: bool) 
     )
 
 
-def test_node_is_replica_ko_lag(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_node_is_replica_ko_lag(fake_restapi) -> None:
     runner = CliRunner()
 
     # We don't do the check ourselves, patroni does it and changes the return code
-    my_mock(mocker, "node_is_replica_ok", status=503)
+    fake_restapi("node_is_replica_ok", status=503)
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "node_is_replica", "--max-lag", "100"]
     )
@@ -46,7 +41,7 @@ def test_node_is_replica_ko_lag(
         == "NODEISREPLICA CRITICAL - This node is not a running replica with no noloadbalance tag and a lag under 100. | is_replica=0;;@0\n"
     )
 
-    my_mock(mocker, "node_is_replica_ok", status=503)
+    fake_restapi("node_is_replica_ok", status=503)
     result = runner.invoke(
         main,
         [
@@ -65,13 +60,11 @@ def test_node_is_replica_ko_lag(
     )
 
 
-def test_node_is_replica_sync_ok(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_node_is_replica_sync_ok(fake_restapi) -> None:
     runner = CliRunner()
 
     # We don't do the check ourselves, patroni does it and changes the return code
-    my_mock(mocker, "node_is_replica_ok")
+    fake_restapi("node_is_replica_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "node_is_replica", "--is-sync"]
     )
@@ -82,13 +75,11 @@ def test_node_is_replica_sync_ok(
     )
 
 
-def test_node_is_replica_sync_ko(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_node_is_replica_sync_ko(fake_restapi) -> None:
     runner = CliRunner()
 
     # We don't do the check ourselves, patroni does it and changes the return code
-    my_mock(mocker, "node_is_replica_ok", status=503)
+    fake_restapi("node_is_replica_ok", status=503)
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "node_is_replica", "--is-sync"]
     )
@@ -99,13 +90,11 @@ def test_node_is_replica_sync_ko(
     )
 
 
-def test_node_is_replica_async_ok(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_node_is_replica_async_ok(fake_restapi) -> None:
     runner = CliRunner()
 
     # We don't do the check ourselves, patroni does it and changes the return code
-    my_mock(mocker, "node_is_replica_ok")
+    fake_restapi("node_is_replica_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "node_is_replica", "--is-async"]
     )
@@ -116,13 +105,11 @@ def test_node_is_replica_async_ok(
     )
 
 
-def test_node_is_replica_async_ko(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_node_is_replica_async_ko(fake_restapi) -> None:
     runner = CliRunner()
 
     # We don't do the check ourselves, patroni does it and changes the return code
-    my_mock(mocker, "node_is_replica_ok", status=503)
+    fake_restapi("node_is_replica_ok", status=503)
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "node_is_replica", "--is-async"]
     )
@@ -133,13 +120,11 @@ def test_node_is_replica_async_ko(
     )
 
 
-def test_node_is_replica_params(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_node_is_replica_params(fake_restapi) -> None:
     runner = CliRunner()
 
     # We don't do the check ourselves, patroni does it and changes the return code
-    my_mock(mocker, "node_is_replica_ok")
+    fake_restapi("node_is_replica_ok")
     result = runner.invoke(
         main,
         [
@@ -157,7 +142,7 @@ def test_node_is_replica_params(
     )
 
     # We don't do the check ourselves, patroni does it and changes the return code
-    my_mock(mocker, "node_is_replica_ok")
+    fake_restapi("node_is_replica_ok")
     result = runner.invoke(
         main,
         [

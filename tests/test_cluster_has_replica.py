@@ -1,20 +1,13 @@
 from click.testing import CliRunner
-from pytest_mock import MockerFixture
 
 from check_patroni.cli import main
 
-from .tools import my_mock
-
 
 # TODO Lag threshold tests
-def test_cluster_has_relica_ok(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_has_relica_ok(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(
-        mocker, "cluster_has_replica_ok", use_old_replica_state=use_old_replica_state
-    )
+    fake_restapi("cluster_has_replica_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_replica"]
     )
@@ -25,14 +18,10 @@ def test_cluster_has_relica_ok(
     )
 
 
-def test_cluster_has_replica_ok_with_count_thresholds(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_has_replica_ok_with_count_thresholds(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(
-        mocker, "cluster_has_replica_ok", use_old_replica_state=use_old_replica_state
-    )
+    fake_restapi("cluster_has_replica_ok")
     result = runner.invoke(
         main,
         [
@@ -52,14 +41,10 @@ def test_cluster_has_replica_ok_with_count_thresholds(
     )
 
 
-def test_cluster_has_replica_ok_with_sync_count_thresholds(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_has_replica_ok_with_sync_count_thresholds(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(
-        mocker, "cluster_has_replica_ok", use_old_replica_state=use_old_replica_state
-    )
+    fake_restapi("cluster_has_replica_ok")
     result = runner.invoke(
         main,
         [
@@ -77,17 +62,10 @@ def test_cluster_has_replica_ok_with_sync_count_thresholds(
     )
 
 
-def test_cluster_has_replica_ok_with_count_thresholds_lag(
-    mocker: MockerFixture,
-    use_old_replica_state: bool,
-) -> None:
+def test_cluster_has_replica_ok_with_count_thresholds_lag(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(
-        mocker,
-        "cluster_has_replica_ok_lag",
-        use_old_replica_state=use_old_replica_state,
-    )
+    fake_restapi("cluster_has_replica_ok_lag")
     result = runner.invoke(
         main,
         [
@@ -109,14 +87,10 @@ def test_cluster_has_replica_ok_with_count_thresholds_lag(
     )
 
 
-def test_cluster_has_replica_ko_with_count_thresholds(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_has_replica_ko_with_count_thresholds(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(
-        mocker, "cluster_has_replica_ko", use_old_replica_state=use_old_replica_state
-    )
+    fake_restapi("cluster_has_replica_ko")
     result = runner.invoke(
         main,
         [
@@ -136,14 +110,10 @@ def test_cluster_has_replica_ko_with_count_thresholds(
     )
 
 
-def test_cluster_has_replica_ko_with_sync_count_thresholds(
-    mocker: MockerFixture, use_old_replica_state: bool
-) -> None:
+def test_cluster_has_replica_ko_with_sync_count_thresholds(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(
-        mocker, "cluster_has_replica_ko", use_old_replica_state=use_old_replica_state
-    )
+    fake_restapi("cluster_has_replica_ko")
     result = runner.invoke(
         main,
         [
@@ -163,17 +133,10 @@ def test_cluster_has_replica_ko_with_sync_count_thresholds(
     )
 
 
-def test_cluster_has_replica_ko_with_count_thresholds_and_lag(
-    mocker: MockerFixture,
-    use_old_replica_state: bool,
-) -> None:
+def test_cluster_has_replica_ko_with_count_thresholds_and_lag(fake_restapi) -> None:
     runner = CliRunner()
 
-    my_mock(
-        mocker,
-        "cluster_has_replica_ko_lag",
-        use_old_replica_state=use_old_replica_state,
-    )
+    fake_restapi("cluster_has_replica_ko_lag")
     result = runner.invoke(
         main,
         [
