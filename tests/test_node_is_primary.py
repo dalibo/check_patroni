@@ -9,7 +9,7 @@ from .tools import my_mock
 def test_node_is_primary_ok(mocker: MockerFixture, use_old_replica_state: bool) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_is_primary_ok", 200)
+    my_mock(mocker, "node_is_primary_ok")
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_primary"])
     assert result.exit_code == 0
     assert (
@@ -21,7 +21,7 @@ def test_node_is_primary_ok(mocker: MockerFixture, use_old_replica_state: bool) 
 def test_node_is_primary_ko(mocker: MockerFixture, use_old_replica_state: bool) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_is_primary_ko", 503)
+    my_mock(mocker, "node_is_primary_ko", status=503)
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_primary"])
     assert result.exit_code == 2
     assert (

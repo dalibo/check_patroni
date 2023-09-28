@@ -11,7 +11,7 @@ def test_node_is_pending_restart_ok(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_is_pending_restart_ok", 200)
+    my_mock(mocker, "node_is_pending_restart_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "node_is_pending_restart"]
     )
@@ -27,7 +27,7 @@ def test_node_is_pending_restart_ko(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_is_pending_restart_ko", 200)
+    my_mock(mocker, "node_is_pending_restart_ko")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "node_is_pending_restart"]
     )

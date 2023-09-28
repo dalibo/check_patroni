@@ -9,7 +9,7 @@ from .tools import my_mock
 def test_node_is_alive_ok(mocker: MockerFixture, use_old_replica_state: bool) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, None, 200)
+    my_mock(mocker, None)
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_alive"])
     assert result.exit_code == 0
     assert (
@@ -21,7 +21,7 @@ def test_node_is_alive_ok(mocker: MockerFixture, use_old_replica_state: bool) ->
 def test_node_is_alive_ko(mocker: MockerFixture, use_old_replica_state: bool) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, None, 404)
+    my_mock(mocker, None, status=404)
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_alive"])
     assert result.exit_code == 2
     assert (

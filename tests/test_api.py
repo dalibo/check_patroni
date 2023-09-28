@@ -11,7 +11,7 @@ def test_api_status_code_200(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_is_pending_restart_ok", 200)
+    my_mock(mocker, "node_is_pending_restart_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "node_is_pending_restart"]
     )
@@ -23,7 +23,7 @@ def test_api_status_code_404(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "Fake test", 404)
+    my_mock(mocker, "Fake test", status=404)
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "node_is_pending_restart"]
     )

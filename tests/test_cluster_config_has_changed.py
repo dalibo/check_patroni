@@ -12,7 +12,7 @@ def test_cluster_config_has_changed_ok_with_hash(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_config_has_changed", 200)
+    my_mock(mocker, "cluster_config_has_changed")
     result = runner.invoke(
         main,
         [
@@ -38,7 +38,7 @@ def test_cluster_config_has_changed_ok_with_state_file(
     with open(here / "cluster_config_has_changed.state_file", "w") as f:
         f.write('{"hash": "96b12d82571473d13e890b893734e731"}')
 
-    my_mock(mocker, "cluster_config_has_changed", 200)
+    my_mock(mocker, "cluster_config_has_changed")
     result = runner.invoke(
         main,
         [
@@ -61,7 +61,7 @@ def test_cluster_config_has_changed_ko_with_hash(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_config_has_changed", 200)
+    my_mock(mocker, "cluster_config_has_changed")
     result = runner.invoke(
         main,
         [
@@ -88,7 +88,7 @@ def test_cluster_config_has_changed_ko_with_state_file_and_save(
     with open(here / "cluster_config_has_changed.state_file", "w") as f:
         f.write('{"hash": "96b12d82571473d13e890b8937ffffff"}')
 
-    my_mock(mocker, "cluster_config_has_changed", 200)
+    my_mock(mocker, "cluster_config_has_changed")
     # test without saving the new hash
     result = runner.invoke(
         main,
@@ -145,7 +145,7 @@ def test_cluster_config_has_changed_params(
     # This one is placed last because it seems like the exceptions are not flushed from stderr for the next tests.
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_config_has_changed", 200)
+    my_mock(mocker, "cluster_config_has_changed")
     result = runner.invoke(
         main,
         [

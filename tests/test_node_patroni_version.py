@@ -11,7 +11,7 @@ def test_node_patroni_version_ok(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_patroni_version", 200)
+    my_mock(mocker, "node_patroni_version")
     result = runner.invoke(
         main,
         [
@@ -34,7 +34,7 @@ def test_node_patroni_version_ko(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_patroni_version", 200)
+    my_mock(mocker, "node_patroni_version")
     result = runner.invoke(
         main,
         [

@@ -11,7 +11,7 @@ def test_cluster_has_leader_ok(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_has_leader_ok", 200)
+    my_mock(mocker, "cluster_has_leader_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_leader"]
     )
@@ -27,7 +27,7 @@ def test_cluster_has_leader_ok_standby_leader(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_has_leader_ok_standby_leader", 200)
+    my_mock(mocker, "cluster_has_leader_ok_standby_leader")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_leader"]
     )
@@ -43,7 +43,7 @@ def test_cluster_has_leader_ko(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_has_leader_ko", 200)
+    my_mock(mocker, "cluster_has_leader_ko")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_leader"]
     )

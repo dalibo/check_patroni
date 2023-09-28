@@ -11,7 +11,9 @@ def test_cluster_node_count_ok(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_node_count_ok", 200, use_old_replica_state)
+    my_mock(
+        mocker, "cluster_node_count_ok", use_old_replica_state=use_old_replica_state
+    )
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_node_count"]
     )
@@ -33,7 +35,9 @@ def test_cluster_node_count_ok_with_thresholds(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_node_count_ok", 200, use_old_replica_state)
+    my_mock(
+        mocker, "cluster_node_count_ok", use_old_replica_state=use_old_replica_state
+    )
     result = runner.invoke(
         main,
         [
@@ -68,7 +72,11 @@ def test_cluster_node_count_healthy_warning(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_node_count_healthy_warning", 200, use_old_replica_state)
+    my_mock(
+        mocker,
+        "cluster_node_count_healthy_warning",
+        use_old_replica_state=use_old_replica_state,
+    )
     result = runner.invoke(
         main,
         [
@@ -99,7 +107,11 @@ def test_cluster_node_count_healthy_critical(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_node_count_healthy_critical", 200, use_old_replica_state)
+    my_mock(
+        mocker,
+        "cluster_node_count_healthy_critical",
+        use_old_replica_state=use_old_replica_state,
+    )
     result = runner.invoke(
         main,
         [
@@ -124,7 +136,11 @@ def test_cluster_node_count_warning(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_node_count_warning", 200, use_old_replica_state)
+    my_mock(
+        mocker,
+        "cluster_node_count_warning",
+        use_old_replica_state=use_old_replica_state,
+    )
     result = runner.invoke(
         main,
         [
@@ -155,7 +171,11 @@ def test_cluster_node_count_critical(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_node_count_critical", 200, use_old_replica_state)
+    my_mock(
+        mocker,
+        "cluster_node_count_critical",
+        use_old_replica_state=use_old_replica_state,
+    )
     result = runner.invoke(
         main,
         [

@@ -9,7 +9,7 @@ from .tools import my_mock
 def test_node_is_leader_ok(mocker: MockerFixture, use_old_replica_state: bool) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_is_leader_ok", 200)
+    my_mock(mocker, "node_is_leader_ok")
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_leader"])
     assert result.exit_code == 0
     assert (
@@ -17,7 +17,7 @@ def test_node_is_leader_ok(mocker: MockerFixture, use_old_replica_state: bool) -
         == "NODEISLEADER OK - This node is a leader node. | is_leader=1;;@0\n"
     )
 
-    my_mock(mocker, "node_is_leader_ok_standby_leader", 200)
+    my_mock(mocker, "node_is_leader_ok_standby_leader")
     result = runner.invoke(
         main,
         ["-e", "https://10.20.199.3:8008", "node_is_leader", "--is-standby-leader"],
@@ -33,7 +33,7 @@ def test_node_is_leader_ok(mocker: MockerFixture, use_old_replica_state: bool) -
 def test_node_is_leader_ko(mocker: MockerFixture, use_old_replica_state: bool) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_is_leader_ko", 503)
+    my_mock(mocker, "node_is_leader_ko", status=503)
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_leader"])
     assert result.exit_code == 2
     assert (
@@ -41,7 +41,7 @@ def test_node_is_leader_ko(mocker: MockerFixture, use_old_replica_state: bool) -
         == "NODEISLEADER CRITICAL - This node is not a leader node. | is_leader=0;;@0\n"
     )
 
-    my_mock(mocker, "node_is_leader_ko_standby_leader", 503)
+    my_mock(mocker, "node_is_leader_ko_standby_leader", status=503)
     result = runner.invoke(
         main,
         ["-e", "https://10.20.199.3:8008", "node_is_leader", "--is-standby-leader"],

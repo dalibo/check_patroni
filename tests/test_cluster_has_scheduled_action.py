@@ -11,7 +11,7 @@ def test_cluster_has_scheduled_action_ok(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_has_scheduled_action_ok", 200)
+    my_mock(mocker, "cluster_has_scheduled_action_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_scheduled_action"]
     )
@@ -27,7 +27,7 @@ def test_cluster_has_scheduled_action_ko_switchover(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_has_scheduled_action_ko_switchover", 200)
+    my_mock(mocker, "cluster_has_scheduled_action_ko_switchover")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_scheduled_action"]
     )
@@ -43,7 +43,7 @@ def test_cluster_has_scheduled_action_ko_restart(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "cluster_has_scheduled_action_ko_restart", 200)
+    my_mock(mocker, "cluster_has_scheduled_action_ko_restart")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_scheduled_action"]
     )

@@ -21,7 +21,8 @@ def getjson(name: str) -> Any:
 def my_mock(
     mocker: MockerFixture,
     json_file: str,
-    status: int,
+    *,
+    status: int = 200,
     use_old_replica_state: bool = False,
 ) -> None:
     def mock_rest_api(self: PatroniResource, service: str) -> Any:

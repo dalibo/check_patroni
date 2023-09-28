@@ -12,7 +12,7 @@ def test_node_tl_has_changed_ok_with_timeline(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_tl_has_changed", 200)
+    my_mock(mocker, "node_tl_has_changed")
     result = runner.invoke(
         main,
         [
@@ -38,7 +38,7 @@ def test_node_tl_has_changed_ok_with_state_file(
     with open(here / "node_tl_has_changed.state_file", "w") as f:
         f.write('{"timeline": 58}')
 
-    my_mock(mocker, "node_tl_has_changed", 200)
+    my_mock(mocker, "node_tl_has_changed")
     result = runner.invoke(
         main,
         [
@@ -61,7 +61,7 @@ def test_node_tl_has_changed_ko_with_timeline(
 ) -> None:
     runner = CliRunner()
 
-    my_mock(mocker, "node_tl_has_changed", 200)
+    my_mock(mocker, "node_tl_has_changed")
     result = runner.invoke(
         main,
         [
@@ -87,7 +87,7 @@ def test_node_tl_has_changed_ko_with_state_file_and_save(
     with open(here / "node_tl_has_changed.state_file", "w") as f:
         f.write('{"timeline": 700}')
 
-    my_mock(mocker, "node_tl_has_changed", 200)
+    my_mock(mocker, "node_tl_has_changed")
     # test without saving the new tl
     result = runner.invoke(
         main,
@@ -144,7 +144,7 @@ def test_node_tl_has_changed_params(
     # This one is placed last because it seems like the exceptions are not flushed from stderr for the next tests.
     runner = CliRunner()
 
-    my_mock(mocker, "node_tl_has_changed", 200)
+    my_mock(mocker, "node_tl_has_changed")
     result = runner.invoke(
         main,
         [
