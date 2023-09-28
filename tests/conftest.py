@@ -2,6 +2,7 @@ from functools import partial
 from typing import Any, Callable
 
 import pytest
+from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
 from .tools import my_mock
@@ -26,3 +27,9 @@ def fake_restapi(
     mocker: MockerFixture, use_old_replica_state: bool
 ) -> Callable[..., Any]:
     return partial(my_mock, mocker, use_old_replica_state=use_old_replica_state)
+
+
+@pytest.fixture
+def runner() -> CliRunner:
+    """A CliRunner with stdout and stderr not mixed."""
+    return CliRunner(mix_stderr=False)

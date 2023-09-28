@@ -3,9 +3,7 @@ from click.testing import CliRunner
 from check_patroni.cli import main
 
 
-def test_cluster_has_leader_ok(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_cluster_has_leader_ok(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("cluster_has_leader_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_leader"]
@@ -17,9 +15,7 @@ def test_cluster_has_leader_ok(fake_restapi) -> None:
     )
 
 
-def test_cluster_has_leader_ok_standby_leader(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_cluster_has_leader_ok_standby_leader(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("cluster_has_leader_ok_standby_leader")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_leader"]
@@ -31,9 +27,7 @@ def test_cluster_has_leader_ok_standby_leader(fake_restapi) -> None:
     )
 
 
-def test_cluster_has_leader_ko(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_cluster_has_leader_ko(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("cluster_has_leader_ko")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_leader"]

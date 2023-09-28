@@ -3,9 +3,7 @@ from click.testing import CliRunner
 from check_patroni.cli import main
 
 
-def test_cluster_is_in_maintenance_ok(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_cluster_is_in_maintenance_ok(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("cluster_is_in_maintenance_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_is_in_maintenance"]
@@ -17,9 +15,7 @@ def test_cluster_is_in_maintenance_ok(fake_restapi) -> None:
     )
 
 
-def test_cluster_is_in_maintenance_ko(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_cluster_is_in_maintenance_ko(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("cluster_is_in_maintenance_ko")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_is_in_maintenance"]
@@ -31,9 +27,9 @@ def test_cluster_is_in_maintenance_ko(fake_restapi) -> None:
     )
 
 
-def test_cluster_is_in_maintenance_ok_pause_false(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_cluster_is_in_maintenance_ok_pause_false(
+    runner: CliRunner, fake_restapi
+) -> None:
     fake_restapi("cluster_is_in_maintenance_ok_pause_false")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_is_in_maintenance"]

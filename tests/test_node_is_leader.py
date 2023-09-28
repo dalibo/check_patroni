@@ -3,9 +3,7 @@ from click.testing import CliRunner
 from check_patroni.cli import main
 
 
-def test_node_is_leader_ok(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_is_leader_ok(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("node_is_leader_ok")
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_leader"])
     assert result.exit_code == 0
@@ -27,9 +25,7 @@ def test_node_is_leader_ok(fake_restapi) -> None:
     )
 
 
-def test_node_is_leader_ko(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_is_leader_ko(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("node_is_leader_ko", status=503)
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_leader"])
     assert result.exit_code == 2

@@ -3,9 +3,7 @@ from click.testing import CliRunner
 from check_patroni.cli import main
 
 
-def test_node_is_replica_ok(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_is_replica_ok(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("node_is_replica_ok")
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_replica"])
     assert result.exit_code == 0
@@ -15,9 +13,7 @@ def test_node_is_replica_ok(fake_restapi) -> None:
     )
 
 
-def test_node_is_replica_ko(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_is_replica_ko(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("node_is_replica_ko", status=503)
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_replica"])
     assert result.exit_code == 2
@@ -27,9 +23,7 @@ def test_node_is_replica_ko(fake_restapi) -> None:
     )
 
 
-def test_node_is_replica_ko_lag(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_is_replica_ko_lag(runner: CliRunner, fake_restapi) -> None:
     # We don't do the check ourselves, patroni does it and changes the return code
     fake_restapi("node_is_replica_ok", status=503)
     result = runner.invoke(
@@ -60,9 +54,7 @@ def test_node_is_replica_ko_lag(fake_restapi) -> None:
     )
 
 
-def test_node_is_replica_sync_ok(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_is_replica_sync_ok(runner: CliRunner, fake_restapi) -> None:
     # We don't do the check ourselves, patroni does it and changes the return code
     fake_restapi("node_is_replica_ok")
     result = runner.invoke(
@@ -75,9 +67,7 @@ def test_node_is_replica_sync_ok(fake_restapi) -> None:
     )
 
 
-def test_node_is_replica_sync_ko(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_is_replica_sync_ko(runner: CliRunner, fake_restapi) -> None:
     # We don't do the check ourselves, patroni does it and changes the return code
     fake_restapi("node_is_replica_ok", status=503)
     result = runner.invoke(
@@ -90,9 +80,7 @@ def test_node_is_replica_sync_ko(fake_restapi) -> None:
     )
 
 
-def test_node_is_replica_async_ok(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_is_replica_async_ok(runner: CliRunner, fake_restapi) -> None:
     # We don't do the check ourselves, patroni does it and changes the return code
     fake_restapi("node_is_replica_ok")
     result = runner.invoke(
@@ -105,9 +93,7 @@ def test_node_is_replica_async_ok(fake_restapi) -> None:
     )
 
 
-def test_node_is_replica_async_ko(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_is_replica_async_ko(runner: CliRunner, fake_restapi) -> None:
     # We don't do the check ourselves, patroni does it and changes the return code
     fake_restapi("node_is_replica_ok", status=503)
     result = runner.invoke(
@@ -120,9 +106,7 @@ def test_node_is_replica_async_ko(fake_restapi) -> None:
     )
 
 
-def test_node_is_replica_params(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_is_replica_params(runner: CliRunner, fake_restapi) -> None:
     # We don't do the check ourselves, patroni does it and changes the return code
     fake_restapi("node_is_replica_ok")
     result = runner.invoke(

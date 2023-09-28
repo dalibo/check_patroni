@@ -6,9 +6,9 @@ from click.testing import CliRunner
 from check_patroni.cli import main
 
 
-def test_cluster_config_has_changed_ok_with_hash(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_cluster_config_has_changed_ok_with_hash(
+    runner: CliRunner, fake_restapi
+) -> None:
     fake_restapi("cluster_config_has_changed")
     result = runner.invoke(
         main,
@@ -28,10 +28,8 @@ def test_cluster_config_has_changed_ok_with_hash(fake_restapi) -> None:
 
 
 def test_cluster_config_has_changed_ok_with_state_file(
-    fake_restapi, tmp_path: Path
+    runner: CliRunner, fake_restapi, tmp_path: Path
 ) -> None:
-    runner = CliRunner()
-
     state_file = tmp_path / "cluster_config_has_changed.state_file"
     with state_file.open("w") as f:
         f.write('{"hash": "96b12d82571473d13e890b893734e731"}')
@@ -54,9 +52,9 @@ def test_cluster_config_has_changed_ok_with_state_file(
     )
 
 
-def test_cluster_config_has_changed_ko_with_hash(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_cluster_config_has_changed_ko_with_hash(
+    runner: CliRunner, fake_restapi
+) -> None:
     fake_restapi("cluster_config_has_changed")
     result = runner.invoke(
         main,
@@ -76,10 +74,8 @@ def test_cluster_config_has_changed_ko_with_hash(fake_restapi) -> None:
 
 
 def test_cluster_config_has_changed_ko_with_state_file_and_save(
-    fake_restapi, tmp_path: Path
+    runner: CliRunner, fake_restapi, tmp_path: Path
 ) -> None:
-    runner = CliRunner()
-
     state_file = tmp_path / "cluster_config_has_changed.state_file"
     with state_file.open("w") as f:
         f.write('{"hash": "96b12d82571473d13e890b8937ffffff"}')
@@ -136,10 +132,10 @@ def test_cluster_config_has_changed_ko_with_state_file_and_save(
     assert new_config_hash == "96b12d82571473d13e890b893734e731"
 
 
-def test_cluster_config_has_changed_params(fake_restapi, tmp_path: Path) -> None:
+def test_cluster_config_has_changed_params(
+    runner: CliRunner, fake_restapi, tmp_path: Path
+) -> None:
     # This one is placed last because it seems like the exceptions are not flushed from stderr for the next tests.
-    runner = CliRunner()
-
     fake_state_file = tmp_path / "fake_file_name.state_file"
     fake_restapi("cluster_config_has_changed")
     result = runner.invoke(

@@ -3,9 +3,7 @@ from click.testing import CliRunner
 from check_patroni.cli import main
 
 
-def test_node_patroni_version_ok(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_patroni_version_ok(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("node_patroni_version")
     result = runner.invoke(
         main,
@@ -24,9 +22,7 @@ def test_node_patroni_version_ok(fake_restapi) -> None:
     )
 
 
-def test_node_patroni_version_ko(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_patroni_version_ko(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("node_patroni_version")
     result = runner.invoke(
         main,

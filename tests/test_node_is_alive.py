@@ -3,9 +3,7 @@ from click.testing import CliRunner
 from check_patroni.cli import main
 
 
-def test_node_is_alive_ok(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_is_alive_ok(runner: CliRunner, fake_restapi) -> None:
     fake_restapi(None)
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_alive"])
     assert result.exit_code == 0
@@ -15,9 +13,7 @@ def test_node_is_alive_ok(fake_restapi) -> None:
     )
 
 
-def test_node_is_alive_ko(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_node_is_alive_ko(runner: CliRunner, fake_restapi) -> None:
     fake_restapi(None, status=404)
     result = runner.invoke(main, ["-e", "https://10.20.199.3:8008", "node_is_alive"])
     assert result.exit_code == 2

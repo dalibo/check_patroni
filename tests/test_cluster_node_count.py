@@ -3,9 +3,9 @@ from click.testing import CliRunner
 from check_patroni.cli import main
 
 
-def test_cluster_node_count_ok(fake_restapi, use_old_replica_state: bool) -> None:
-    runner = CliRunner()
-
+def test_cluster_node_count_ok(
+    runner: CliRunner, fake_restapi, use_old_replica_state: bool
+) -> None:
     fake_restapi("cluster_node_count_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_node_count"]
@@ -24,10 +24,8 @@ def test_cluster_node_count_ok(fake_restapi, use_old_replica_state: bool) -> Non
 
 
 def test_cluster_node_count_ok_with_thresholds(
-    fake_restapi, use_old_replica_state: bool
+    runner: CliRunner, fake_restapi, use_old_replica_state: bool
 ) -> None:
-    runner = CliRunner()
-
     fake_restapi("cluster_node_count_ok")
     result = runner.invoke(
         main,
@@ -59,10 +57,8 @@ def test_cluster_node_count_ok_with_thresholds(
 
 
 def test_cluster_node_count_healthy_warning(
-    fake_restapi, use_old_replica_state: bool
+    runner: CliRunner, fake_restapi, use_old_replica_state: bool
 ) -> None:
-    runner = CliRunner()
-
     fake_restapi("cluster_node_count_healthy_warning")
     result = runner.invoke(
         main,
@@ -89,9 +85,7 @@ def test_cluster_node_count_healthy_warning(
         )
 
 
-def test_cluster_node_count_healthy_critical(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_cluster_node_count_healthy_critical(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("cluster_node_count_healthy_critical")
     result = runner.invoke(
         main,
@@ -112,9 +106,9 @@ def test_cluster_node_count_healthy_critical(fake_restapi) -> None:
     )
 
 
-def test_cluster_node_count_warning(fake_restapi, use_old_replica_state: bool) -> None:
-    runner = CliRunner()
-
+def test_cluster_node_count_warning(
+    runner: CliRunner, fake_restapi, use_old_replica_state: bool
+) -> None:
     fake_restapi("cluster_node_count_warning")
     result = runner.invoke(
         main,
@@ -141,9 +135,7 @@ def test_cluster_node_count_warning(fake_restapi, use_old_replica_state: bool) -
         )
 
 
-def test_cluster_node_count_critical(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_cluster_node_count_critical(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("cluster_node_count_critical")
     result = runner.invoke(
         main,

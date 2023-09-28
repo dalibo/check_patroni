@@ -3,9 +3,7 @@ from click.testing import CliRunner
 from check_patroni.cli import main
 
 
-def test_cluster_has_scheduled_action_ok(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_cluster_has_scheduled_action_ok(runner: CliRunner, fake_restapi) -> None:
     fake_restapi("cluster_has_scheduled_action_ok")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_scheduled_action"]
@@ -17,9 +15,9 @@ def test_cluster_has_scheduled_action_ok(fake_restapi) -> None:
     )
 
 
-def test_cluster_has_scheduled_action_ko_switchover(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_cluster_has_scheduled_action_ko_switchover(
+    runner: CliRunner, fake_restapi
+) -> None:
     fake_restapi("cluster_has_scheduled_action_ko_switchover")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_scheduled_action"]
@@ -31,9 +29,9 @@ def test_cluster_has_scheduled_action_ko_switchover(fake_restapi) -> None:
     )
 
 
-def test_cluster_has_scheduled_action_ko_restart(fake_restapi) -> None:
-    runner = CliRunner()
-
+def test_cluster_has_scheduled_action_ko_restart(
+    runner: CliRunner, fake_restapi
+) -> None:
     fake_restapi("cluster_has_scheduled_action_ko_restart")
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_scheduled_action"]
