@@ -14,7 +14,7 @@ def replace_chars(text: str) -> str:
 
 
 class ClusterNodeCount(PatroniResource):
-    def probe(self: "ClusterNodeCount") -> Iterable[nagiosplugin.Metric]:
+    def probe(self) -> Iterable[nagiosplugin.Metric]:
         item_dict = self.rest_api("cluster")
         role_counters: Counter[str] = Counter()
         roles = []
@@ -48,7 +48,7 @@ class ClusterNodeCount(PatroniResource):
 
 
 class ClusterHasLeader(PatroniResource):
-    def probe(self: "ClusterHasLeader") -> Iterable[nagiosplugin.Metric]:
+    def probe(self) -> Iterable[nagiosplugin.Metric]:
         item_dict = self.rest_api("cluster")
 
         is_leader_found = False
@@ -69,24 +69,20 @@ class ClusterHasLeader(PatroniResource):
 
 
 class ClusterHasLeaderSummary(nagiosplugin.Summary):
-    def ok(self: "ClusterHasLeaderSummary", results: nagiosplugin.Result) -> str:
+    def ok(self, results: nagiosplugin.Result) -> str:
         return "The cluster has a running leader."
 
     @handle_unknown
-    def problem(self: "ClusterHasLeaderSummary", results: nagiosplugin.Result) -> str:
+    def problem(self, results: nagiosplugin.Result) -> str:
         return "The cluster has no running leader."
 
 
 class ClusterHasReplica(PatroniResource):
-    def __init__(
-        self: "ClusterHasReplica",
-        connection_info: ConnectionInfo,
-        max_lag: Union[int, None],
-    ):
+    def __init__(self, connection_info: ConnectionInfo, max_lag: Union[int, None]):
         super().__init__(connection_info)
         self.max_lag = max_lag
 
-    def probe(self: "ClusterHasReplica") -> Iterable[nagiosplugin.Metric]:
+    def probe(self) -> Iterable[nagiosplugin.Metric]:
         item_dict = self.rest_api("cluster")
 
         replicas = []
@@ -140,7 +136,7 @@ class ClusterHasReplica(PatroniResource):
 
 class ClusterConfigHasChanged(PatroniResource):
     def __init__(
-        self: "ClusterConfigHasChanged",
+        self,
         connection_info: ConnectionInfo,
         config_hash: str,  # Always contains the old hash
         state_file: str,  # Only used to update the hash in the state_file (when needed)
@@ -151,7 +147,7 @@ class ClusterConfigHasChanged(PatroniResource):
         self.config_hash = config_hash
         self.save = save
 
-    def probe(self: "ClusterConfigHasChanged") -> Iterable[nagiosplugin.Metric]:
+    def probe(self) -> Iterable[nagiosplugin.Metric]:
         item_dict = self.rest_api("config")
 
         new_hash = hashlib.md5(json.dumps(item_dict).encode()).hexdigest()
@@ -183,23 +179,21 @@ class ClusterConfigHasChanged(PatroniResource):
 
 
 class ClusterConfigHasChangedSummary(nagiosplugin.Summary):
-    def __init__(self: "ClusterConfigHasChangedSummary", config_hash: str) -> None:
+    def __init__(self, config_hash: str) -> None:
         self.old_config_hash = config_hash
 
     # Note: It would be helpful to display the old / new hash here. Unfortunately, it's not a metric.
     # So we only have the old / expected one.
-    def ok(self: "ClusterConfigHasChangedSummary", results: nagiosplugin.Result) -> str:
+    def ok(self, results: nagiosplugin.Result) -> str:
         return f"The hash of patroni's dynamic configuration has not changed ({self.old_config_hash})."
 
     @handle_unknown
-    def problem(
-        self: "ClusterConfigHasChangedSummary", results: nagiosplugin.Result
-    ) -> str:
+    def problem(self, results: nagiosplugin.Result) -> str:
         return f"The hash of patroni's dynamic configuration has changed. The old hash was {self.old_config_hash}."
 
 
 class ClusterIsInMaintenance(PatroniResource):
-    def probe(self: "ClusterIsInMaintenance") -> Iterable[nagiosplugin.Metric]:
+    def probe(self) -> Iterable[nagiosplugin.Metric]:
         item_dict = self.rest_api("cluster")
 
         # The actual check
@@ -212,7 +206,7 @@ class ClusterIsInMaintenance(PatroniResource):
 
 
 class ClusterHasScheduledAction(PatroniResource):
-    def probe(self: "ClusterIsInMaintenance") -> Iterable[nagiosplugin.Metric]:
+    def probe(self) -> Iterable[nagiosplugin.Metric]:
         item_dict = self.rest_api("cluster")
 
         scheduled_switchover = 0
