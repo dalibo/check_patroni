@@ -32,7 +32,7 @@ class Parameters:
 class PatroniResource(nagiosplugin.Resource):
     conn_info: ConnectionInfo
 
-    def rest_api(self: "PatroniResource", service: str) -> Any:
+    def rest_api(self, service: str) -> Any:
         """Try to connect to all the provided endpoints for the requested service"""
         for endpoint in self.conn_info.endpoints:
             cert: Optional[Union[Tuple[str, str], str]] = None

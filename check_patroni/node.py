@@ -7,7 +7,7 @@ from .types import APIError, ConnectionInfo, PatroniResource, handle_unknown
 
 
 class NodeIsPrimary(PatroniResource):
-    def probe(self: "NodeIsPrimary") -> Iterable[nagiosplugin.Metric]:
+    def probe(self) -> Iterable[nagiosplugin.Metric]:
         try:
             self.rest_api("primary")
         except APIError:
@@ -16,24 +16,22 @@ class NodeIsPrimary(PatroniResource):
 
 
 class NodeIsPrimarySummary(nagiosplugin.Summary):
-    def ok(self: "NodeIsPrimarySummary", results: nagiosplugin.Result) -> str:
+    def ok(self, results: nagiosplugin.Result) -> str:
         return "This node is the primary with the leader lock."
 
     @handle_unknown
-    def problem(self: "NodeIsPrimarySummary", results: nagiosplugin.Result) -> str:
+    def problem(self, results: nagiosplugin.Result) -> str:
         return "This node is not the primary with the leader lock."
 
 
 class NodeIsLeader(PatroniResource):
     def __init__(
-        self: "NodeIsLeader",
-        connection_info: ConnectionInfo,
-        check_is_standby_leader: bool,
+        self, connection_info: ConnectionInfo, check_is_standby_leader: bool
     ) -> None:
         super().__init__(connection_info)
         self.check_is_standby_leader = check_is_standby_leader
 
-    def probe(self: "NodeIsLeader") -> Iterable[nagiosplugin.Metric]:
+    def probe(self) -> Iterable[nagiosplugin.Metric]:
         apiname = "leader"
         if self.check_is_standby_leader:
             apiname = "standby-leader"
@@ -46,26 +44,23 @@ class NodeIsLeader(PatroniResource):
 
 
 class NodeIsLeaderSummary(nagiosplugin.Summary):
-    def __init__(
-        self: "NodeIsLeaderSummary",
-        check_is_standby_leader: bool,
-    ) -> None:
+    def __init__(self, check_is_standby_leader: bool) -> None:
         if check_is_standby_leader:
             self.leader_kind = "standby leader"
         else:
             self.leader_kind = "leader"
 
-    def ok(self: "NodeIsLeaderSummary", results: nagiosplugin.Result) -> str:
+    def ok(self, results: nagiosplugin.Result) -> str:
         return f"This node is a {self.leader_kind} node."
 
     @handle_unknown
-    def problem(self: "NodeIsLeaderSummary", results: nagiosplugin.Result) -> str:
+    def problem(self, results: nagiosplugin.Result) -> str:
         return f"This node is not a {self.leader_kind} node."
 
 
 class NodeIsReplica(PatroniResource):
     def __init__(
-        self: "NodeIsReplica",
+        self,
         connection_info: ConnectionInfo,
         max_lag: str,
         check_is_sync: bool,
@@ -76,7 +71,7 @@ class NodeIsReplica(PatroniResource):
         self.check_is_sync = check_is_sync
         self.check_is_async = check_is_async
 
-    def probe(self: "NodeIsReplica") -> Iterable[nagiosplugin.Metric]:
+    def probe(self) -> Iterable[nagiosplugin.Metric]:
         try:
             if self.check_is_sync:
                 api_name = "synchronous"
@@ -95,12 +90,7 @@ class NodeIsReplica(PatroniResource):
 
 
 class NodeIsReplicaSummary(nagiosplugin.Summary):
-    def __init__(
-        self: "NodeIsReplicaSummary",
-        lag: str,
-        check_is_sync: bool,
-        check_is_async: bool,
-    ) -> None:
+    def __init__(self, lag: str, check_is_sync: bool, check_is_async: bool) -> None:
         self.lag = lag
         if check_is_sync:
             self.replica_kind = "synchronous replica"
@@ -109,7 +99,7 @@ class NodeIsReplicaSummary(nagiosplugin.Summary):
         else:
             self.replica_kind = "replica"
 
-    def ok(self: "NodeIsReplicaSummary", results: nagiosplugin.Result) -> str:
+    def ok(self, results: nagiosplugin.Result) -> str:
         if self.lag is None:
             return (
                 f"This node is a running {self.replica_kind} with no noloadbalance tag."
@@ -117,14 +107,14 @@ class NodeIsReplicaSummary(nagiosplugin.Summary):
         return f"This node is a running {self.replica_kind} with no noloadbalance tag and the lag is under {self.lag}."
 
     @handle_unknown
-    def problem(self: "NodeIsReplicaSummary", results: nagiosplugin.Result) -> str:
+    def problem(self, results: nagiosplugin.Result) -> str:
         if self.lag is None:
             return f"This node is not a running {self.replica_kind} with no noloadbalance tag."
         return f"This node is not a running {self.replica_kind} with no noloadbalance tag and a lag under {self.lag}."
 
 
 class NodeIsPendingRestart(PatroniResource):
-    def probe(self: "NodeIsPendingRestart") -> Iterable[nagiosplugin.Metric]:
+    def probe(self) -> Iterable[nagiosplugin.Metric]:
         item_dict = self.rest_api("patroni")
 
         is_pending_restart = item_dict.get("pending_restart", False)
@@ -137,19 +127,17 @@ class NodeIsPendingRestart(PatroniResource):
 
 
 class NodeIsPendingRestartSummary(nagiosplugin.Summary):
-    def ok(self: "NodeIsPendingRestartSummary", results: nagiosplugin.Result) -> str:
+    def ok(self, results: nagiosplugin.Result) -> str:
         return "This node doesn't have the pending restart flag."
 
     @handle_unknown
-    def problem(
-        self: "NodeIsPendingRestartSummary", results: nagiosplugin.Result
-    ) -> str:
+    def problem(self, results: nagiosplugin.Result) -> str:
         return "This node has the pending restart flag."
 
 
 class NodeTLHasChanged(PatroniResource):
     def __init__(
-        self: "NodeTLHasChanged",
+        self,
         connection_info: ConnectionInfo,
         timeline: str,  # Always contains the old timeline
         state_file: str,  # Only used to update the timeline in the state_file (when needed)
@@ -160,7 +148,7 @@ class NodeTLHasChanged(PatroniResource):
         self.timeline = timeline
         self.save = save
 
-    def probe(self: "NodeTLHasChanged") -> Iterable[nagiosplugin.Metric]:
+    def probe(self) -> Iterable[nagiosplugin.Metric]:
         item_dict = self.rest_api("patroni")
         new_tl = item_dict["timeline"]
 
@@ -193,27 +181,23 @@ class NodeTLHasChanged(PatroniResource):
 
 
 class NodeTLHasChangedSummary(nagiosplugin.Summary):
-    def __init__(self: "NodeTLHasChangedSummary", timeline: str) -> None:
+    def __init__(self, timeline: str) -> None:
         self.timeline = timeline
 
-    def ok(self: "NodeTLHasChangedSummary", results: nagiosplugin.Result) -> str:
+    def ok(self, results: nagiosplugin.Result) -> str:
         return f"The timeline is still {self.timeline}."
 
     @handle_unknown
-    def problem(self: "NodeTLHasChangedSummary", results: nagiosplugin.Result) -> str:
+    def problem(self, results: nagiosplugin.Result) -> str:
         return f"The expected timeline was {self.timeline} got {results['timeline'].metric}."
 
 
 class NodePatroniVersion(PatroniResource):
-    def __init__(
-        self: "NodePatroniVersion",
-        connection_info: ConnectionInfo,
-        patroni_version: str,
-    ) -> None:
+    def __init__(self, connection_info: ConnectionInfo, patroni_version: str) -> None:
         super().__init__(connection_info)
         self.patroni_version = patroni_version
 
-    def probe(self: "NodePatroniVersion") -> Iterable[nagiosplugin.Metric]:
+    def probe(self) -> Iterable[nagiosplugin.Metric]:
         item_dict = self.rest_api("patroni")
 
         version = item_dict["patroni"]["version"]
@@ -232,21 +216,21 @@ class NodePatroniVersion(PatroniResource):
 
 
 class NodePatroniVersionSummary(nagiosplugin.Summary):
-    def __init__(self: "NodePatroniVersionSummary", patroni_version: str) -> None:
+    def __init__(self, patroni_version: str) -> None:
         self.patroni_version = patroni_version
 
-    def ok(self: "NodePatroniVersionSummary", results: nagiosplugin.Result) -> str:
+    def ok(self, results: nagiosplugin.Result) -> str:
         return f"Patroni's version is {self.patroni_version}."
 
     @handle_unknown
-    def problem(self: "NodePatroniVersionSummary", results: nagiosplugin.Result) -> str:
+    def problem(self, results: nagiosplugin.Result) -> str:
         # FIXME find a way to make the following work, check is perf data can be strings
         # return f"The expected patroni version was {self.patroni_version} got {results['patroni_version'].metric}."
         return f"Patroni's version is not {self.patroni_version}."
 
 
 class NodeIsAlive(PatroniResource):
-    def probe(self: "NodeIsAlive") -> Iterable[nagiosplugin.Metric]:
+    def probe(self) -> Iterable[nagiosplugin.Metric]:
         try:
             self.rest_api("liveness")
         except APIError:
@@ -255,9 +239,9 @@ class NodeIsAlive(PatroniResource):
 
 
 class NodeIsAliveSummary(nagiosplugin.Summary):
-    def ok(self: "NodeIsAliveSummary", results: nagiosplugin.Result) -> str:
+    def ok(self, results: nagiosplugin.Result) -> str:
         return "This node is alive (patroni is running)."
 
     @handle_unknown
-    def problem(self: "NodeIsAliveSummary", results: nagiosplugin.Result) -> str:
+    def problem(self, results: nagiosplugin.Result) -> str:
         return "This node is not alive (patroni is not running)."
