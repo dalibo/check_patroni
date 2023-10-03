@@ -66,7 +66,7 @@ Running the tests,
 * manually:
 
   ```bash
-  pytest tests
+  pytest --cov tests
   ```
 
 * or using tox:
