@@ -328,7 +328,7 @@ Usage: check_patroni node_is_pending_restart [OPTIONS]
 
   Check if the node is in pending restart state.
 
-  This situation can arise if the configuration has been modified but requiers
+  This situation can arise if the configuration has been modified but requires
   a restart of PostgreSQL to take effect.
 
   Check:

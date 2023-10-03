@@ -610,7 +610,7 @@ def node_is_pending_restart(ctx: click.Context) -> None:
     """Check if the node is in pending restart state.
 
     This situation can arise if the configuration has been modified but
-    requiers a restart of PostgreSQL to take effect.
+    requires a restart of PostgreSQL to take effect.
 
     \b
     Check:
