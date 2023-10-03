@@ -29,10 +29,10 @@ def my_mock(
         if status != 200:
             raise APIError("Test en erreur pour status code 200")
         if json_file:
-            if use_old_replica_state and (
-                json_file.startswith("cluster_has_replica")
-                or json_file.startswith("cluster_node_count")
-            ):
+            if use_old_replica_state:
+                assert json_file.startswith(
+                    "cluster_has_replica"
+                ) or json_file.startswith("cluster_node_count")
                 return cluster_api_set_replica_running(getjson(json_file))
             return getjson(json_file)
         return None

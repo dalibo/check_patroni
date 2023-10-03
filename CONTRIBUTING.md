@@ -61,21 +61,15 @@ erroneously.
 The tests are executed automatically for each PR using the ci (see
 `.github/workflow/lint.yml` and `.github/workflow/tests.yml`).
 
-Running the tests manually:
+Running the tests,
 
-* Using patroni's nominal replica state of `streaming` (since v3.0.4):
-
-  ```bash
-  pytest ./tests
-  ```
-
-* Using patroni's nominal replica state of `running` (before v3.0.4):
+* manually:
 
   ```bash
-  pytest --use-old-replica-state ./tests
+  pytest tests
   ```
 
-* Using tox:
+* or using tox:
 
   ```bash
   tox -e lint    # mypy + flake8 + black + isort ° codespell
@@ -83,9 +77,9 @@ Running the tests manually:
   tox -e py      # pytests and "lint" tests for the default version of python
   ```
 
-Please note that when dealing with any service that checks the state of a node
-in patroni's `cluster` endpoint, the corresponding JSON test file must be added
-in `./tests/tools.py`.
+Please note that when dealing with any service that checks the state of a node,
+the related tests must use the `old_replica_state` fixture to test with both
+old (pre 3.0.4) and new replica states.
 
 A bash script, `check_patroni.sh`, is provided to facilitate testing all
 services on a Patroni endpoint (`./vagrant/check_patroni.sh`). It requires one

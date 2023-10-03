@@ -4,8 +4,10 @@ from check_patroni.cli import main
 
 
 # TODO Lag threshold tests
-def test_cluster_has_relica_ok(runner: CliRunner, fake_restapi) -> None:
-    fake_restapi("cluster_has_replica_ok")
+def test_cluster_has_relica_ok(
+    runner: CliRunner, fake_restapi, old_replica_state: bool
+) -> None:
+    fake_restapi("cluster_has_replica_ok", use_old_replica_state=old_replica_state)
     result = runner.invoke(
         main, ["-e", "https://10.20.199.3:8008", "cluster_has_replica"]
     )
@@ -17,9 +19,9 @@ def test_cluster_has_relica_ok(runner: CliRunner, fake_restapi) -> None:
 
 
 def test_cluster_has_replica_ok_with_count_thresholds(
-    runner: CliRunner, fake_restapi
+    runner: CliRunner, fake_restapi, old_replica_state: bool
 ) -> None:
-    fake_restapi("cluster_has_replica_ok")
+    fake_restapi("cluster_has_replica_ok", use_old_replica_state=old_replica_state)
     result = runner.invoke(
         main,
         [
@@ -40,9 +42,9 @@ def test_cluster_has_replica_ok_with_count_thresholds(
 
 
 def test_cluster_has_replica_ok_with_sync_count_thresholds(
-    runner: CliRunner, fake_restapi
+    runner: CliRunner, fake_restapi, old_replica_state: bool
 ) -> None:
-    fake_restapi("cluster_has_replica_ok")
+    fake_restapi("cluster_has_replica_ok", use_old_replica_state=old_replica_state)
     result = runner.invoke(
         main,
         [
@@ -61,9 +63,9 @@ def test_cluster_has_replica_ok_with_sync_count_thresholds(
 
 
 def test_cluster_has_replica_ok_with_count_thresholds_lag(
-    runner: CliRunner, fake_restapi
+    runner: CliRunner, fake_restapi, old_replica_state: bool
 ) -> None:
-    fake_restapi("cluster_has_replica_ok_lag")
+    fake_restapi("cluster_has_replica_ok_lag", use_old_replica_state=old_replica_state)
     result = runner.invoke(
         main,
         [
@@ -86,9 +88,9 @@ def test_cluster_has_replica_ok_with_count_thresholds_lag(
 
 
 def test_cluster_has_replica_ko_with_count_thresholds(
-    runner: CliRunner, fake_restapi
+    runner: CliRunner, fake_restapi, old_replica_state: bool
 ) -> None:
-    fake_restapi("cluster_has_replica_ko")
+    fake_restapi("cluster_has_replica_ko", use_old_replica_state=old_replica_state)
     result = runner.invoke(
         main,
         [
@@ -109,9 +111,9 @@ def test_cluster_has_replica_ko_with_count_thresholds(
 
 
 def test_cluster_has_replica_ko_with_sync_count_thresholds(
-    runner: CliRunner, fake_restapi
+    runner: CliRunner, fake_restapi, old_replica_state: bool
 ) -> None:
-    fake_restapi("cluster_has_replica_ko")
+    fake_restapi("cluster_has_replica_ko", use_old_replica_state=old_replica_state)
     result = runner.invoke(
         main,
         [
@@ -132,9 +134,9 @@ def test_cluster_has_replica_ko_with_sync_count_thresholds(
 
 
 def test_cluster_has_replica_ko_with_count_thresholds_and_lag(
-    runner: CliRunner, fake_restapi
+    runner: CliRunner, fake_restapi, old_replica_state: bool
 ) -> None:
-    fake_restapi("cluster_has_replica_ko_lag")
+    fake_restapi("cluster_has_replica_ko_lag", use_old_replica_state=old_replica_state)
     result = runner.invoke(
         main,
         [
