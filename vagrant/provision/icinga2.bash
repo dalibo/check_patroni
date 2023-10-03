@@ -66,7 +66,7 @@ icinga_setup(){
 	info "# Icinga setup"
 	info "#============================================================================="
 
-## this part is already done by the standart icinga install with the user icinga2 
+## this part is already done by the standard icinga install with the user icinga2
 ## and a random password, here we dont really care
 
 	cat << __EOF__ | sudo -u postgres psql 
@@ -83,7 +83,7 @@ __EOF__
 	icingacli setup config directory --group icingaweb2
 	icingacli setup token create
 
-## this part is already done by the standart icinga install with the user icinga2
+## this part is already done by the standard icinga install with the user icinga2
 	cat << __EOF__ > /etc/icinga2/features-available/ido-pgsql.conf 
 /**
  * The db_ido_pgsql library implements IDO functionality
@@ -198,7 +198,7 @@ grafana(){
 	cat << __EOF__ > /etc/grafana/grafana.ini 
 [database]
 # You can configure the database connection by specifying type, host, name, user and password
-# as seperate properties or as on string using the url propertie.
+# as separate properties or as on string using the url property.
 
 # Either "mysql", "postgres" or "sqlite3", it's your choice
 type = postgres

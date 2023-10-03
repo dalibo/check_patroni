@@ -100,7 +100,7 @@ http://$IP/icingaweb2/setup
 
   Finish
 
-* Screen 15: Hopefuly success
+* Screen 15: Hopefully success
 
   Login
 
