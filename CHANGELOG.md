@@ -6,6 +6,9 @@
 
 ### Fixed
 
+* Add compatibility with [requests](https://requests.readthedocs.io)
+  version 2.25 and higher.
+
 ### Misc
 
 * Improve test coverage by running an HTTP server to fake the Patroni API (#55
