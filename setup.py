@@ -45,7 +45,8 @@ setup(
     ],
     extras_require={
         "test": [
-            "pytest",
+            "importlib_metadata; python_version < '3.8'",
+            "pytest >= 6.0.2",
         ],
     },
     entry_points={
