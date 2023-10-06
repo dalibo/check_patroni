@@ -12,6 +12,8 @@
   by @dlax).
 * Work around old pytest versions in type annotations in the test suite.
 * Declare compatibility with click version 7.1 (or higher).
+* In tests, work around nagiosplugin 1.3.2 not properly handling stdout
+  redirection.
 
 ## check_patroni 1.0.0 - 2023-08-28
 

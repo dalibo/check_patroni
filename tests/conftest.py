@@ -1,7 +1,9 @@
+import logging
 import sys
 from pathlib import Path
 from threading import Thread
 from typing import Any, Iterator, Tuple
+from unittest.mock import patch
 
 if sys.version_info >= (3, 8):
     from importlib.metadata import version as metadata_version
@@ -13,6 +15,8 @@ from click.testing import CliRunner
 
 from . import PatroniAPI
 
+logger = logging.getLogger(__name__)
+
 
 def numversion(pkgname: str) -> Tuple[int, ...]:
     version = metadata_version(pkgname)
@@ -23,6 +27,19 @@ if numversion("pytest") >= (6, 2):
     TempPathFactory = pytest.TempPathFactory
 else:
     from _pytest.tmpdir import TempPathFactory
+
+
+@pytest.fixture(scope="session", autouse=True)
+def nagioplugin_runtime_stdout() -> Iterator[None]:
+    # work around https://github.com/mpounsett/nagiosplugin/issues/24 when
+    # nagiosplugin is older than 1.3.3
+    if numversion("nagiosplugin") < (1, 3, 3):
+        target = "nagiosplugin.runtime.Runtime.stdout"
+        with patch(target, None):
+            logger.warning("patching %r", target)
+            yield None
+    else:
+        yield None
 
 
 @pytest.fixture(
