@@ -41,7 +41,7 @@ setup(
         "attrs >= 17, !=21.1",
         "requests",
         "nagiosplugin >= 1.3.2",
-        "click >= 8.0.1",
+        "click >= 7.1",
     ],
     extras_require={
         "test": [
