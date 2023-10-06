@@ -1,3 +1,4 @@
+import json
 from typing import Any, Callable, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
@@ -71,7 +72,7 @@ class PatroniResource(nagiosplugin.Resource):
 
             try:
                 return r.json()
-            except requests.exceptions.JSONDecodeError:
+            except (json.JSONDecodeError, ValueError):
                 return None
         raise nagiosplugin.CheckError("Connection failed for all provided endpoints")
 
