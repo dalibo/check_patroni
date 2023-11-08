@@ -285,17 +285,38 @@ def cluster_has_leader(ctx: click.Context) -> None:
 
     This check applies to any kind of leaders including standby leaders.
 
+    A leader is a node with the "leader" role and a "running" state.
+
+    A standby leader is a node with a "standby_leader" role and a "streaming"
+    or "in archive recovery" state. Please note that log shipping could be
+    stuck because the WAL are not available or applicable. Patroni doesn't
+    provide information about the origin cluster (timeline or lag), so we
+    cannot check if there is a problem in that particular case. That's why we
+    issue a warning when the node is "in archive recovery". We suggest using
+    other supervision tools to do this (eg. check_pgactivity).
+
     \b
     Check:
     * `OK`: if there is a leader node.
-    * `CRITICAL`: otherwise
+    * 'WARNING': if there is a stanby leader in archive mode.
+    * `CRITICAL`: otherwise.
 
-    Perfdata: `has_leader` is 1 if there is a leader node, 0 otherwise
+    \b
+    Perfdata:
+    * `has_leader` is 1 if there is any kind of leader node, 0 otherwise
+    * `is_standby_leader_in_arc_rec` is 1 if the standby leader node is "in
+       archive recovery", 0 otherwise
+    * `is_standby_leader` is 1 if there is a standby leader node, 0 otherwise
+    * `is_leader` is 1 if there is a "classical" leader node, 0 otherwise
+
     """
     check = nagiosplugin.Check()
     check.add(
         ClusterHasLeader(ctx.obj.connection_info),
         nagiosplugin.ScalarContext("has_leader", None, "@0:0"),
+        nagiosplugin.ScalarContext("is_standby_leader_in_arc_rec", "@1:1", None),
+        nagiosplugin.ScalarContext("is_leader", None, None),
+        nagiosplugin.ScalarContext("is_standby_leader", None, None),
         ClusterHasLeaderSummary(),
     )
     check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)

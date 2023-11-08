@@ -52,19 +52,42 @@ class ClusterHasLeader(PatroniResource):
         item_dict = self.rest_api("cluster")
 
         is_leader_found = False
+        is_standby_leader_found = False
+        is_standby_leader_in_arc_rec = False
         for member in item_dict["members"]:
-            if (
-                member["role"] in ("leader", "standby_leader")
-                and member["state"] == "running"
-            ):
+            if member["role"] == "leader" and member["state"] == "running":
                 is_leader_found = True
                 break
 
+            if member["role"] == "standby_leader":
+                if member["state"] not in ["streaming", "in archive recovery"]:
+                    # for patroni >= 3.0.4 any state would be wrong
+                    # for patroni <  3.0.4 a state different from running would be wrong
+                    if self.has_detailed_states() or member["state"] != "running":
+                        continue
+
+                if member["state"] in ["in archive recovery"]:
+                    is_standby_leader_in_arc_rec = True
+
+                is_standby_leader_found = True
+                break
         return [
             nagiosplugin.Metric(
                 "has_leader",
+                1 if is_leader_found or is_standby_leader_found else 0,
+            ),
+            nagiosplugin.Metric(
+                "is_standby_leader_in_arc_rec",
+                1 if is_standby_leader_in_arc_rec else 0,
+            ),
+            nagiosplugin.Metric(
+                "is_standby_leader",
+                1 if is_standby_leader_found else 0,
+            ),
+            nagiosplugin.Metric(
+                "is_leader",
                 1 if is_leader_found else 0,
-            )
+            ),
         ]
 
 
@@ -74,7 +97,7 @@ class ClusterHasLeaderSummary(nagiosplugin.Summary):
 
     @handle_unknown
     def problem(self, results: nagiosplugin.Result) -> str:
-        return "The cluster has no running leader."
+        return "The cluster has no running leader or the standby leader is in archive recovery."
 
 
 class ClusterHasReplica(PatroniResource):
