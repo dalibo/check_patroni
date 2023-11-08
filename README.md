@@ -176,11 +176,27 @@ Usage: check_patroni cluster_has_leader [OPTIONS]
 
   This check applies to any kind of leaders including standby leaders.
 
+  A leader is a node with the "leader" role and a "running" state.
+
+  A standby leader is a node with a "standby_leader" role and a "streaming" or
+  "in archive recovery" state. Please note that log shipping could be stuck
+  because the WAL are not available or applicable. Patroni doesn't provide
+  information about the origin cluster (timeline or lag), so we cannot check
+  if there is a problem in that particular case. That's why we issue a warning
+  when the node is "in archive recovery". We suggest using other supervision
+  tools to do this (eg. check_pgactivity).
+
   Check:
   * `OK`: if there is a leader node.
-  * `CRITICAL`: otherwise
+  * 'WARNING': if there is a stanby leader in archive mode.
+  * `CRITICAL`: otherwise.
 
-  Perfdata: `has_leader` is 1 if there is a leader node, 0 otherwise
+  Perfdata:
+  * `has_leader` is 1 if there is any kind of leader node, 0 otherwise
+  * `is_standby_leader_in_arc_rec` is 1 if the standby leader node is "in
+     archive recovery", 0 otherwise
+  * `is_standby_leader` is 1 if there is a standby leader node, 0 otherwise
+  * `is_leader` is 1 if there is a "classical" leader node, 0 otherwise
 
 Options:
   --help  Show this message and exit.

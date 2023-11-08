@@ -6,6 +6,7 @@
 
 * Add the timeline in the  `cluster_has_replica` perfstats. (#50)
 * Add a mention about shell completion support and shell versions in the doc. (#53)
+* Add the leader type and whether it's archiving to the `cluster_has_leader` perfstats. (#58)
 
 ### Fixed
 
@@ -13,6 +14,7 @@
   version 2.25 and higher.
 * Fix what `cluster_has_replica` deems a healthy replica. (#50, reported by @mbanck)
 * Fix `cluster_has_replica` to display perfstats for replicas whenever it's possible (healthy or not). (#50)
+* Fix `cluster_has_leader` to correctly check for standby leaders. (#58, reported by @mbanck)
 
 ### Misc
 
