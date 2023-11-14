@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Changed
+
+* In `cluster_node_count`, a healthy standby, sync replica or standby leaders cannot be "in
+  archive recovery" because this service doesn't check for lag and timelines.
+
 ### Added
 
 * Add the timeline in the  `cluster_has_replica` perfstats. (#50)
@@ -15,6 +20,7 @@
 * Fix what `cluster_has_replica` deems a healthy replica. (#50, reported by @mbanck)
 * Fix `cluster_has_replica` to display perfstats for replicas whenever it's possible (healthy or not). (#50)
 * Fix `cluster_has_leader` to correctly check for standby leaders. (#58, reported by @mbanck)
+* Fix `cluster_node_count` to correctly manage replication states. (#50, reported by @mbanck)
 
 ### Misc
 

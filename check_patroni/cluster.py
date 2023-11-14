@@ -15,24 +15,51 @@ def replace_chars(text: str) -> str:
 
 class ClusterNodeCount(PatroniResource):
     def probe(self) -> Iterable[nagiosplugin.Metric]:
+        def debug_member(member: Any, health: str) -> None:
+            _log.debug(
+                "Node %(node_name)s is %(health)s: role %(role)s state %(state)s.",
+                {
+                    "node_name": member["name"],
+                    "health": health,
+                    "role": member["role"],
+                    "state": member["state"],
+                },
+            )
+
+        # get the cluster info
         item_dict = self.rest_api("cluster")
+
         role_counters: Counter[str] = Counter()
         roles = []
         status_counters: Counter[str] = Counter()
         statuses = []
+        healthy_member = 0
 
         for member in item_dict["members"]:
-            roles.append(replace_chars(member["role"]))
-            statuses.append(replace_chars(member["state"]))
+            state, role = member["state"], member["role"]
+            roles.append(replace_chars(role))
+            statuses.append(replace_chars(state))
+
+            if role == "leader" and state == "running":
+                healthy_member += 1
+                debug_member(member, "healthy")
+                continue
+
+            if role in ["standby_leader", "replica", "sync_standby"] and (
+                (self.has_detailed_states() and state == "streaming")
+                or (not self.has_detailed_states() and state == "running")
+            ):
+                healthy_member += 1
+                debug_member(member, "healthy")
+                continue
+
+            debug_member(member, "unhealthy")
         role_counters.update(roles)
         status_counters.update(statuses)
 
         # The actual check: members, healthy_members
         yield nagiosplugin.Metric("members", len(item_dict["members"]))
-        yield nagiosplugin.Metric(
-            "healthy_members",
-            status_counters["running"] + status_counters.get("streaming", 0),
-        )
+        yield nagiosplugin.Metric("healthy_members", healthy_member)
 
         # The performance data : role
         for role in role_counters:
