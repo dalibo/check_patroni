@@ -55,7 +55,7 @@ def cluster_api_set_replica_running(in_json: Path, target_dir: Path) -> Path:
     with in_json.open() as f:
         js = json.load(f)
     for node in js["members"]:
-        if node["role"] in ["replica", "sync_standby"]:
+        if node["role"] in ["replica", "sync_standby", "standby_leader"]:
             if node["state"] in ["streaming", "in archive recovery"]:
                 node["state"] = "running"
     assert target_dir.is_dir()

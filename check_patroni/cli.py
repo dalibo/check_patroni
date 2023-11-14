@@ -227,28 +227,39 @@ def cluster_node_count(
     """Count the number of nodes in the cluster.
 
     \b
-    The state refers to the state of PostgreSQL. Possible values are:
-    * initializing new cluster, initdb failed
-    * running custom bootstrap script, custom bootstrap failed
-    * starting, start failed
-    * restarting, restart failed
-    * running, streaming (for a replica V3.0.4)
-    * stopping, stopped, stop failed
-    * creating replica
-    * crashed
-
-    \b
     The role refers to the role of the server in the cluster. Possible values
     are:
-    * master or leader (V3.0.0+)
+    * master or leader
     * replica
+    * standby_leader
+    * sync_standby
     * demoted
     * promoted
     * uninitialized
 
     \b
+    The state refers to the state of PostgreSQL. Possible values are:
+    * initializing new cluster, initdb failed
+    * running custom bootstrap script, custom bootstrap failed
+    * starting, start failed
+    * restarting, restart failed
+    * running, streaming, in archive recovery
+    * stopping, stopped, stop failed
+    * creating replica
+    * crashed
+
+    \b
+    The "healthy" checks only ensures that:
+    * a leader has the running state
+    * a standby_leader has the running or streaming (V3.0.4) state
+    * a replica or sync-standby has the running or streaming (V3.0.4) state
+
+    Since we dont check the lag or timeline, "in archive recovery" is not considered a valid state
+    for this service. See cluster_has_leader and cluster_has_replica for specialized checks.
+
+    \b
     Check:
-    * Compares the number of nodes against the normal and healthy (running + streaming) nodes warning and critical thresholds.
+    * Compares the number of nodes against the normal and healthy nodes warning and critical thresholds.
     * `OK`:  If they are not provided.
 
     \b
