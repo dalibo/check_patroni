@@ -36,7 +36,6 @@ from .node import (
 )
 from .types import ConnectionInfo, Parameters
 
-DEFAULT_CFG = "config.ini"
 handler = logging.StreamHandler()
 handler.setFormatter(logging.Formatter("%(levelname)s - %(message)s"))
 _log.addHandler(handler)
@@ -49,11 +48,15 @@ def print_version(ctx: click.Context, param: str, value: str) -> None:
     ctx.exit()
 
 
-def configure(ctx: click.Context, param: str, filename: str) -> None:
+def configure(ctx: click.Context, param: str, filename: str) -> str:
     """Use a config file for the parameters
     stolen from https://jwodder.github.io/kbits/posts/click-config/
     """
     # FIXME should use click-configfile / click-config-file ?
+
+    if filename is None:
+        return None
+
     cfg = ConfigParser()
     cfg.read(filename)
     ctx.default_map = {}
@@ -72,15 +75,17 @@ def configure(ctx: click.Context, param: str, filename: str) -> None:
         except KeyError:
             pass
 
+    return filename
+
 
 @click.group()
 @click.option(
     "--config",
+    "config",
     type=click.Path(dir_okay=False),
-    default=DEFAULT_CFG,
     callback=configure,
     is_eager=True,
-    expose_value=False,
+    expose_value=True,
     help="Read option defaults from the specified INI file",
     show_default=True,
 )
@@ -147,6 +152,7 @@ def configure(ctx: click.Context, param: str, filename: str) -> None:
 @nagiosplugin.guarded
 def main(
     ctx: click.Context,
+    config: str,
     endpoints: List[str],
     cert_file: str,
     key_file: str,
@@ -157,11 +163,13 @@ def main(
     """Nagios plugin that uses Patroni's REST API to monitor a Patroni cluster."""
     # FIXME Not all "is/has" services have the same return code for ok. Check if it's ok
 
-    # We use this to pass parameters instead of ctx.parent.params because the
-    # latter is typed as Optional[Context] and mypy complains with the following
-    # error unless we test if ctx.parent is none which looked ugly.
-    #
-    # error: Item "None" of "Optional[Context]" has an attribute "params"  [union-attr]
+    # We check if the file exists here instead of in a configure() because the error
+    # has to be caught by nagios plugin to be be correctly dispalyed
+    try:
+        if config is not None:
+            open(config)
+    except FileNotFoundError:
+        raise click.UsageError("Config File not found", ctx)
 
     # The config file allows endpoints to be specified as a comma separated list of endpoints
     # To avoid confusion, We allow the same in command line parameters
@@ -174,6 +182,12 @@ def main(
         logging.getLogger("urllib3").addHandler(handler)
         logging.getLogger("urllib3").setLevel(logging.DEBUG)
         _log.setLevel(logging.DEBUG)
+
+    # We use this to pass parameters instead of ctx.parent.params because the
+    # latter is typed as Optional[Context] and mypy complains with the following
+    # error unless we test if ctx.parent is none which looked ugly.
+    #
+    # error: Item "None" of "Optional[Context]" has an attribute "params"  [union-attr]
 
     connection_info: ConnectionInfo
     if cert_file is None and key_file is None:
