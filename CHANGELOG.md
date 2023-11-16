@@ -5,6 +5,7 @@
 ### Added
 
 * Add the timeline in the  `cluster_has_replica` perfstats. (#50)
+* Add a mention about shell completion support and shell versions in the doc. (#53)
 
 ### Fixed
 
