@@ -117,7 +117,10 @@ a file spécific to your shell of choice.
   eval "$(_CHECK_PATRONI_COMPLETE=fish_source check_patroni)"
   ```
 
-[click]: https://click.palletsprojects.com/en/8.0.x/shell-completion/?highlight=completion
+Please note that shell completion is not supported far all shell versions, for
+example only Bash versions older than 4.4 are supported.
+
+[click]: https://click.palletsprojects.com/en/8.1.x/shell-completion/
 _EOF_
 readme
 readme "## Cluster services"
