@@ -1,7 +1,7 @@
 import logging
 import re
 from configparser import ConfigParser
-from typing import List
+from typing import List, Optional
 
 import click
 import nagiosplugin
@@ -48,17 +48,24 @@ def print_version(ctx: click.Context, param: str, value: str) -> None:
     ctx.exit()
 
 
-def configure(ctx: click.Context, param: str, filename: str) -> str:
+def configure(ctx: click.Context, param: str, value: Optional[str]) -> Optional[str]:
     """Use a config file for the parameters
     stolen from https://jwodder.github.io/kbits/posts/click-config/
     """
     # FIXME should use click-configfile / click-config-file ?
+    if value is None:
+        return value
 
-    if filename is None:
-        return None
+    try:
+        f = open(value)
+    except OSError as e:
+        click.echo(f"failed to read configuration: {e}", err=True)
+        ctx.exit(3)
+    else:
+        cfg = ConfigParser()
+        cfg.read_file(f)
+        f.close()
 
-    cfg = ConfigParser()
-    cfg.read(filename)
     ctx.default_map = {}
     for sect in cfg.sections():
         command_path = sect.split(".")
@@ -75,19 +82,17 @@ def configure(ctx: click.Context, param: str, filename: str) -> str:
         except KeyError:
             pass
 
-    return filename
+    return value
 
 
 @click.group()
 @click.option(
     "--config",
     "config",
-    type=click.Path(dir_okay=False),
     callback=configure,
     is_eager=True,
-    expose_value=True,
+    expose_value=False,
     help="Read option defaults from the specified INI file",
-    show_default=True,
 )
 @click.option(
     "-e",
@@ -152,7 +157,6 @@ def configure(ctx: click.Context, param: str, filename: str) -> str:
 @nagiosplugin.guarded
 def main(
     ctx: click.Context,
-    config: str,
     endpoints: List[str],
     cert_file: str,
     key_file: str,
@@ -162,14 +166,6 @@ def main(
 ) -> None:
     """Nagios plugin that uses Patroni's REST API to monitor a Patroni cluster."""
     # FIXME Not all "is/has" services have the same return code for ok. Check if it's ok
-
-    # We check if the file exists here instead of in a configure() because the error
-    # has to be caught by nagios plugin to be be correctly dispalyed
-    try:
-        if config is not None:
-            open(config)
-    except FileNotFoundError:
-        raise click.UsageError("Config File not found", ctx)
 
     # The config file allows endpoints to be specified as a comma separated list of endpoints
     # To avoid confusion, We allow the same in command line parameters
