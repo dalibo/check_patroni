@@ -122,11 +122,18 @@ def cluster_has_leader_ko_standby_leader_archiving(
 
 @pytest.mark.usefixtures("cluster_has_leader_ko_standby_leader_archiving")
 def test_cluster_has_leader_ko_standby_leader_archiving(
-    runner: CliRunner, patroni_api: PatroniAPI
+    runner: CliRunner, patroni_api: PatroniAPI, old_replica_state: bool
 ) -> None:
     result = runner.invoke(main, ["-e", patroni_api.endpoint, "cluster_has_leader"])
-    assert (
-        result.stdout
-        == "CLUSTERHASLEADER WARNING - The cluster has no running leader or the standby leader is in archive recovery. | has_leader=1;;@0 is_leader=0 is_standby_leader=1 is_standby_leader_in_arc_rec=1;@1:1\n"
-    )
-    assert result.exit_code == 1
+    if old_replica_state:
+        assert (
+            result.stdout
+            == "CLUSTERHASLEADER OK - The cluster has a running leader. | has_leader=1;;@0 is_leader=0 is_standby_leader=1 is_standby_leader_in_arc_rec=0;@1:1\n"
+        )
+        assert result.exit_code == 0
+    else:
+        assert (
+            result.stdout
+            == "CLUSTERHASLEADER WARNING - The cluster has no running leader or the standby leader is in archive recovery. | has_leader=1;;@0 is_leader=0 is_standby_leader=1 is_standby_leader_in_arc_rec=1;@1:1\n"
+        )
+        assert result.exit_code == 1
