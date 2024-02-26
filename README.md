@@ -45,7 +45,7 @@ Commands:
   node_is_leader                Check if the node is a leader node.
   node_is_pending_restart       Check if the node is in pending restart...
   node_is_primary               Check if the node is the primary with the...
-  node_is_replica               Check if the node is a running replica...
+  node_is_replica               Check if the node is a replica with no...
   node_patroni_version          Check if the version is equal to the input
   node_tl_has_changed           Check if the timeline has changed.
 ```
@@ -437,11 +437,20 @@ Options:
 ```
 Usage: check_patroni node_is_replica [OPTIONS]
 
-  Check if the node is a running replica with no noloadbalance tag.
+  Check if the node is a replica with no noloadbalance tag.
 
   It is possible to check if the node is synchronous or asynchronous. If
-  nothing is specified any kind of replica is accepted. When checking for a
+  nothing is specified any kind of replica is accepted.  When checking for a
   synchronous replica, it's not possible to specify a lag.
+
+  This service is using the following Patroni endpoints: replica, asynchronous
+  and synchronous. The first two implement the `lag` tag. For these endpoints
+  the state of a replica node doesn't reflect the replication state
+  (`streaming` or `in archive recovery`), we only know if it's `running`. The
+  timeline is also not checked.
+
+  Therefore, if a cluster is using asynchronous replication, it is recommended
+  to check for the lag to detect a divegence as soon as possible.
 
   Check:
   * `OK`: if the node is a running replica with noloadbalance tag and the lag is under the maximum threshold.
