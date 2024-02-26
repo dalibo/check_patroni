@@ -621,10 +621,20 @@ def node_is_leader(ctx: click.Context, check_standby_leader: bool) -> None:
 def node_is_replica(
     ctx: click.Context, max_lag: str, check_is_sync: bool, check_is_async: bool
 ) -> None:
-    """Check if the node is a running replica with no noloadbalance tag.
+    """Check if the node is a replica with no noloadbalance tag.
 
-    It is possible to check if the node is synchronous or asynchronous. If nothing is specified any kind of replica is accepted.
-    When checking for a synchronous replica, it's not possible to specify a lag.
+    It is possible to check if the node is synchronous or asynchronous. If
+    nothing is specified any kind of replica is accepted.  When checking for a
+    synchronous replica, it's not possible to specify a lag.
+
+    This service is using the following Patroni endpoints: replica, asynchronous
+    and synchronous. The first two implement the `lag` tag. For these endpoints
+    the state of a replica node doesn't reflect the replication state
+    (`streaming` or `in archive recovery`), we only know if it's `running`. The
+    timeline is also not checked.
+
+    Therefore, if a cluster is using asynchronous replication, it is
+    recommended to check for the lag to detect a divegence as soon as possible.
 
     \b
     Check:
