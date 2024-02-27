@@ -109,9 +109,9 @@ def test_cluster_has_leader_ko_standby_leader(
 def cluster_has_leader_ko_standby_leader_archiving(
     patroni_api: PatroniAPI, old_replica_state: bool, datadir: Path, tmp_path: Path
 ) -> Iterator[None]:
-    cluster_path: Union[
-        str, Path
-    ] = "cluster_has_leader_ko_standby_leader_archiving.json"
+    cluster_path: Union[str, Path] = (
+        "cluster_has_leader_ko_standby_leader_archiving.json"
+    )
     patroni_path = "cluster_has_replica_patroni_verion_3.1.0.json"
     if old_replica_state:
         cluster_path = cluster_api_set_replica_running(datadir / cluster_path, tmp_path)
