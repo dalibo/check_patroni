@@ -2,7 +2,7 @@ black
 codespell
 isort
 flake8
-mypy==0.961
+mypy
 pytest
 pytest-cov
 types-requests

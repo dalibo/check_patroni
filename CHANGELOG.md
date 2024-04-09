@@ -1,6 +1,11 @@
 # Change log
 
-## Unreleased
+## check_patroni 2.0.0 - 2024-04-29
+
+### Notice
+
+While fixing `cluster_has_replica`, the definition of a healthy replica was
+changed. It's more restrictive now, hence the jump from v1 to v2.
 
 ### Changed
 
@@ -24,7 +29,7 @@
 
 ### Misc
 
-* Improve the documentation for node_is_replica.
+* Improve the documentation for `node_is_replica`.
 * Improve test coverage by running an HTTP server to fake the Patroni API (#55
   by @dlax).
 * Work around old pytest versions in type annotations in the test suite.
