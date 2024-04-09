@@ -1,6 +1,6 @@
 # Change log
 
-## Unreleased
+## check_patroni 2.0.0 - 2024-04-09
 
 ### Changed
 
@@ -24,7 +24,7 @@
 
 ### Misc
 
-* Improve the documentation for node_is_replica.
+* Improve the documentation for `node_is_replica`.
 * Improve test coverage by running an HTTP server to fake the Patroni API (#55
   by @dlax).
 * Work around old pytest versions in type annotations in the test suite.
