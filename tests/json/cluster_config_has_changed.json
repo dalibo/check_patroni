@@ -1,6 +1,6 @@
 {
   "loop_wait": 10,
-  "master_start_timeout": 300,
+  "primary_start_timeout": 300,
   "postgresql": {
     "parameters": {
       "archive_command": "pgbackrest --stanza=main archive-push %p",

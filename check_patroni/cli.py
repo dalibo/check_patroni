@@ -229,7 +229,7 @@ def cluster_node_count(
     \b
     The role refers to the role of the server in the cluster. Possible values
     are:
-    * master or leader
+    * leader (master was removed in patroni 4.0.0)
     * replica
     * standby_leader
     * sync_standby
