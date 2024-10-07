@@ -1,6 +1,7 @@
 __pycache__/
 check_patroni.egg-info
 tests/config.ini
+tests/*.state_file
 vagrant/.vagrant
 vagrant/*.state_file
 .*.swp

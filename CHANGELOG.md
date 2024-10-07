@@ -1,5 +1,13 @@
 # Change log
 
+## Unreleased
+
+### Misc
+
+* Update the tests and the documentation to reflect that master is replaced by
+  primary everywhere it's visible in Patroni. We didn't use the term so there
+  is nothing to change in our code.
+
 ## check_patroni 2.0.0 - 2024-04-29
 
 ### Notice
