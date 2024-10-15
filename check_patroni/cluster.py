@@ -180,7 +180,7 @@ class ClusterHasReplica(PatroniResource):
                     # members because leader_tl will remain None. it's not
                     # a big deal since having no leader is rare.
                     for tmember in cluster_item_dict["members"]:
-                        if tmember["role"] == "leader":
+                        if tmember["role"] in ["leader", "standby_leader"]:
                             leader_tl = int(tmember["timeline"])
                             break
 

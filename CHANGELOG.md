@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+* cluster_has_replica now properly accounts for standby leaders (#72, reported by @MLyssens)
+
 ### Misc
 
 * Update the tests and the documentation to reflect that master is replaced by
