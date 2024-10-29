@@ -75,7 +75,7 @@ class PatroniResource(nagiosplugin.Resource):
                 return r.json()
             except (json.JSONDecodeError, ValueError):
                 return None
-        raise nagiosplugin.CheckError("Connection failed for all provided endpoints")
+        raise APIError("Connection failed for all provided endpoints")
 
     @lru_cache(maxsize=None)
     def has_detailed_states(self) -> bool:
