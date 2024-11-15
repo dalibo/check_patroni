@@ -121,6 +121,11 @@ Please note that shell completion is not supported far all shell versions, for
 example only Bash versions older than 4.4 are supported.
 
 [click]: https://click.palletsprojects.com/en/8.1.x/shell-completion/
+
+## Connection errors and service status
+
+If patroni is not running, we have no way to know if the provided endpoint is
+valid, therefore the check returns UNKNOWN.
 _EOF_
 readme
 readme "## Cluster services"

@@ -140,6 +140,11 @@ example only Bash versions older than 4.4 are supported.
 
 [click]: https://click.palletsprojects.com/en/8.1.x/shell-completion/
 
+## Connection errors and service status
+
+If patroni is not running, we have no way to know if the provided endpoint is
+valid, therefore the check returns UNKNOWN.
+
 ## Cluster services
 
 ### cluster_config_has_changed
@@ -356,11 +361,14 @@ Options:
 Usage: check_patroni node_is_alive [OPTIONS]
 
   Check if the node is alive ie patroni is running. This is a liveness check
-  as defined in Patroni's documentation.
+  as defined in Patroni's documentation. If patroni is not running, we have no
+  way to know if the provided endpoint is valid, therefore the check returns
+  UNKNOWN.
 
   Check:
-  * `OK`: If patroni is running.
-  * `CRITICAL`: otherwise.
+  * `OK`: If patroni the liveness check returns with HTTP status 200.
+  * `CRITICAL`: if partoni's liveness check returns with an HTTP status
+     other than 200.
 
   Perfdata:
   * `is_running` is 1 if patroni is running, 0 otherwise

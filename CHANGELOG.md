@@ -1,5 +1,12 @@
 # Change log
 
+## unreleased
+
+### Fixed
+
+* Update the documentation to clarify that if patroni cannot be reached, we consider
+  it's a configuration error that returns UNKNOWN (#77, reported by @MLyssens)
+
 ## check_patroni 2.1.0 - 2024-10-19
 
 ### Fixed
