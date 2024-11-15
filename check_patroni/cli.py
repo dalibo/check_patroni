@@ -789,12 +789,15 @@ def node_patroni_version(ctx: click.Context, patroni_version: str) -> None:
 @nagiosplugin.guarded
 def node_is_alive(ctx: click.Context) -> None:
     """Check if the node is alive ie patroni is running. This is
-    a liveness check as defined in Patroni's documentation.
+    a liveness check as defined in Patroni's documentation. If
+    patroni is not running, we have no way to know if the provided
+    endpoint is valid, therefore the check returns UNKNOWN.
 
     \b
     Check:
-    * `OK`: If patroni is running.
-    * `CRITICAL`: otherwise.
+    * `OK`: If patroni the liveness check returns with HTTP status 200.
+    * `CRITICAL`: if partoni's liveness check returns with an HTTP status
+       other than 200.
 
     \b
     Perfdata:

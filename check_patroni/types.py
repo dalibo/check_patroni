@@ -11,8 +11,8 @@ from . import _log
 
 
 class APIError(requests.exceptions.RequestException):
-    """This exception is raised when the rest api couldn't
-    be reached and we got a http status code different from 200.
+    """This exception is raised when the rest api could
+    be reached but we got a http status code different from 200.
     """
 
 
