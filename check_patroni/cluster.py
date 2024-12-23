@@ -133,9 +133,12 @@ class ClusterHasLeaderSummary(nagiosplugin.Summary):
 
 
 class ClusterHasReplica(PatroniResource):
-    def __init__(self, connection_info: ConnectionInfo, max_lag: Union[int, None]):
+    def __init__(
+        self, connection_info: ConnectionInfo, max_lag: Union[int, None], sync_type: str
+    ):
         super().__init__(connection_info)
         self.max_lag = max_lag
+        self.sync_type = sync_type
 
     def probe(self) -> Iterable[nagiosplugin.Metric]:
         def debug_member(member: Any, health: str) -> None:
@@ -161,7 +164,7 @@ class ClusterHasReplica(PatroniResource):
 
         # Look for replicas
         for member in cluster_item_dict["members"]:
-            if member["role"] in ["replica", "sync_standby"]:
+            if member["role"] in ["replica", "sync_standby", "quorum_standby"]:
                 if member["lag"] == "unknown":
                     # This could happen if the node is stopped
                     # nagiosplugin doesn't handle strings in perfstats
@@ -175,7 +178,11 @@ class ClusterHasReplica(PatroniResource):
                             "name": member["name"],
                             "lag": member["lag"],
                             "timeline": member["timeline"],
-                            "sync": 1 if member["role"] == "sync_standby" else 0,
+                            "sync": (
+                                1
+                                if member["role"] in ["sync_standby", "quorum_standby"]
+                                else 0
+                            ),
                         }
                     )
 
@@ -214,7 +221,13 @@ class ClusterHasReplica(PatroniResource):
                     unhealthy_replica += 1
                     continue
 
-                if member["role"] == "sync_standby":
+                if (
+                    self.sync_type in ["sync", "any"]
+                    and member["role"] == "sync_standby"
+                ) or (
+                    self.sync_type in ["quorum", "any"]
+                    and member["role"] == "quorum_standby"
+                ):
                     sync_replica += 1
 
                 if self.max_lag is None or self.max_lag >= int(member["lag"]):

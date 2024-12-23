@@ -32,6 +32,59 @@ def test_cluster_has_relica_ok(runner: CliRunner, patroni_api: PatroniAPI) -> No
     assert result.exit_code == 0
 
 
+@pytest.fixture
+def cluster_has_replica_ok_sync(
+    patroni_api: PatroniAPI, old_replica_state: bool, datadir: Path, tmp_path: Path
+) -> Iterator[None]:
+    cluster_path: Union[str, Path] = "cluster_has_replica_ok.json"
+    patroni_path = "cluster_has_replica_patroni_verion_3.1.0.json"
+    if old_replica_state:
+        cluster_path = cluster_api_set_replica_running(datadir / cluster_path, tmp_path)
+        patroni_path = "cluster_has_replica_patroni_verion_3.0.0.json"
+    with patroni_api.routes({"cluster": cluster_path, "patroni": patroni_path}):
+        yield None
+
+
+@pytest.mark.usefixtures("cluster_has_replica_ok_sync")
+def test_cluster_has_relica_ok_sync(runner: CliRunner, patroni_api: PatroniAPI) -> None:
+    result = runner.invoke(
+        main, ["-e", patroni_api.endpoint, "cluster_has_replica", "--sync-type", "sync"]
+    )
+    assert (
+        result.stdout
+        == "CLUSTERHASREPLICA OK - healthy_replica is 2 | healthy_replica=2 srv2_lag=0 srv2_sync=0 srv2_timeline=51 srv3_lag=0 srv3_sync=1 srv3_timeline=51 sync_replica=1 unhealthy_replica=0\n"
+    )
+    assert result.exit_code == 0
+
+
+@pytest.fixture
+def cluster_has_replica_ok_quorum(
+    patroni_api: PatroniAPI, old_replica_state: bool, datadir: Path, tmp_path: Path
+) -> Iterator[None]:
+    cluster_path: Union[str, Path] = "cluster_has_replica_ok_quorum.json"
+    patroni_path = "cluster_has_replica_patroni_verion_3.1.0.json"
+    if old_replica_state:
+        cluster_path = cluster_api_set_replica_running(datadir / cluster_path, tmp_path)
+        patroni_path = "cluster_has_replica_patroni_verion_3.0.0.json"
+    with patroni_api.routes({"cluster": cluster_path, "patroni": patroni_path}):
+        yield None
+
+
+@pytest.mark.usefixtures("cluster_has_replica_ok_quorum")
+def test_cluster_has_relica_ok_qorum(
+    runner: CliRunner, patroni_api: PatroniAPI
+) -> None:
+    result = runner.invoke(
+        main,
+        ["-e", patroni_api.endpoint, "cluster_has_replica", "--sync-type", "quorum"],
+    )
+    assert (
+        result.stdout
+        == "CLUSTERHASREPLICA OK - healthy_replica is 2 | healthy_replica=2 srv2_lag=0 srv2_sync=1 srv2_timeline=51 srv3_lag=0 srv3_sync=1 srv3_timeline=51 sync_replica=2 unhealthy_replica=0\n"
+    )
+    assert result.exit_code == 0
+
+
 @pytest.mark.usefixtures("cluster_has_replica_ok")
 def test_cluster_has_replica_ok_with_count_thresholds(
     runner: CliRunner, patroni_api: PatroniAPI

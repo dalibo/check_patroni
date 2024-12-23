@@ -361,6 +361,13 @@ def cluster_has_leader(ctx: click.Context) -> None:
     type=str,
     help="Critical threshold for the number of sync replica.",
 )
+@click.option(
+    "--sync-type",
+    type=click.Choice(["any", "sync", "quorum"], case_sensitive=True),
+    default="any",
+    show_default=True,
+    help="Synchronous replication mode used to filter and count sync standbies.",
+)
 @click.option("--max-lag", "max_lag", type=str, help="maximum allowed lag")
 @click.pass_context
 @nagiosplugin.guarded
@@ -370,9 +377,10 @@ def cluster_has_replica(
     critical: str,
     sync_warning: str,
     sync_critical: str,
+    sync_type: str,
     max_lag: str,
 ) -> None:
-    """Check if the cluster has healthy replicas and/or if some are sync standbies
+    """Check if the cluster has healthy replicas and/or if some are sync or quorum standbies
 
     \b
     For patroni (and this check):
@@ -381,7 +389,7 @@ def cluster_has_replica(
 
     \b
     A healthy replica:
-    * has a `replica` or `sync_standby` role
+    * has a `replica`, `quorum_standby` or `sync_standby` role
     * has the same timeline as the leader and
       * is in `running` state (patroni < V3.0.4)
       * is in `streaming` or `in archive recovery` state (patroni >= V3.0.4)
@@ -398,16 +406,24 @@ def cluster_has_replica(
     switchover or failover and the standbies are in the process of catching up with
     the new leader. The alert shouldn't last long.
 
+    In PostgreSQL, synchronous replication has two modes: on and quorum and is
+    configured with the gucs `synchronous_standby_names` and `synchronous_commit`. Patroni
+    uses the parameter `synchronous_mode`, which can be set to `on`, `quorum` and `off`,
+    and has `synchronous_node_count` to configure the synchronous replication factor.
+    Please note that, in synchronous replication, the number of servers tagged as "{sync|quorum}_standby"
+    (what we measure) is not always equal tot `synchronous_node_count`.
+
     \b
     Check:
     * `OK`: if the healthy_replica count and their lag are compatible with the replica count threshold.
-            and if the sync_replica count is compatible with the sync replica count threshold.
+            and if the synchronous replica count is compatible with the sync replica count threshold.
     * `WARNING` / `CRITICAL`: otherwise
 
     \b
     Perfdata:
     * healthy_replica & unhealthy_replica count
-    * the number of sync_replica, they are included in the previous count
+    * the number of sync_replica (sync or quorum depending on `--sync-type`), they are included
+      in the previous count
     * the lag of each replica labelled with "member name"_lag
     * the timeline of each replica labelled with "member name"_timeline
     * a boolean to tell if the node is a sync stanbdy labelled with "member name"_sync
@@ -416,7 +432,7 @@ def cluster_has_replica(
     tmax_lag = size_to_byte(max_lag) if max_lag is not None else None
     check = nagiosplugin.Check()
     check.add(
-        ClusterHasReplica(ctx.obj.connection_info, tmax_lag),
+        ClusterHasReplica(ctx.obj.connection_info, tmax_lag, sync_type),
         nagiosplugin.ScalarContext(
             "healthy_replica",
             warning,
