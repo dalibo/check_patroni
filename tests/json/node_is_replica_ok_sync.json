@@ -1,0 +1,22 @@
+{
+  "state": "running",
+  "postmaster_start_time": "2024-12-23 10:07:07.660665+00:00",
+  "role": "replica",
+  "server_version": 140013,
+  "xlog": {
+    "received_location": 251660416,
+    "replayed_location": 251660416,
+    "replayed_timestamp": "2024-12-23 15:43:43.152572+00:00",
+    "paused": false
+  },
+  "sync_standby": true,
+  "timeline": 9,
+  "replication_state": "streaming",
+  "dcs_last_seen": 1734972473,
+  "database_system_identifier": "7421168130564934130",
+  "patroni": {
+    "version": "4.0.2",
+    "scope": "patroni-demo",
+    "name": "p2"
+  }
+}
