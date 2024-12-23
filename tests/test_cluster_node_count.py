@@ -40,6 +40,67 @@ def test_cluster_node_count_ok(
     assert result.exit_code == 0
 
 
+@pytest.fixture
+def cluster_node_count_ok_sync(
+    patroni_api: PatroniAPI, old_replica_state: bool, datadir: Path, tmp_path: Path
+) -> Iterator[None]:
+    cluster_path: Union[str, Path] = "cluster_node_count_ok_sync.json"
+    patroni_path = "cluster_has_replica_patroni_verion_3.1.0.json"
+    if old_replica_state:
+        cluster_path = cluster_api_set_replica_running(datadir / cluster_path, tmp_path)
+        patroni_path = "cluster_has_replica_patroni_verion_3.0.0.json"
+    with patroni_api.routes({"cluster": cluster_path, "patroni": patroni_path}):
+        yield None
+
+
+@pytest.mark.usefixtures("cluster_node_count_ok_sync")
+def test_cluster_node_count_ok_sync(
+    runner: CliRunner, patroni_api: PatroniAPI, old_replica_state: bool
+) -> None:
+    result = runner.invoke(main, ["-e", patroni_api.endpoint, "cluster_node_count"])
+    if old_replica_state:
+        assert (
+            result.output
+            == "CLUSTERNODECOUNT OK - members is 3 | healthy_members=3 members=3 role_leader=1 role_replica=1 role_sync_standby=1 state_running=3\n"
+        )
+    else:
+        assert (
+            result.output
+            == "CLUSTERNODECOUNT OK - members is 3 | healthy_members=3 members=3 role_leader=1 role_replica=1 role_sync_standby=1 state_running=1 state_streaming=2\n"
+        )
+    assert result.exit_code == 0
+
+
+@pytest.fixture
+def cluster_node_count_ok_quorum(
+    patroni_api: PatroniAPI, old_replica_state: bool, datadir: Path, tmp_path: Path
+) -> Iterator[None]:
+    cluster_path: Union[str, Path] = "cluster_node_count_ok_quorum.json"
+    patroni_path = "cluster_has_replica_patroni_verion_3.1.0.json"
+    if old_replica_state:
+        cluster_path = cluster_api_set_replica_running(datadir / cluster_path, tmp_path)
+        patroni_path = "cluster_has_replica_patroni_verion_3.0.0.json"
+    with patroni_api.routes({"cluster": cluster_path, "patroni": patroni_path}):
+        yield None
+
+
+@pytest.mark.usefixtures("cluster_node_count_ok_quorum")
+def test_cluster_node_count_ok_quorum(
+    runner: CliRunner, patroni_api: PatroniAPI, old_replica_state: bool
+) -> None:
+    result = runner.invoke(main, ["-e", patroni_api.endpoint, "cluster_node_count"])
+    if old_replica_state:
+        assert (
+            result.output
+            == "CLUSTERNODECOUNT OK - members is 3 | healthy_members=3 members=3 role_leader=1 role_quorum_standby=2 state_running=3\n"
+        )
+    else:
+        assert (
+            result.output
+            == "CLUSTERNODECOUNT OK - members is 3 | healthy_members=3 members=3 role_leader=1 role_quorum_standby=2 state_running=1 state_streaming=2\n"
+        )
+
+
 @pytest.mark.usefixtures("cluster_node_count_ok")
 def test_cluster_node_count_ok_with_thresholds(
     runner: CliRunner, patroni_api: PatroniAPI, old_replica_state: bool

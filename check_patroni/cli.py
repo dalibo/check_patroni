@@ -233,6 +233,7 @@ def cluster_node_count(
     * replica
     * standby_leader
     * sync_standby
+    * quorum_standby
     * demoted
     * promoted
     * uninitialized
@@ -252,7 +253,7 @@ def cluster_node_count(
     The "healthy" checks only ensures that:
     * a leader has the running state
     * a standby_leader has the running or streaming (V3.0.4) state
-    * a replica or sync-standby has the running or streaming (V3.0.4) state
+    * a replica, quorum_standby or sync_standby has the running or streaming (V3.0.4) state
 
     Since we dont check the lag or timeline, "in archive recovery" is not considered a valid state
     for this service. See cluster_has_leader and cluster_has_replica for specialized checks.
