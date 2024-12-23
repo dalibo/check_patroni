@@ -45,7 +45,12 @@ class ClusterNodeCount(PatroniResource):
                 debug_member(member, "healthy")
                 continue
 
-            if role in ["standby_leader", "replica", "sync_standby"] and (
+            if role in [
+                "standby_leader",
+                "replica",
+                "sync_standby",
+                "quorum_standby",
+            ] and (
                 (self.has_detailed_states() and state == "streaming")
                 or (not self.has_detailed_states() and state == "running")
             ):
