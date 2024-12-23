@@ -65,35 +65,53 @@ class NodeIsReplica(PatroniResource):
         max_lag: str,
         check_is_sync: bool,
         check_is_async: bool,
+        sync_type: str,
     ) -> None:
         super().__init__(connection_info)
         self.max_lag = max_lag
         self.check_is_sync = check_is_sync
         self.check_is_async = check_is_async
+        self.sync_type = sync_type
 
     def probe(self) -> Iterable[nagiosplugin.Metric]:
+        item_dict = {}
         try:
-            if self.check_is_sync:
-                api_name = "synchronous"
-            elif self.check_is_async:
-                api_name = "asynchronous"
-            else:
-                api_name = "replica"
-
             if self.max_lag is None:
-                self.rest_api(api_name)
+                item_dict = self.rest_api("replica")
             else:
-                self.rest_api(f"{api_name}?lag={self.max_lag}")
+                item_dict = self.rest_api(f"replica?lag={self.max_lag}")
         except APIError:
             return [nagiosplugin.Metric("is_replica", 0)]
-        return [nagiosplugin.Metric("is_replica", 1)]
+
+        if self.check_is_sync:
+            if (
+                self.sync_type in ["sync", "any"] and "sync_standby" in item_dict.keys()
+            ) or (
+                self.sync_type in ["quorum", "any"]
+                and "quorum_standby" in item_dict.keys()
+            ):
+                return [nagiosplugin.Metric("is_replica", 1)]
+            else:
+                return [nagiosplugin.Metric("is_replica", 0)]
+        elif self.check_is_async:
+            if (
+                "sync_standby" in item_dict.keys()
+                or "quorum_standby" in item_dict.keys()
+            ):
+                return [nagiosplugin.Metric("is_replica", 0)]
+            else:
+                return [nagiosplugin.Metric("is_replica", 1)]
+        else:
+            return [nagiosplugin.Metric("is_replica", 1)]
 
 
 class NodeIsReplicaSummary(nagiosplugin.Summary):
-    def __init__(self, lag: str, check_is_sync: bool, check_is_async: bool) -> None:
+    def __init__(
+        self, lag: str, check_is_sync: bool, check_is_async: bool, sync_type: str
+    ) -> None:
         self.lag = lag
         if check_is_sync:
-            self.replica_kind = "synchronous replica"
+            self.replica_kind = f"synchronous replica of kind '{sync_type}'"
         elif check_is_async:
             self.replica_kind = "asynchronous replica"
         else:

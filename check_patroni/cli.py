@@ -627,6 +627,13 @@ def node_is_leader(ctx: click.Context, check_standby_leader: bool) -> None:
     help="check if the replica is synchronous",
 )
 @click.option(
+    "--sync-type",
+    type=click.Choice(["any", "sync", "quorum"], case_sensitive=True),
+    default="any",
+    show_default=True,
+    help="Synchronous replication mode.",
+)
+@click.option(
     "--is-async",
     "check_is_async",
     is_flag=True,
@@ -636,7 +643,11 @@ def node_is_leader(ctx: click.Context, check_standby_leader: bool) -> None:
 @click.pass_context
 @nagiosplugin.guarded
 def node_is_replica(
-    ctx: click.Context, max_lag: str, check_is_sync: bool, check_is_async: bool
+    ctx: click.Context,
+    max_lag: str,
+    check_is_sync: bool,
+    check_is_async: bool,
+    sync_type: str,
 ) -> None:
     """Check if the node is a replica with no noloadbalance tag.
 
@@ -675,9 +686,11 @@ def node_is_replica(
 
     check = nagiosplugin.Check()
     check.add(
-        NodeIsReplica(ctx.obj.connection_info, max_lag, check_is_sync, check_is_async),
+        NodeIsReplica(
+            ctx.obj.connection_info, max_lag, check_is_sync, check_is_async, sync_type
+        ),
         nagiosplugin.ScalarContext("is_replica", None, "@0:0"),
-        NodeIsReplicaSummary(max_lag, check_is_sync, check_is_async),
+        NodeIsReplicaSummary(max_lag, check_is_sync, check_is_async, sync_type),
     )
     check.main(verbose=ctx.obj.verbose, timeout=ctx.obj.timeout)
 
