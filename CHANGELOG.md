@@ -2,6 +2,10 @@
 
 ## unreleased
 
+### Added
+
+* Support for quorum synchronous réplication (#80)
+
 ### Fixed
 
 * Update the documentation to clarify that if patroni cannot be reached, we consider
