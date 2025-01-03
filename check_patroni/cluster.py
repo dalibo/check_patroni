@@ -1,7 +1,7 @@
 import hashlib
 import json
 from collections import Counter
-from typing import Any, Iterable, Union
+from typing import Any, Iterable, Literal, Union
 
 import nagiosplugin
 
@@ -134,7 +134,10 @@ class ClusterHasLeaderSummary(nagiosplugin.Summary):
 
 class ClusterHasReplica(PatroniResource):
     def __init__(
-        self, connection_info: ConnectionInfo, max_lag: Union[int, None], sync_type: str
+        self,
+        connection_info: ConnectionInfo,
+        max_lag: Union[int, None],
+        sync_type: Literal["any", "sync", "quorum"],
     ):
         super().__init__(connection_info)
         self.max_lag = max_lag

@@ -1,7 +1,7 @@
 import logging
 import re
 from configparser import ConfigParser
-from typing import List
+from typing import List, Literal
 
 import click
 import nagiosplugin
@@ -377,7 +377,7 @@ def cluster_has_replica(
     critical: str,
     sync_warning: str,
     sync_critical: str,
-    sync_type: str,
+    sync_type: Literal["any", "sync", "quorum"],
     max_lag: str,
 ) -> None:
     """Check if the cluster has healthy replicas and/or if some are sync or quorum standbies
@@ -647,7 +647,7 @@ def node_is_replica(
     max_lag: str,
     check_is_sync: bool,
     check_is_async: bool,
-    sync_type: str,
+    sync_type: Literal["any", "sync", "quorum"],
 ) -> None:
     """Check if the node is a replica with no noloadbalance tag.
 

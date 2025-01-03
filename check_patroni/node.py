@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Literal
 
 import nagiosplugin
 
@@ -65,7 +65,7 @@ class NodeIsReplica(PatroniResource):
         max_lag: str,
         check_is_sync: bool,
         check_is_async: bool,
-        sync_type: str,
+        sync_type: Literal["any", "sync", "quorum"],
     ) -> None:
         super().__init__(connection_info)
         self.max_lag = max_lag
@@ -84,20 +84,14 @@ class NodeIsReplica(PatroniResource):
             return [nagiosplugin.Metric("is_replica", 0)]
 
         if self.check_is_sync:
-            if (
-                self.sync_type in ["sync", "any"] and "sync_standby" in item_dict.keys()
-            ) or (
-                self.sync_type in ["quorum", "any"]
-                and "quorum_standby" in item_dict.keys()
+            if (self.sync_type in ["sync", "any"] and "sync_standby" in item_dict) or (
+                self.sync_type in ["quorum", "any"] and "quorum_standby" in item_dict
             ):
                 return [nagiosplugin.Metric("is_replica", 1)]
             else:
                 return [nagiosplugin.Metric("is_replica", 0)]
         elif self.check_is_async:
-            if (
-                "sync_standby" in item_dict.keys()
-                or "quorum_standby" in item_dict.keys()
-            ):
+            if "sync_standby" in item_dict or "quorum_standby" in item_dict:
                 return [nagiosplugin.Metric("is_replica", 0)]
             else:
                 return [nagiosplugin.Metric("is_replica", 1)]
@@ -107,7 +101,11 @@ class NodeIsReplica(PatroniResource):
 
 class NodeIsReplicaSummary(nagiosplugin.Summary):
     def __init__(
-        self, lag: str, check_is_sync: bool, check_is_async: bool, sync_type: str
+        self,
+        lag: str,
+        check_is_sync: bool,
+        check_is_async: bool,
+        sync_type: Literal["any", "sync", "quorum"],
     ) -> None:
         self.lag = lag
         if check_is_sync:
