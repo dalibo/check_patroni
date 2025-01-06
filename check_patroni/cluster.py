@@ -1,12 +1,12 @@
 import hashlib
 import json
 from collections import Counter
-from typing import Any, Iterable, Literal, Union
+from typing import Any, Iterable, Union
 
 import nagiosplugin
 
 from . import _log
-from .types import ConnectionInfo, PatroniResource, handle_unknown
+from .types import ConnectionInfo, PatroniResource, SyncType, handle_unknown
 
 
 def replace_chars(text: str) -> str:
@@ -137,7 +137,7 @@ class ClusterHasReplica(PatroniResource):
         self,
         connection_info: ConnectionInfo,
         max_lag: Union[int, None],
-        sync_type: Literal["any", "sync", "quorum"],
+        sync_type: SyncType,
     ):
         super().__init__(connection_info)
         self.max_lag = max_lag
