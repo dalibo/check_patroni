@@ -1,9 +1,9 @@
-from typing import Iterable, Literal
+from typing import Iterable
 
 import nagiosplugin
 
 from . import _log
-from .types import APIError, ConnectionInfo, PatroniResource, handle_unknown
+from .types import APIError, ConnectionInfo, PatroniResource, SyncType, handle_unknown
 
 
 class NodeIsPrimary(PatroniResource):
@@ -65,7 +65,7 @@ class NodeIsReplica(PatroniResource):
         max_lag: str,
         check_is_sync: bool,
         check_is_async: bool,
-        sync_type: Literal["any", "sync", "quorum"],
+        sync_type: SyncType,
     ) -> None:
         super().__init__(connection_info)
         self.max_lag = max_lag
@@ -105,7 +105,7 @@ class NodeIsReplicaSummary(nagiosplugin.Summary):
         lag: str,
         check_is_sync: bool,
         check_is_async: bool,
-        sync_type: Literal["any", "sync", "quorum"],
+        sync_type: SyncType,
     ) -> None:
         self.lag = lag
         if check_is_sync:

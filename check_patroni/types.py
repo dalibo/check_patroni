@@ -1,6 +1,6 @@
 import json
 from functools import lru_cache
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable, List, Literal, Optional, Tuple, Union
 from urllib.parse import urlparse
 
 import attr
@@ -8,6 +8,8 @@ import nagiosplugin
 import requests
 
 from . import _log
+
+SyncType = Literal["any", "sync", "quorum"]
 
 
 class APIError(requests.exceptions.RequestException):
