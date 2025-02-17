@@ -1,6 +1,6 @@
 # Change log
 
-## unreleased
+## check_patroni 2.2.0 - 2025-02-17
 
 ### Added
 
